@@ -1,0 +1,6 @@
+{
+    "port": 8080,
+    "apiEndpoint": "https://vktool.azurewebsites.net",
+    "clientHost": "https://vktool.azurewebsites.net",
+    "mongodbConnectionString": "mongodb://mongo-vkazu-tool:xCDadoQcctQ4KhGCmWO0biXixZJcA3Q2YkfWrCc8fjqi5AxvarwzMkOaSEpm13e5EWJjWdLQqmPLhs6t65sCvQ%3D%3D@mongo-vkazu-tool.documents.azure.com:10250/tool?ssl=true&sslverifycertificate=false"
+}
