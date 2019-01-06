@@ -1,6 +1,7 @@
 import * as Express from 'express'
 import passport from 'passport'
 import AuthService from '../services/AuthService';
+import config from 'config'
 
 export default class AuthController {
     public static async isAuth(req: Express.Request, res: Express.Response): Promise<void> {
@@ -26,7 +27,7 @@ export default class AuthController {
                 if (err && (Object.keys(err).length !== 0 && err.constructor === Object)) {
                     res.send(err)
                 } else {
-                    res.redirect('https://vktool.azurewebsites.net/')
+                    res.redirect(config.get('clientHost'))
                 }
             })
         })(req, res, next)

@@ -1,10 +1,11 @@
 import * as Express from 'express'
 import Contact from '../entities/Contact';
 import ContactGroup from '../entities/ContactGroup';
+import ContactGroupModel from '../models/ContactGroupModel';
 
 export default class ContactsController {
     public static async getContacts(req: Express.Request, res: Express.Response): Promise<void> {
-        let contacts = await Contact.aggregate(
+        /* let contacts = await Contact.aggregate(
             [
                 {
                     "$lookup": {
@@ -15,25 +16,32 @@ export default class ContactsController {
                     }
                 }
             ])
+ */
+
+        let contacts = await Contact.find({}).populate('contactGroups')
 
         res.send(contacts)
     }
 
     public static async getMembers(req: Express.Request, res: Express.Response): Promise<void> {
-        let contacts = await Contact.aggregate(
-            [
-                {
-                    "$lookup": {
-                        "from": ContactGroup.collection.name,
-                        "localField": "contactGroups",
-                        "foreignField": "_id",
-                        "as": "contactGroups"
-                    }
-                },
-                { "$match": { "contactGroups": { $elemMatch: { bexioId: 7 } } } }
-            ])
+        /*let contacts = await Contact.aggregate(
+                    [
+                        {
+                            "$lookup": {
+                                "from": ContactGroup.collection.name,
+                                "localField": "contactGroups",
+                                "foreignField": "_id",
+                                "as": "contactGroups"
+                            }
+                        },
+                        { "$match": { "contactGroups": { $elemMatch: { bexioId: 7 } } } }
+                    ]) */
 
-        res.send(contacts)
+        let contacts = await Contact.find({}).populate('contactGroups')
+
+        res.send(contacts.filter((elem) => {
+            return (elem.contactGroups as Array<ContactGroupModel>).filter(group => group.bexioId === 7).length > 0
+        }))
     }
 
     public static async getRanks(req: Express.Request, res: Express.Response): Promise<void> {

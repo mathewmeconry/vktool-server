@@ -5,7 +5,7 @@ import Contact from '../entities/Contact';
 
 export default class OrdersController {
     public static async getOrders(req: Express.Request, res: Express.Response): Promise<void> {
-        let contacts = await Order.aggregate(
+/*         let contacts = await Order.aggregate(
             [
                 {
                     "$lookup": {
@@ -33,7 +33,9 @@ export default class OrdersController {
                 },
                 { "$unwind": "$user" },
                 { "$unwind": "$contact" }
-            ])
+            ]) */
+
+        let contacts = await Order.find().populate('positions').populate('user').populate('contact')
 
         res.send(contacts)
     }

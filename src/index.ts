@@ -14,16 +14,16 @@ import session from 'express-session'
 import uuid from 'uuid'
 import AuthService from './services/AuthService';
 import UserRoutes from './routes/UserRoutes';
-
+import config from 'config'
 
 //connect to mongoose
-mongoose.connect('mongodb://mongo-vkazu-tool:xCDadoQcctQ4KhGCmWO0biXixZJcA3Q2YkfWrCc8fjqi5AxvarwzMkOaSEpm13e5EWJjWdLQqmPLhs6t65sCvQ%3D%3D@mongo-vkazu-tool.documents.azure.com:10250/tool?ssl=true&sslverifycertificate=false').then((con: mongoose.Mongoose) => {
+mongoose.connect(config.get('mongodbConnectionString')).then((con: mongoose.Mongoose) => {
     let app: Express.Application = express()
     const server = createServer(app)
 
     // CORS Headers
     app.use(function (req, res, next) {
-        res.header("Access-Control-Allow-Origin", "https://vktool.azurewebsites.net")
+        res.header("Access-Control-Allow-Origin", config.get('clientHost'))
         res.header("Access-Control-Allow-Methods", "GET, POST, PUT")
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
         res.header("Access-Control-Allow-Credentials", "true")
@@ -60,7 +60,7 @@ mongoose.connect('mongodb://mongo-vkazu-tool:xCDadoQcctQ4KhGCmWO0biXixZJcA3Q2Ykf
         res.sendFile(path.join(__dirname + '/../public/index.html'))
     })
 
-    server.listen(process.env.PORT || 8080, () => {
-        console.log('Listening on port: ' + (process.env.PORT || 8080))
+    server.listen(process.env.PORT || config.get('port'), () => {
+        console.log('Listening on port: ' + (process.env.PORT || config.get('port')))
     })
 });

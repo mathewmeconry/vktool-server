@@ -24,6 +24,14 @@ export const OrderSchema: Schema = new Schema({
     updatedAt: Date
 })
 
+OrderSchema.virtual('billingReports', {
+    ref: 'BillingReport',
+    localField: '_id',
+    foreignField: 'order'
+})
+
+OrderSchema.set('toObject', { virtuals: true });
+OrderSchema.set('toJSON', { virtuals: true });
 
 OrderSchema.pre('save', function (next: Function): void{
     (<OrderModel>this).updatedAt = new Date()

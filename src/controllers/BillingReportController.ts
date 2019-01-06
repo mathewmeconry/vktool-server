@@ -59,6 +59,7 @@ export default class BillingReportController {
 
         let compensations = await BillingReport.aggregate(
             [
+                { "$unwind": "$compensations" },
                 {
                     "$lookup": {
                         "from": CompensationEntry.collection.name,
@@ -105,31 +106,42 @@ export default class BillingReportController {
     public static async getOpenOrders(req: Express.Request, res: Express.Response): Promise<void> {
         let lastWeek = new Date()
         lastWeek.setDate(lastWeek.getDate() - 7)
-        let orders = await Order.aggregate([{
-            "$lookup": {
-                "from": BillingReport.collection.name,
-                "localField": "_id",
-                "foreignField": "order",
-                "as": "billingreports"
-            }
-        }, {
-            "$match": {
+        /*         let orders = await Order.aggregate([{
+                    "$lookup": {
+                        "from": BillingReport.collection.name,
+                        "localField": "_id",
+                        "foreignField": "order",
+                        "as": "billingreports"
+                    }
+                }, {
+                    "$match": {
+                        "$expr": {
+                            "$gt": [
+                                { "$size": "$execDates" },
+                                { "$size": "$billingreports" }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "execDates": {
+                            "$gte": lastWeek
+                        }
+                    }
+                }]) */
+
+        let orders = await Order.find({})
+            .populate('billingReports')
+            .where({ execDates: { $gte: lastWeek } })
+            .where({
                 "$expr": {
                     "$gt": [
-                        { "$size": "$execDates" },
-                        { "$size": "$billingreports" }
+                        { "$size": { "$ifNull": ["$execDates", []] } },
+                        { "$size": { "$ifNull": ["$billingReports", []] } }
                     ]
                 }
-            }
-        },
-        {
-            "$match": {
-                "execDates": {
-                    "$gte": lastWeek
-                }
-            }
-        }])
-
+            })
 
         res.send(orders)
     }
