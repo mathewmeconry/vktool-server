@@ -60,7 +60,7 @@ mongoose.connect('mongodb://mongo-vkazu-tool:xCDadoQcctQ4KhGCmWO0biXixZJcA3Q2Ykf
         res.sendFile(path.join(__dirname + '/../public/index.html'))
     })
 
-    server.listen(process.env.port || 8000, () => {
-        console.log('Listening on port: ' + (process.env.port || 8000))
+    server.listen(process.env.port || 8080, () => {
+        console.log('Listening on port: ' + (process.env.port || 8080))
     })
 });
