@@ -9,6 +9,7 @@
     "@types/mongoose": "^5.3.7",
     "@types/passport": "^1.0.0",
     "@types/uuid": "^3.4.4",
+    "bexio": "../bexio",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "express-validator": "^5.3.1",
