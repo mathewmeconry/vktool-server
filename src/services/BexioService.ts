@@ -7,7 +7,7 @@ import Order from '../entities/Order';
 import Position from '../entities/Position';
 
 export namespace BexioService {
-    let bexioAPI = new Bexio('6317446720.apps.bexio.com', 'Q5+mns0qH/vgB8/Q9phFV9cjpCU=', 'https://vkazutool.azurewebsites.net/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW])
+    let bexioAPI = new Bexio('6317446720.apps.bexio.com', 'Q5+mns0qH/vgB8/Q9phFV9cjpCU=', 'https://vktool.azurewebsites.net/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW])
 
     export function isInitialized(): boolean {
         return bexioAPI.isInitialized()
