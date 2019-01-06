@@ -131,7 +131,7 @@ export default class BillingReportController {
                     }
                 }]) */
 
-        let orders = await Order.find({})
+        let orders = await Order.find({}, { timeout: false })
             .populate('billingReports')
             .where({ execDates: { $gte: lastWeek } })
             .where({
@@ -167,7 +167,7 @@ export default class BillingReportController {
             let member = await Contact.findOne({ "_id": i })
             let from = new Date("1970-01-01 " + entry.from)
             let until = new Date("1970-01-01 " + entry.until)
-            let _0800 = new Date("1970-01-01 08:00")
+            let _0700 = new Date("1970-01-01 07:00")
             let _2100 = new Date("1970-01-01 21:00")
             let dayHours = 0
             let nightHours = 0
@@ -182,28 +182,28 @@ export default class BillingReportController {
              * 21:00 - 08:00 = 15 Bucks
              */
             while (true) {
-                if (from < _0800 && until > _0800) {
-                    nightHours += (_0800.getTime() - from.getTime()) / 1000 / 60 / 60
-                    from = new Date(_0800.toString())
+                if (from < _0700 && until > _0700) {
+                    nightHours += (_0700.getTime() - from.getTime()) / 1000 / 60 / 60
+                    from = new Date(_0700.toString())
                 }
 
-                if (from < _0800 && until < _0800) {
+                if (from < _0700 && until < _0700) {
                     nightHours += (until.getTime() - from.getTime()) / 1000 / 60 / 60
                     break
                 }
 
-                if (from >= _0800 && from < _2100 && until > _2100) {
+                if (from >= _0700 && from < _2100 && until > _2100) {
                     dayHours += (_2100.getTime() - from.getTime()) / 1000 / 60 / 60
                     from = new Date(_2100.toString())
                 }
 
-                if (from >= _0800 && until <= _2100) {
+                if (from >= _0700 && until <= _2100) {
                     dayHours += (until.getTime() - from.getTime()) / 1000 / 60 / 60
                     break
                 }
 
 
-                _0800.setDate(_0800.getDate() + 1)
+                _0700.setDate(_0700.getDate() + 1)
                 _2100.setDate(_2100.getDate() + 1)
             }
 

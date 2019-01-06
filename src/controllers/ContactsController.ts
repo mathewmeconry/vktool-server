@@ -18,7 +18,7 @@ export default class ContactsController {
             ])
  */
 
-        let contacts = await Contact.find({}).populate('contactGroups')
+        let contacts = await Contact.find({}, { timeout: false }).populate('contactGroups')
 
         res.send(contacts)
     }
@@ -37,7 +37,7 @@ export default class ContactsController {
                         { "$match": { "contactGroups": { $elemMatch: { bexioId: 7 } } } }
                     ]) */
 
-        let contacts = await Contact.find({}).populate('contactGroups')
+        let contacts = await Contact.find({}, { timeout: false }).populate('contactGroups')
 
         res.send(contacts.filter((elem) => {
             return (elem.contactGroups as Array<ContactGroupModel>).filter(group => group.bexioId === 7).length > 0
