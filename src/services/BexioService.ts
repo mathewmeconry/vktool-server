@@ -74,6 +74,8 @@ export namespace BexioService {
         return new Promise<void>(async (resolve, reject) => {
             let contacts = await bexioAPI.contacts.list({})
             let savePromises: Array<any> = []
+
+            console.log('syncing ' + contacts.length)
             for (let contact of contacts) {
                 let contactType = await ContactType.findOne({ bexioId: contact.contact_type_id })
                 let contactGroups = await ContactGroup.find({ bexioId: { $in: (contact.contact_group_ids || '').split(',') } })
@@ -96,6 +98,8 @@ export namespace BexioService {
                     userId: contact.user_id,
                     ownerId: contact.owner_id
                 }, { upsert: true }))
+
+                console.log('synced ' + savePromises.length)
             }
 
             Promise.all(savePromises).then(() => {
@@ -139,6 +143,7 @@ export namespace BexioService {
         return new Promise<void>(async (resolve, reject) => {
             let types = await bexioAPI.contactTypes.list({})
             let savePromises: Array<any> = []
+
             for (let type of types) {
                 let promise = ContactType.findOneAndUpdate({ bexioId: type.id }, { name: type.name }, { upsert: true })
                 savePromises.push(promise)
@@ -163,6 +168,7 @@ export namespace BexioService {
             let dateRegex = /(\d{2})\.(\d{2})\.(\d{4})/mg
             let orders = await bexioAPI.orders.list({})
             let savePromises: Array<any> = []
+            console.log('Syncing ' + orders.length)
             for (let order of orders) {
                 let bexioOrder = await bexioAPI.orders.show({}, order.id.toString())
                 if (bexioOrder) {
@@ -204,6 +210,7 @@ export namespace BexioService {
                         positions: await Position.find({ orderBexioId: bexioOrder.id }),
                     }, { upsert: true })
                     savePromises.push(promise)
+                    console.log('Synced ' + savePromises.length)
                 }
             }
 
