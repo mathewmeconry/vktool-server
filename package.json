@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "prestart": "yarn && tsc",
+    "prestart": "./node_modules/typescript/bin/tsc",
     "start": "node dist/index.js"
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "mongoose": "^5.4.2",
     "passport": "^0.4.0",
     "passport-outlook": "^2.2.0",
+    "typescript": "^3.2.2",
     "uuid": "^3.3.2"
   }
 }
