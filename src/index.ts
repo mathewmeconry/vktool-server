@@ -23,7 +23,7 @@ mongoose.connect('mongodb://mongo-vkazu-tool:xCDadoQcctQ4KhGCmWO0biXixZJcA3Q2Ykf
 
     // CORS Headers
     app.use(function (req, res, next) {
-        res.header("Access-Control-Allow-Origin", "https://vkazutool.azurewebsites.net")
+        res.header("Access-Control-Allow-Origin", "https://vktool.azurewebsites.net")
         res.header("Access-Control-Allow-Methods", "GET, POST, PUT")
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
         res.header("Access-Control-Allow-Credentials", "true")

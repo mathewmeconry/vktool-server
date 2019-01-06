@@ -26,7 +26,7 @@ export default class AuthController {
                 if (err && (Object.keys(err).length !== 0 && err.constructor === Object)) {
                     res.send(err)
                 } else {
-                    res.redirect('https://vkazutool.azurewebsites.net/')
+                    res.redirect('https://vktool.azurewebsites.net/')
                 }
             })
         })(req, res, next)
