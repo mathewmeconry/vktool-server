@@ -2,6 +2,7 @@ import * as Express from 'express'
 import Order from "../entities/Order";
 import Position from "../entities/Position";
 import Contact from '../entities/Contact';
+import OrderModel from '../models/OrderModel';
 
 export default class OrdersController {
     public static async getOrders(req: Express.Request, res: Express.Response): Promise<void> {
@@ -35,8 +36,17 @@ export default class OrdersController {
                         { "$unwind": "$contact" }
                     ]) */
 
-        let contacts = await Order.find({}, { timeout: false }).populate('positions').populate('user').populate('contact')
-
-        res.send(contacts)
+        let orders: Array<OrderModel> = []
+        Order.find({}, { timeout: false })
+            .populate('positions')
+            .populate('user')
+            .populate('contact')
+            .cursor()
+            .on('data', (data: Array<OrderModel>) => {
+                orders = orders.concat(data)
+            })
+            .on('end', () => {
+                res.send(orders)
+            })
     }
 }

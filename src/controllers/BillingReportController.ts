@@ -6,6 +6,7 @@ import CompensationEntry from '../entities/CompensationEntry';
 import User from '../entities/User';
 import CompensationEntryModel from '../models/CompensationEntryModel';
 import BillingReportModel from '../models/BillingReportModel';
+import OrderModel from '../models/OrderModel';
 
 
 export default class BillingReportController {
@@ -131,7 +132,8 @@ export default class BillingReportController {
                     }
                 }]) */
 
-        let orders = await Order.find({}, { timeout: false })
+        let orders: Array<OrderModel> = [];
+        Order.find({}, { timeout: false })
             .populate('billingReports')
             .where({ execDates: { $gte: lastWeek } })
             .where({
@@ -142,8 +144,13 @@ export default class BillingReportController {
                     ]
                 }
             })
-
-        res.send(orders)
+            .cursor()
+            .on('data', (data: Array<OrderModel>) => {
+                orders = orders.concat(data)
+            })
+            .on('end', () => {
+                res.send(orders)
+            })
     }
 
     public static async put(req: Express.Request, res: Express.Response): Promise<void> {
