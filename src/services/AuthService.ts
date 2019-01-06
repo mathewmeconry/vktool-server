@@ -34,7 +34,6 @@ export default class AuthService {
     }
 
     public static isAuthorized(req: Express.Request, role: AuthRoles): boolean {
-        return true
         if (req.isAuthenticated() && (req.user.roles.indexOf(role) > -1 || req.user.roles.indexOf(AuthRoles.ADMIN) > -1)) {
             return true
         }
