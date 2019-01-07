@@ -118,8 +118,10 @@ export default class AuthService {
                         user = Object.assign(user, userInfo)
 
                         getManager().getRepository(User).save(user).then(user => {
+                            console.log(user)
                             return done(null, user)
                         }).catch(err => {
+                            console.log(err)
                             return done(err)
                         })
                     })
