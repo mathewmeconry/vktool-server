@@ -82,6 +82,7 @@ export default class AuthService {
                 }
 
                 let user = await AuthService.findUserByOutlookId(profile.id)
+                console.log(user)
                 if (user) {
                     user.accessToken = accessToken,
                         user.refreshToken = refreshToken
@@ -89,6 +90,7 @@ export default class AuthService {
                     await getManager().getRepository(User).save(user)
                     return done(null, user)
                 } else {
+                    console.log('else')
                     let userInfo = {};
                     getManager().getRepository(Contact).findOne({ mail: profile.emails[0].value }).then(contact => {
                         userInfo = {
