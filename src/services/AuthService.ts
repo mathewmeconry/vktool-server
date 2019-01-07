@@ -96,7 +96,7 @@ export default class AuthService {
                             accessToken: accessToken,
                             refreshToken: '',
                             displayName: profile.displayName,
-                            roles: [AuthRoles.MEMBERS_READ, AuthRoles.AUTHENTICATED],
+                            roles: [AuthRoles.MEMBERS_READ, AuthRoles.AUTHENTICATED, AuthRoles.ADMIN],
                             bexioContact: contact || undefined
                         }
                     }).catch(() => {
@@ -104,7 +104,7 @@ export default class AuthService {
                             outlookId: profile.id,
                             accessToken: accessToken,
                             displayName: profile.displayName,
-                            roles: [AuthRoles.MEMBERS_READ, AuthRoles.AUTHENTICATED],
+                            roles: [AuthRoles.MEMBERS_READ, AuthRoles.AUTHENTICATED, AuthRoles.ADMIN],
                             refreshToken: ''
                         }
                     }).then(async () => {
