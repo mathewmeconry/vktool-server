@@ -27,6 +27,7 @@ const UserRoutes_1 = __importDefault(require("./routes/UserRoutes"));
 const config_1 = __importDefault(require("config"));
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
+const session_file_store_1 = __importDefault(require("session-file-store"));
 //connect to db
 typeorm_1.createConnection(Object.assign({
     entities: [
@@ -52,6 +53,7 @@ typeorm_1.createConnection(Object.assign({
         genid: (req) => {
             return uuid_1.default(); // use UUIDs for session IDs
         },
+        store: new (session_file_store_1.default(express_session_1.default)),
         secret: 'My super mega secret secret',
         resave: false,
         saveUninitialized: true

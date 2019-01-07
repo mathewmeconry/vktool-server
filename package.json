@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "prepare": "./node_modules/typescript/bin/tsc"
+    "prepare": "./node_modules/typescript/bin/tsc",
+    "dev": "npm run prepare && node dist/index.js"
   },
   "dependencies": {
     "@types/config": "^0.0.34",
@@ -9,6 +10,7 @@
     "@types/mysql": "^2.15.5",
     "@types/node": "^10.12.18",
     "@types/passport": "^1.0.0",
+    "@types/session-file-store": "^1.2.0",
     "@types/uuid": "^3.4.4",
     "bexio": "../bexio",
     "config": "^3.0.1",
@@ -19,6 +21,7 @@
     "passport": "^0.4.0",
     "passport-outlook": "^2.2.0",
     "reflect-metadata": "^0.1.12",
+    "session-file-store": "^1.2.0",
     "typeorm": "^0.2.11",
     "typescript": "^3.2.2",
     "uuid": "^3.3.2"

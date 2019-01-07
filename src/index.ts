@@ -16,6 +16,7 @@ import UserRoutes from './routes/UserRoutes';
 import config from 'config'
 import "reflect-metadata";
 import { createConnection, ConnectionOptions } from 'typeorm';
+import FileStore from 'session-file-store'
 
 //connect to db
 
@@ -51,6 +52,7 @@ createConnection(
         genid: (req) => {
             return uuid() // use UUIDs for session IDs
         },
+        store: new (FileStore(session)),
         secret: 'My super mega secret secret',
         resave: false,
         saveUninitialized: true
