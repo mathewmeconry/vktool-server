@@ -212,7 +212,7 @@ export namespace BexioService {
                                 validFrom: new Date(bexioOrder.is_valid_from),
                                 title: bexioOrder.title,
                                 contact: contact,
-                                total: parseFloat(bexioOrder.total),
+                                total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : null,
                                 user: user,
                                 positions: [],
                             })
@@ -234,7 +234,7 @@ export namespace BexioService {
                                         internalPos: position.internal_pos,
                                         articleId: position.article_id,
                                         orderBexioId: bexioOrder.id,
-                                        positionTotal: parseFloat(position.position_total),
+                                        positionTotal: (parseFloat(position.position_total)) ? parseFloat(position.position_total) : null,
                                         order: orderDB
                                     })
                                     positionPromises.push(positionRepo.save(positionDB))
