@@ -8,6 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -29,11 +37,20 @@ let Compensation = class Compensation extends Base_1.default {
         this.valutaDate = valutaDate;
         this.payout = payout;
     }
+    loadMember() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.member = (yield typeorm_1.getManager().getRepository(Contact_1.default).findOne(this.memberId));
+        });
+    }
 };
 __decorate([
     typeorm_1.ManyToOne(type => Contact_1.default, contact => contact.compensations, { eager: true }),
     __metadata("design:type", Contact_1.default)
 ], Compensation.prototype, "member", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Number)
+], Compensation.prototype, "memberId", void 0);
 __decorate([
     typeorm_1.ManyToOne(type => User_1.default, { eager: true }),
     __metadata("design:type", User_1.default)

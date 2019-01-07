@@ -1,4 +1,4 @@
-import { Column, ManyToOne, Entity, TableInheritance, JoinColumn } from "typeorm";
+import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager } from "typeorm";
 import Contact from "./Contact";
 import Payout from "./Payout";
 import User from "./User";
@@ -9,6 +9,9 @@ import Base from "./Base";
 export default class Compensation extends Base {
     @ManyToOne(type => Contact, contact => contact.compensations, { eager: true })
     public member: Contact
+
+    @Column({ nullable: true })
+    public memberId?: number;
 
     @ManyToOne(type => User, { eager: true })
     public creator: User
@@ -49,5 +52,9 @@ export default class Compensation extends Base {
         this.paied = paied
         this.valutaDate = valutaDate
         this.payout = payout
+    }
+
+    public async loadMember(): Promise<void> {
+        this.member = (await getManager().getRepository(Contact).findOne(this.memberId)) as Contact
     }
 }

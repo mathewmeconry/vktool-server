@@ -20,8 +20,33 @@ const OrderCompensation_1 = __importDefault(require("../entities/OrderCompensati
 class BillingReportController {
     static getBillingReports(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let billingreportRepository = typeorm_1.getManager().getRepository(BillingReport_1.default);
-            res.send(yield billingreportRepository.find());
+            let billingReports = yield typeorm_1.getManager().getRepository(BillingReport_1.default)
+                .createQueryBuilder('billingReport')
+                .leftJoinAndSelect('billingReport.creator', 'user')
+                .leftJoinAndSelect('billingReport.order', 'order')
+                .leftJoinAndSelect('billingReport.compensations', 'compensations')
+                .getMany();
+            let promises = [];
+            for (let billingReport of billingReports) {
+                promises.push(new Promise((resolve, reject) => {
+                    let billingReportPromises = [];
+                    for (let compensation of billingReport.compensations) {
+                        billingReportPromises.push(compensation.loadMember());
+                    }
+                    Promise.all(billingReportPromises).then(() => {
+                        resolve();
+                    });
+                }));
+            }
+            Promise.all(promises).then(() => {
+                res.send(billingReports);
+            }).catch(err => {
+                console.error(err);
+                res.status(500);
+                res.send({
+                    message: 'sorry man...'
+                });
+            });
         });
     }
     static getOpenOrders(req, res) {

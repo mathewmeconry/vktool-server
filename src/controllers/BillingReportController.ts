@@ -5,12 +5,41 @@ import Order from '../entities/Order';
 import User from '../entities/User';
 import { getManager } from 'typeorm';
 import OrderCompensation from '../entities/OrderCompensation';
+import Compensation from '../entities/Compensation';
 
 
 export default class BillingReportController {
     public static async getBillingReports(req: Express.Request, res: Express.Response): Promise<void> {
-        let billingreportRepository = getManager().getRepository(BillingReport)
-        res.send(await billingreportRepository.find())
+        let billingReports = await getManager().getRepository(BillingReport)
+            .createQueryBuilder('billingReport')
+            .leftJoinAndSelect('billingReport.creator', 'user')
+            .leftJoinAndSelect('billingReport.order', 'order')
+            .leftJoinAndSelect('billingReport.compensations', 'compensations')
+            .getMany()
+
+        let promises = []
+        for (let billingReport of billingReports) {
+            promises.push(new Promise<void>((resolve, reject) => {
+                let billingReportPromises = []
+                for (let compensation of billingReport.compensations) {
+                    billingReportPromises.push(compensation.loadMember())
+                }
+
+                Promise.all(billingReportPromises).then(() => {
+                    resolve()
+                })
+            }))
+        }
+
+        Promise.all(promises).then(() => {
+            res.send(billingReports)
+        }).catch(err => {
+            console.error(err)
+            res.status(500)
+            res.send({
+                message: 'sorry man...'
+            })
+        })
     }
 
     public static async getOpenOrders(req: Express.Request, res: Express.Response): Promise<void> {
