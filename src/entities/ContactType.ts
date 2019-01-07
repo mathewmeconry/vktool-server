@@ -1,5 +1,8 @@
-import { ContactTypeSchema } from "./../schemas/ContactTypeSchema";
-import mongoose from "mongoose";
-import ContactTypeModel from "../models/ContactTypeModel";
+import BexioBase from "./BexioBase";
+import { Entity, Column } from "typeorm";
 
-export default mongoose.model<ContactTypeModel>('ContactType', ContactTypeSchema)
+@Entity()
+export default class ContactType extends BexioBase {
+    @Column('text')
+    public name: string
+}

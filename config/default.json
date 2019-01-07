@@ -2,5 +2,12 @@
     "port": 8000,
     "apiEndpoint": "http://localhost:8000",
     "clientHost": "http://localhost:3000",
-    "mongodbConnectionString": "mongodb://127.0.0.1:32768/vk_tool"
+    "db": {
+        "type": "mysql",
+        "host": "localhost",
+        "port": 32777,
+        "username": "root",
+        "password": "password",
+        "database": "vktool"
+    }
 }

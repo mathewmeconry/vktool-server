@@ -1,5 +1,8 @@
-import mongoose from "mongoose";
-import { ContactGroupSchema } from "../schemas/ContactGroupSchema";
-import ContactGroupModel from "../models/ContactGroupModel";
+import { Entity, Column } from "typeorm";
+import BexioBase from "./BexioBase";
 
-export default mongoose.model<ContactGroupModel>('ContactGroup', ContactGroupSchema)
+@Entity()
+export default class ContactGroup extends BexioBase {
+    @Column('text')
+    public name: string
+}

@@ -1,7 +1,7 @@
 import * as Express from 'express'
 import AuthService from '../services/AuthService';
 import User from '../entities/User';
-import Contact from '../entities/Contact';
+import { getManager } from 'typeorm';
 
 export default class UserController {
     public static async me(req: Express.Request, res: Express.Response): Promise<void> {
@@ -13,24 +13,6 @@ export default class UserController {
     }
 
     public static async users(req: Express.Request, res: Express.Response): Promise<void> {
-        let users = await User.aggregate(
-            [
-                {
-                    "$lookup": {
-                        "from": Contact.collection.name,
-                        "localField": "bexioContact",
-                        "foreignField": "_id",
-                        "as": "bexioContact"
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$bexioContact",
-                        "preserveNullAndEmptyArrays": true
-                    }
-                }
-            ])
-
-        res.send(users)
+        res.send(await getManager().getRepository(User).find())
     }
 }

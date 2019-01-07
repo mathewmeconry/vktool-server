@@ -5,9 +5,8 @@ import * as Express from 'express'
 import { Strategy as OutlookStrategy } from 'passport-outlook'
 import User from '../entities/User';
 import Contact from '../entities/Contact';
-import { Types } from 'mongoose';
-import UserModel from '../models/UserModel';
 import config from 'config'
+import { getManager } from "typeorm";
 
 export default class AuthService {
     public static init(app: Express.Application) {
@@ -45,44 +44,25 @@ export default class AuthService {
         return req.isAuthenticated()
     }
 
-    public static serializeUser(user: UserModel, done: (err: any, userId?: string) => void): void {
-        done(null, user._id);
+    public static serializeUser(user: User, done: (err: any, userId?: string) => void): void {
+        done(null, user.id.toString());
     }
 
-    public static deserializeUser(id: string, done: (err: any, user?: UserModel) => void): void {
-        User.aggregate([
-            {
-                "$lookup": {
-                    "from": Contact.collection.name,
-                    "localField": "bexioContact",
-                    "foreignField": "_id",
-                    "as": "bexioContact"
+    public static deserializeUser(id: string, done: (err: any, user?: User) => void): void {
+        getManager().getRepository(User).find({ id: parseInt(id) })
+            .then(user => {
+                if (user && user.length === 1) {
+                    done(null, user[0])
+                } else {
+                    done('no User found')
                 }
-            },
-            {
-                "$unwind": {
-                    "path": "$bexioContact",
-                    "preserveNullAndEmptyArrays": true
-                }
-            },
-            {
-                "$match": {
-                    "_id": new Types.ObjectId(id)
-                }
-            }
-        ]).then(user => {
-            if (user && user.length === 1) {
-                done(null, user[0])
-            } else {
-                done('no User found')
-            }
-        }).catch(err => {
-            done(err)
-        })
+            }).catch(err => {
+                done(err)
+            })
     }
 
-    public static async findUserByOutlookId(outlookId: string): Promise<UserModel | null> {
-        return User.findOne({ outlookId: outlookId })
+    public static async findUserByOutlookId(outlookId: string): Promise<User | undefined> {
+        return getManager().getRepository(User).findOne({ outlookId: outlookId })
     }
 
     public static addOutlookStrategy() {
@@ -106,11 +86,11 @@ export default class AuthService {
                     user.accessToken = accessToken,
                         user.refreshToken = refreshToken
                     user.displayName = profile.displayName
-                    user.save()
+                    await getManager().getRepository(User).save(user)
                     return done(null, user)
                 } else {
                     let userInfo = {};
-                    Contact.findOne({ mail: profile.emails[0].value }).then(contact => {
+                    getManager().getRepository(Contact).findOne({ mail: profile.emails[0].value }).then(contact => {
                         userInfo = {
                             outlookId: profile.id,
                             accessToken: accessToken,
@@ -127,12 +107,20 @@ export default class AuthService {
                             roles: [AuthRoles.MEMBERS_READ, AuthRoles.AUTHENTICATED],
                             refreshToken: ''
                         }
-                    }).then(() => {
+                    }).then(async () => {
                         //@ts-ignore
                         if (refreshToken) userInfo.refreshToken = refreshToken
+                        let UserRepo = getManager().getRepository(User)
+
                         //@ts-ignore
-                        User.findOneAndUpdate({ outlookId: userInfo.outlookId }, userInfo, { upsert: true }, (err, user) => {
-                            return done(err, user)
+                        user = await UserRepo.findOne({ outlookId: userInfo.outlookId })
+                        if (!user) user = new User()
+                        user = Object.assign(user, userInfo)
+
+                        getManager().getRepository(User).save(user).then(user => {
+                            return done(null, user)
+                        }).catch(err => {
+                            return done(err)
                         })
                     })
                 }

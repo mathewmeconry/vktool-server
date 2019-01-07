@@ -6,6 +6,7 @@ import Contact from '../entities/Contact';
 import Order from '../entities/Order';
 import Position from '../entities/Position';
 import config from 'config'
+import { getManager, In } from 'typeorm';
 
 export namespace BexioService {
     let bexioAPI = new Bexio('6317446720.apps.bexio.com', 'Q5+mns0qH/vgB8/Q9phFV9cjpCU=', config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW])
@@ -74,14 +75,21 @@ export namespace BexioService {
     export async function syncContacts(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             let contacts = await bexioAPI.contacts.list({})
+            let contactRepo = getManager().getRepository(Contact)
+            let contactTypeRepo = getManager().getRepository(ContactType)
+            let contactGroupRepo = getManager().getRepository(ContactGroup)
             let savePromises: Array<any> = []
 
             console.log('syncing ' + contacts.length)
             for (let contact of contacts) {
-                let contactType = await ContactType.findOne({ bexioId: contact.contact_type_id })
-                let contactGroups = await ContactGroup.find({ bexioId: { $in: (contact.contact_group_ids || '').split(',') } })
-                savePromises.push(Contact.updateOne({ bexioId: contact.id }, {
+                let contactType = await contactTypeRepo.findOne({ bexioId: contact.contact_type_id })
+                let contactGroups = await contactGroupRepo.find({ bexioId: In((contact.contact_group_ids || '').split(',')) })
+                let contactDB = await contactRepo.findOne({ bexioId: contact.id })
+
+                if (!contactDB) contactDB = new Contact()
+                contactDB = Object.assign(contactDB, {
                     bexioId: contact.id,
+                    nr: contact.nr,
                     contactType: contactType,
                     firstname: contact.name_2,
                     lastname: contact.name_1,
@@ -98,14 +106,17 @@ export namespace BexioService {
                     contactGroups: contactGroups,
                     userId: contact.user_id,
                     ownerId: contact.owner_id
-                }, { upsert: true }))
+                })
+
+                savePromises.push(contactRepo.save(contactDB))
 
                 console.log('synced ' + savePromises.length)
             }
 
             Promise.all(savePromises).then(() => {
                 resolve()
-            }).catch(() => {
+            }).catch((err) => {
+                console.error(err)
                 reject()
             })
         })
@@ -120,15 +131,22 @@ export namespace BexioService {
     export async function syncContactGroups(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             let groups = await bexioAPI.contactGroups.list({})
+            let contactGroupRepo = getManager().getRepository(ContactGroup)
             let savePromises: Array<any> = []
+
             for (let group of groups) {
-                let promise = ContactGroup.updateOne({ bexioId: group.id }, { name: group.name }, { upsert: true })
-                savePromises.push(promise)
+                let groupDB = await contactGroupRepo.findOne({ bexioId: group.id })
+                if (!groupDB) groupDB = new ContactGroup()
+                groupDB.bexioId = group.id
+                groupDB.name = group.name
+
+                savePromises.push(contactGroupRepo.save(groupDB))
             }
 
             Promise.all(savePromises).then(() => {
                 resolve()
-            }).catch(() => {
+            }).catch((err) => {
+                console.error(err)
                 reject()
             })
         })
@@ -143,16 +161,22 @@ export namespace BexioService {
     export async function syncContactTypes(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             let types = await bexioAPI.contactTypes.list({})
+            let contactTypeRepo = getManager().getRepository(ContactType)
             let savePromises: Array<any> = []
 
             for (let type of types) {
-                let promise = ContactType.findOneAndUpdate({ bexioId: type.id }, { name: type.name }, { upsert: true })
-                savePromises.push(promise)
+                let typeDB = await contactTypeRepo.findOne({ bexioId: type.id })
+                if (!typeDB) typeDB = new ContactType()
+                typeDB.bexioId = type.id
+                typeDB.name = type.name
+
+                savePromises.push(contactTypeRepo.save(typeDB))
             }
 
             Promise.all(savePromises).then(() => {
                 resolve()
-            }).catch(() => {
+            }).catch((err) => {
+                console.error(err)
                 reject()
             })
         })
@@ -166,58 +190,75 @@ export namespace BexioService {
      */
     export async function syncOrders(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
-            let dateRegex = /(\d{2})\.(\d{2})\.(\d{4})/mg
             let orders = await bexioAPI.orders.list({})
+            let contactRepo = getManager().getRepository(Contact)
             let savePromises: Array<any> = []
+
             console.log('Syncing ' + orders.length)
             for (let order of orders) {
                 let bexioOrder = await bexioAPI.orders.show({}, order.id.toString())
                 if (bexioOrder) {
-                    let contact = await Contact.findOne({ bexioId: bexioOrder.contact_id })
-                    let user = await Contact.findOne({ bexioId: bexioOrder.user_id })
-                    let execDates: Array<Date> = []
+                    let contact = await contactRepo.findOne({ bexioId: bexioOrder.contact_id })
+                    let user = await contactRepo.findOne({ bexioId: bexioOrder.user_id })
 
-                    //first sync all positions 
-                    if (bexioOrder.positions) {
-                        for (let position of bexioOrder.positions) {
-                            await Position.findOneAndUpdate({ bexioId: position.id }, {
-                                bexioId: position.id,
-                                positionType: position.type,
-                                text: position.text,
-                                pos: position.pos,
-                                internalPos: position.internal_pos,
-                                articleId: position.article_id,
-                                orderBexioId: bexioOrder.id,
-                                positionTotal: position.position_total
-                            }, { upsert: true })
+                    savePromises.push(getManager().transaction(async transaction => {
+                        return new Promise<void>(async (resolve, reject) => {
+                            let orderRepo = transaction.getRepository(Order)
+                            let orderDB = await orderRepo.findOne({ bexioId: bexioOrder.id })
+                            if (!orderDB) orderDB = new Order()
+                            orderDB = Object.assign(orderDB, {
+                                bexioId: bexioOrder.id,
+                                documentNr: bexioOrder.document_nr,
+                                validFrom: new Date(bexioOrder.is_valid_from),
+                                title: bexioOrder.title,
+                                contact: contact,
+                                total: parseFloat(bexioOrder.total),
+                                user: user,
+                                positions: [],
+                            })
 
-                            if (position.text) {
-                                let match = dateRegex.exec(position.text)
-                                if (match) {
-                                    execDates = execDates.concat(new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1])))
+                            await orderRepo.save(orderDB)
+
+                            //first sync all positions 
+                            let positionPromises = []
+                            if (bexioOrder.positions) {
+                                let positionRepo = transaction.getRepository(Position)
+                                for (let position of bexioOrder.positions) {
+                                    let positionDB = await positionRepo.findOne({ bexioId: position.id })
+                                    if (!positionDB) positionDB = new Position()
+                                    positionDB = Object.assign(positionDB, {
+                                        bexioId: position.id,
+                                        positionType: position.type,
+                                        text: position.text,
+                                        pos: position.pos,
+                                        internalPos: position.internal_pos,
+                                        articleId: position.article_id,
+                                        orderBexioId: bexioOrder.id,
+                                        positionTotal: parseFloat(position.position_total),
+                                        order: orderDB
+                                    })
+                                    positionPromises.push(positionRepo.save(positionDB))
                                 }
                             }
-                        }
-                    }
 
-                    let promise = Order.findOneAndUpdate({ bexioId: bexioOrder.id }, {
-                        bexioId: bexioOrder.id,
-                        documentNr: bexioOrder.document_nr,
-                        title: bexioOrder.title,
-                        contact: contact,
-                        total: bexioOrder.total,
-                        user: user,
-                        execDates: execDates,
-                        positions: await Position.find({ orderBexioId: bexioOrder.id }),
-                    }, { upsert: true })
-                    savePromises.push(promise)
-                    console.log('Synced ' + savePromises.length)
+                            Promise.all(positionPromises).then(async (positions) => {
+                                if (orderDB) {
+                                    orderDB.positions = positions
+                                    await orderRepo.save(orderDB)
+
+                                    console.log('Synced ' + savePromises.length)
+                                    resolve()
+                                }
+                            })
+                        })
+                    }))
                 }
             }
 
             Promise.all(savePromises).then(() => {
                 resolve()
-            }).catch(() => {
+            }).catch((err) => {
+                console.error(err)
                 reject()
             })
         })

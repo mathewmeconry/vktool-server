@@ -2,257 +2,93 @@ import * as Express from 'express'
 import BillingReport from '../entities/BillingReport';
 import Contact from '../entities/Contact';
 import Order from '../entities/Order';
-import CompensationEntry from '../entities/CompensationEntry';
 import User from '../entities/User';
-import CompensationEntryModel from '../models/CompensationEntryModel';
-import BillingReportModel from '../models/BillingReportModel';
-import OrderModel from '../models/OrderModel';
+import { getManager } from 'typeorm';
+import OrderCompensation from '../entities/OrderCompensation';
 
 
 export default class BillingReportController {
     public static async getBillingReports(req: Express.Request, res: Express.Response): Promise<void> {
-        let billingReports = await BillingReport.aggregate(
-            [
-                {
-                    "$lookup": {
-                        "from": User.collection.name,
-                        "localField": "creator",
-                        "foreignField": "_id",
-                        "as": "creator"
-                    }
-                },
-                {
-                    "$lookup": {
-                        "from": Order.collection.name,
-                        "localField": "order",
-                        "foreignField": "_id",
-                        "as": "order"
-                    }
-                },
-                {
-                    "$lookup": {
-                        "from": User.collection.name,
-                        "localField": "approvedBy",
-                        "foreignField": "_id",
-                        "as": "approvedBy"
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$creator",
-                        "preserveNullAndEmptyArrays": true
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$order",
-                        "preserveNullAndEmptyArrays": true
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$approvedBy",
-                        "preserveNullAndEmptyArrays": true
-                    }
-                }
-            ]
-        )
-
-        let compensations = await BillingReport.aggregate(
-            [
-                { "$unwind": "$compensations" },
-                {
-                    "$lookup": {
-                        "from": CompensationEntry.collection.name,
-                        "localField": "compensations",
-                        "foreignField": "_id",
-                        "as": "compensations"
-                    }
-                },
-                { "$unwind": "$compensations" },
-                {
-                    "$lookup": {
-                        "from": 'contacts',
-                        "localField": "compensations.member",
-                        "foreignField": "_id",
-                        "as": "compensations.member"
-                    }
-                },
-                {
-                    "$unwind": "$compensations.member"
-                },
-                {
-                    "$group": {
-                        "_id": "$_id",
-                        "compensations": { "$push": "$compensations" }
-                    }
-                }
-            ]
-        )
-
-        let compensationsById: { [index: string]: CompensationEntryModel } = {}
-        for (let compensation of compensations) {
-            compensationsById[compensation._id] = compensation.compensations
-        }
-
-        let reports = []
-        for (let billingReport of billingReports) {
-            billingReport.compensations = compensationsById[billingReport._id]
-            reports.push(billingReport)
-        }
-
-        res.send(reports)
+        let billingreportRepository = getManager().getRepository(BillingReport)
+        res.send(await billingreportRepository.find())
     }
 
     public static async getOpenOrders(req: Express.Request, res: Express.Response): Promise<void> {
-        let lastWeek = new Date()
-        lastWeek.setDate(lastWeek.getDate() - 7)
-        /*         let orders = await Order.aggregate([{
-                    "$lookup": {
-                        "from": BillingReport.collection.name,
-                        "localField": "_id",
-                        "foreignField": "order",
-                        "as": "billingreports"
-                    }
-                }, {
-                    "$match": {
-                        "$expr": {
-                            "$gt": [
-                                { "$size": "$execDates" },
-                                { "$size": "$billingreports" }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "$match": {
-                        "execDates": {
-                            "$gte": lastWeek
-                        }
-                    }
-                }]) */
+        let now = new Date()
+        let before14Days = now
+        before14Days.setDate(before14Days.getDate() - 14)
 
-        let orders: Array<OrderModel> = [];
-        Order.find({}, { timeout: false })
-            .populate('billingReports')
-            .where({ execDates: { $gte: lastWeek } })
-            .where({
-                "$expr": {
-                    "$gt": [
-                        { "$size": { "$ifNull": ["$execDates", []] } },
-                        { "$size": { "$ifNull": ["$billingReports", []] } }
-                    ]
-                }
-            })
-            .cursor()
-            .on('data', (data: Array<OrderModel>) => {
-                orders = orders.concat(data)
-            })
-            .on('end', () => {
-                res.send(orders)
-            })
+        let orders = await getManager()
+            .getRepository(Order)
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.positions', 'position')
+            .innerJoinAndSelect('position.member', 'contact')
+            .where('order.validFrom <= :date', { date: now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() })
+            .getMany()
+
+        orders = orders.filter(order => order.execDates.find(execDate => execDate >= before14Days))
+
+        res.send(orders.filter(order => order.execDates.length >= (order.billingReports || []).length))
     }
 
     public static async put(req: Express.Request, res: Express.Response): Promise<void> {
-        let creator = await User.findOne({ "_id": req.body.creatorId })
-        let order = await Order.findOne({ "_id": req.body.orderId })
+        let creator = await getManager().getRepository(User).findOneOrFail({ id: req.body.creatorId })
+        let order = await getManager().getRepository(Order).findOneOrFail({ id: req.body.orderId })
 
-        let billingReport = new BillingReport({
-            creator: creator,
-            order: order,
-            orderDate: new Date(req.body.date),
-            compensations: [],
-            remarks: req.body.remarks,
-            food: req.body.food,
-            status: 'pending'
-        })
+        let billingReport = new BillingReport(
+            creator,
+            order,
+            new Date(req.body.date),
+            [],
+            req.body.food,
+            req.body.remarks,
+            'pending'
+        )
+        billingReport.updatedBy = req.user
 
 
         let compensationEntries = []
         for (let i in req.body.compensationEntries) {
             let entry = req.body.compensationEntries[i]
-            let member = await Contact.findOne({ "_id": i })
+            let member = await getManager().getRepository(Contact).findOneOrFail({ id: parseInt(i) })
             let from = new Date("1970-01-01 " + entry.from)
             let until = new Date("1970-01-01 " + entry.until)
-            let _0700 = new Date("1970-01-01 07:00")
-            let _2100 = new Date("1970-01-01 21:00")
-            let dayHours = 0
-            let nightHours = 0
 
-            if (until < from) {
-                until.setDate(until.getDate() + 1)
-            }
+            let compensationEntry = new OrderCompensation(
+                member,
+                creator,
+                billingReport.date,
+                billingReport,
+                from,
+                until
+            )
+            compensationEntry.updatedBy = req.user
 
-            /**
-             * Payout schema:
-             * 08:00 - 21:00 = 10 Bucks
-             * 21:00 - 08:00 = 15 Bucks
-             */
-            while (true) {
-                if (from < _0700 && until > _0700) {
-                    nightHours += (_0700.getTime() - from.getTime()) / 1000 / 60 / 60
-                    from = new Date(_0700.toString())
-                }
-
-                if (from < _0700 && until < _0700) {
-                    nightHours += (until.getTime() - from.getTime()) / 1000 / 60 / 60
-                    break
-                }
-
-                if (from >= _0700 && from < _2100 && until > _2100) {
-                    dayHours += (_2100.getTime() - from.getTime()) / 1000 / 60 / 60
-                    from = new Date(_2100.toString())
-                }
-
-                if (from >= _0700 && until <= _2100) {
-                    dayHours += (until.getTime() - from.getTime()) / 1000 / 60 / 60
-                    break
-                }
-
-
-                _0700.setDate(_0700.getDate() + 1)
-                _2100.setDate(_2100.getDate() + 1)
-            }
-
-
-            let compensationEntry = new CompensationEntry({
-                member: member,
-                creator: creator,
-                dayHours: dayHours,
-                nightHours: nightHours,
-                from: from,
-                to: until,
-                amount: ((dayHours * 10) + (nightHours * 15)),
-                billingReport: billingReport,
-                type: 'order',
-                approved: false
-            })
             compensationEntries.push(compensationEntry)
-            compensationEntry.save()
+            getManager().getRepository(OrderCompensation).save(compensationEntry)
         }
 
         billingReport.compensations = compensationEntries
-        billingReport.save()
+        getManager().getRepository(BillingReport).save(billingReport)
         res.send(billingReport)
     }
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
-        let billingReport = await BillingReport.findOne({ '_id': req.body._id })
+        let billingReportRepo = getManager().getRepository(BillingReport)
+        let billingReport = await billingReportRepo.findOne({ id: req.body._id })
 
         if (billingReport) {
-            let compensations = await CompensationEntry.find({ 'billingReport': billingReport._id })
-            let savePromises = []
-            for (let compensation of compensations) {
-                compensation.approved = true
-                compensation.lastModifiedBy = req.user
-                savePromises.push(compensation.save())
-            }
+            getManager().transaction(async (transaction) => {
+                billingReport = billingReport as BillingReport
+                await transaction.createQueryBuilder()
+                    .update(OrderCompensation)
+                    .set({ approved: true, updatedBy: req.user })
+                    .where('billingReport = :id', { id: billingReport.id })
+                    .execute()
 
-            billingReport.status = 'approved'
-            billingReport.lastModifiedBy = req.user
-
-            Promise.all(savePromises).then(async () => {
-                await (billingReport as BillingReportModel).save()
+                billingReport.state = 'approved'
+                billingReport.updatedBy = req.user
+                await transaction.save(billingReport)
                 res.send(billingReport)
             }).catch(err => {
                 res.status(500)
@@ -269,15 +105,16 @@ export default class BillingReportController {
     }
 
     public static async edit(req: Express.Request, res: Express.Response): Promise<void> {
-        let billingReport = await BillingReport.findOne({ '_id': req.body._id })
+        let billingReportRepo = getManager().getRepository(BillingReport)
+        let billingReport = await billingReportRepo.findOne({ id: req.body._id })
         if (billingReport) {
             for (let i of req.body) {
                 //@ts-ignore
                 billingReport[i] = req.body[i]
             }
 
-            billingReport.lastModifiedBy = req.user
-            await billingReport.save()
+            billingReport.updatedBy = req.user
+            await billingReportRepo.save(billingReport)
             res.send(billingReport)
         } else {
             res.status(500)

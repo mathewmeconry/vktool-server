@@ -2,7 +2,6 @@ const express = require('express')
 import path from 'path'
 import * as Express from 'express'
 import { createServer } from 'http'
-import mongoose from "mongoose";
 import { BexioService } from './services/BexioService'
 import * as bodyParser from 'body-parser'
 import AuthRoutes from './routes/AuthRoutes';
@@ -15,9 +14,22 @@ import uuid from 'uuid'
 import AuthService from './services/AuthService';
 import UserRoutes from './routes/UserRoutes';
 import config from 'config'
+import "reflect-metadata";
+import { createConnection, ConnectionOptions } from 'typeorm';
 
-//connect to mongoose
-mongoose.connect(config.get('mongodbConnectionString')).then((con: mongoose.Mongoose) => {
+//connect to db
+
+createConnection(
+    Object.assign(
+        {
+            entities: [
+                __dirname + "/entities/*.js"
+            ],
+            synchronize: true
+        },
+        config.get('db') as ConnectionOptions
+    )
+).then(connection => {
     let app: Express.Application = express()
     const server = createServer(app)
 
@@ -63,4 +75,4 @@ mongoose.connect(config.get('mongodbConnectionString')).then((con: mongoose.Mong
     server.listen(process.env.PORT || config.get('port'), () => {
         console.log('Listening on port: ' + (process.env.PORT || config.get('port')))
     })
-});
+})
