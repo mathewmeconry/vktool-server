@@ -86,7 +86,6 @@ class AuthService {
                     return done(new Error('No accepted Organization'));
                 }
                 let user = yield AuthService.findUserByOutlookId(profile.id);
-                console.log(user);
                 if (user) {
                     user.accessToken = accessToken,
                         user.refreshToken = refreshToken;
@@ -95,7 +94,6 @@ class AuthService {
                     return done(null, user);
                 }
                 else {
-                    console.log('else');
                     let userInfo = {};
                     typeorm_1.getManager().getRepository(Contact_1.default).findOne({ mail: profile.emails[0].value }).then(contact => {
                         userInfo = {
@@ -125,10 +123,8 @@ class AuthService {
                             user = new User_1.default();
                         user = Object.assign(user, userInfo);
                         typeorm_1.getManager().getRepository(User_1.default).save(user).then(user => {
-                            console.log(user);
                             return done(null, user);
                         }).catch(err => {
-                            console.log(err);
                             return done(err);
                         });
                     }));
