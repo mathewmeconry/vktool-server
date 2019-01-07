@@ -22,7 +22,6 @@ export default class BillingReportController {
             .getRepository(Order)
             .createQueryBuilder('order')
             .leftJoinAndSelect('order.positions', 'position')
-            .innerJoinAndSelect('position.member', 'contact')
             .where('order.validFrom <= :date', { date: now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() })
             .getMany()
 

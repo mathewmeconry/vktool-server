@@ -33,7 +33,6 @@ class BillingReportController {
                 .getRepository(Order_1.default)
                 .createQueryBuilder('order')
                 .leftJoinAndSelect('order.positions', 'position')
-                .innerJoinAndSelect('position.member', 'contact')
                 .where('order.validFrom <= :date', { date: now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() })
                 .getMany();
             orders = orders.filter(order => order.execDates.find(execDate => execDate >= before14Days));
