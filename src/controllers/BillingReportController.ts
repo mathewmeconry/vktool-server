@@ -15,31 +15,10 @@ export default class BillingReportController {
             .leftJoinAndSelect('billingReport.creator', 'user')
             .leftJoinAndSelect('billingReport.order', 'order')
             .leftJoinAndSelect('billingReport.compensations', 'compensations')
+            .leftJoinAndSelect('compensations.member', 'member')
             .getMany()
 
-        let promises = []
-        for (let billingReport of billingReports) {
-            promises.push(new Promise<void>((resolve, reject) => {
-                let billingReportPromises = []
-                for (let compensation of billingReport.compensations) {
-                    billingReportPromises.push(compensation.loadMember())
-                }
-
-                Promise.all(billingReportPromises).then(() => {
-                    resolve()
-                })
-            }))
-        }
-
-        Promise.all(promises).then(() => {
-            res.send(billingReports)
-        }).catch(err => {
-            console.error(err)
-            res.status(500)
-            res.send({
-                message: 'sorry man...'
-            })
-        })
+        res.send(billingReports)
     }
 
     public static async getOpenOrders(req: Express.Request, res: Express.Response): Promise<void> {
@@ -103,7 +82,7 @@ export default class BillingReportController {
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
         let billingReportRepo = getManager().getRepository(BillingReport)
-        let billingReport = await billingReportRepo.findOne({ id: req.body._id })
+        let billingReport = await billingReportRepo.findOne({ id: req.body.id })
 
         if (billingReport) {
             getManager().transaction(async (transaction) => {

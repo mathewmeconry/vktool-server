@@ -3,6 +3,8 @@ import Contact from "./Contact";
 import Payout from "./Payout";
 import User from "./User";
 import Base from "./Base";
+import OrderCompensation from "./OrderCompensation";
+import CustomCompensation from "./CustomCompensation";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -56,5 +58,19 @@ export default class Compensation extends Base {
 
     public async loadMember(): Promise<void> {
         this.member = (await getManager().getRepository(Contact).findOne(this.memberId)) as Contact
+    }
+
+    public static isOrderBased(compensation: Compensation): compensation is OrderCompensation {
+        return (
+            (<OrderCompensation>compensation).billingReport !== undefined &&
+            (<OrderCompensation>compensation).billingReport !== null
+        )
+    }
+
+    public static isCustom(compensation: Compensation): compensation is CustomCompensation {
+        return (
+            (<CustomCompensation>compensation).description !== undefined &&
+            (<CustomCompensation>compensation).description !== null
+        )
     }
 }

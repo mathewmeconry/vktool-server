@@ -8,7 +8,16 @@ import CustomCompensation from "../entities/CustomCompensation";
 
 export default class CompensationController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
-        res.send(await getManager().getRepository(Compensation).find())
+        res.send(
+            await getManager()
+                .getRepository(Compensation)
+                .createQueryBuilder('compensation')
+                .leftJoinAndSelect('compensation.member', 'member')
+                .leftJoinAndSelect('compensation.creator', 'creator')
+                .leftJoinAndSelect('compensation.billingReport', 'billingReport')
+                .leftJoinAndSelect('billingReport.order', 'order')
+                .getMany()
+        )
     }
 
     public static async getUser(req: Express.Request, res: Express.Response): Promise<void> {
@@ -40,6 +49,24 @@ export default class CompensationController {
         } else {
             res.status(500)
             res.send({ message: 'Sorry man...' })
+        }
+    }
+
+    public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
+        let compensationRepo = getManager().getRepository(Compensation)
+        let compensation = await compensationRepo.findOne(req.body.id)
+
+        if (compensation) {
+            compensation.approved = true
+            compensation.approvedBy = req.user
+            compensation.updatedBy = req.user
+            await compensationRepo.save(compensation)
+            res.send(compensation)
+        } else {
+            res.status(500)
+            res.send({
+                message: 'sorry man...'
+            })
         }
     }
 }

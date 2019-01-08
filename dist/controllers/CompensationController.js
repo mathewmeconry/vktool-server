@@ -20,7 +20,14 @@ const CustomCompensation_1 = __importDefault(require("../entities/CustomCompensa
 class CompensationController {
     static getAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.send(yield typeorm_1.getManager().getRepository(Compensation_1.default).find());
+            res.send(yield typeorm_1.getManager()
+                .getRepository(Compensation_1.default)
+                .createQueryBuilder('compensation')
+                .leftJoinAndSelect('compensation.member', 'member')
+                .leftJoinAndSelect('compensation.creator', 'creator')
+                .leftJoinAndSelect('compensation.billingReport', 'billingReport')
+                .leftJoinAndSelect('billingReport.order', 'order')
+                .getMany());
         });
     }
     static getUser(req, res) {
@@ -47,6 +54,25 @@ class CompensationController {
             else {
                 res.status(500);
                 res.send({ message: 'Sorry man...' });
+            }
+        });
+    }
+    static approve(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let compensationRepo = typeorm_1.getManager().getRepository(Compensation_1.default);
+            let compensation = yield compensationRepo.findOne(req.body.id);
+            if (compensation) {
+                compensation.approved = true;
+                compensation.approvedBy = req.user;
+                compensation.updatedBy = req.user;
+                yield compensationRepo.save(compensation);
+                res.send(compensation);
+            }
+            else {
+                res.status(500);
+                res.send({
+                    message: 'sorry man...'
+                });
             }
         });
     }

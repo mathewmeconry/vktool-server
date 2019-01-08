@@ -42,6 +42,14 @@ let Compensation = class Compensation extends Base_1.default {
             this.member = (yield typeorm_1.getManager().getRepository(Contact_1.default).findOne(this.memberId));
         });
     }
+    static isOrderBased(compensation) {
+        return (compensation.billingReport !== undefined &&
+            compensation.billingReport !== null);
+    }
+    static isCustom(compensation) {
+        return (compensation.description !== undefined &&
+            compensation.description !== null);
+    }
 };
 __decorate([
     typeorm_1.ManyToOne(type => Contact_1.default, contact => contact.compensations, { eager: true }),

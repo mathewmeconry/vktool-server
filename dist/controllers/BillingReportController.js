@@ -25,28 +25,9 @@ class BillingReportController {
                 .leftJoinAndSelect('billingReport.creator', 'user')
                 .leftJoinAndSelect('billingReport.order', 'order')
                 .leftJoinAndSelect('billingReport.compensations', 'compensations')
+                .leftJoinAndSelect('compensations.member', 'member')
                 .getMany();
-            let promises = [];
-            for (let billingReport of billingReports) {
-                promises.push(new Promise((resolve, reject) => {
-                    let billingReportPromises = [];
-                    for (let compensation of billingReport.compensations) {
-                        billingReportPromises.push(compensation.loadMember());
-                    }
-                    Promise.all(billingReportPromises).then(() => {
-                        resolve();
-                    });
-                }));
-            }
-            Promise.all(promises).then(() => {
-                res.send(billingReports);
-            }).catch(err => {
-                console.error(err);
-                res.status(500);
-                res.send({
-                    message: 'sorry man...'
-                });
-            });
+            res.send(billingReports);
         });
     }
     static getOpenOrders(req, res) {
@@ -89,7 +70,7 @@ class BillingReportController {
     static approve(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
-            let billingReport = yield billingReportRepo.findOne({ id: req.body._id });
+            let billingReport = yield billingReportRepo.findOne({ id: req.body.id });
             if (billingReport) {
                 typeorm_1.getManager().transaction((transaction) => __awaiter(this, void 0, void 0, function* () {
                     billingReport = billingReport;
