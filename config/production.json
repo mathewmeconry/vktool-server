@@ -1,7 +1,7 @@
 {
     "port": 8080,
-    "apiEndpoint": "https://vktool.azurewebsites.net",
-    "clientHost": "https://vktool.azurewebsites.net",
+    "apiEndpoint": "https://app.vkazu.ch",
+    "clientHost": "https://app.vkazu.ch",
     "db": {
         "type": "mysql",
         "host": "vktool-db.mariadb.database.azure.com",
