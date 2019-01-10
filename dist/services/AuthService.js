@@ -101,7 +101,7 @@ class AuthService {
                             accessToken: accessToken,
                             refreshToken: '',
                             displayName: profile.displayName,
-                            roles: [AuthRoles_1.AuthRoles.MEMBERS_READ, AuthRoles_1.AuthRoles.AUTHENTICATED, AuthRoles_1.AuthRoles.ADMIN],
+                            roles: [AuthRoles_1.AuthRoles.MEMBERS_READ, AuthRoles_1.AuthRoles.AUTHENTICATED],
                             bexioContact: contact || undefined
                         };
                     }).catch(() => {
@@ -109,7 +109,7 @@ class AuthService {
                             outlookId: profile.id,
                             accessToken: accessToken,
                             displayName: profile.displayName,
-                            roles: [AuthRoles_1.AuthRoles.MEMBERS_READ, AuthRoles_1.AuthRoles.AUTHENTICATED, AuthRoles_1.AuthRoles.ADMIN],
+                            roles: [AuthRoles_1.AuthRoles.MEMBERS_READ, AuthRoles_1.AuthRoles.AUTHENTICATED],
                             refreshToken: ''
                         };
                     }).then(() => __awaiter(this, void 0, void 0, function* () {
