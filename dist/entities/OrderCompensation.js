@@ -19,7 +19,7 @@ const Payout_1 = __importDefault(require("./Payout"));
 const User_1 = __importDefault(require("./User"));
 const Contact_1 = __importDefault(require("./Contact"));
 let OrderCompensation = class OrderCompensation extends Compensation_1.default {
-    constructor(member, creator, date, billingReport, from, until, dayHours = 0, nightHours = 0, approved = false, paied = false, valutaDate, payout) {
+    constructor(member, creator, date, billingReport, from, until, dayHours = 0, nightHours = 0, charge = true, approved = false, paied = false, valutaDate, payout) {
         super(member, creator, 0, date, approved, paied, valutaDate, payout);
         this.dayHours = 0;
         this.nightHours = 0;
@@ -28,6 +28,7 @@ let OrderCompensation = class OrderCompensation extends Compensation_1.default {
         this.nightHours = nightHours;
         this.from = from;
         this.until = until;
+        this.charge = charge;
     }
     calcAmount() {
         this.calculateHours();
@@ -85,13 +86,17 @@ __decorate([
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "nightHours", void 0);
 __decorate([
-    typeorm_1.Column('date'),
+    typeorm_1.Column('datetime'),
     __metadata("design:type", Date)
 ], OrderCompensation.prototype, "from", void 0);
 __decorate([
-    typeorm_1.Column('date'),
+    typeorm_1.Column('datetime'),
     __metadata("design:type", Date)
 ], OrderCompensation.prototype, "until", void 0);
+__decorate([
+    typeorm_1.Column('boolean'),
+    __metadata("design:type", Boolean)
+], OrderCompensation.prototype, "charge", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
@@ -100,7 +105,7 @@ __decorate([
 ], OrderCompensation.prototype, "calcAmount", null);
 OrderCompensation = __decorate([
     typeorm_1.ChildEntity(),
-    __metadata("design:paramtypes", [Contact_1.default, User_1.default, Date, BillingReport_1.default, Date, Date, Number, Number, Boolean, Boolean, Date, Payout_1.default])
+    __metadata("design:paramtypes", [Contact_1.default, User_1.default, Date, BillingReport_1.default, Date, Date, Number, Number, Boolean, Boolean, Boolean, Date, Payout_1.default])
 ], OrderCompensation);
 exports.default = OrderCompensation;
 //# sourceMappingURL=OrderCompensation.js.map

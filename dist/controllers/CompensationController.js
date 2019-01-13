@@ -60,7 +60,7 @@ class CompensationController {
     static approve(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let compensationRepo = typeorm_1.getManager().getRepository(Compensation_1.default);
-            let compensation = yield compensationRepo.findOne(req.body.id);
+            let compensation = yield compensationRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne();
             if (compensation) {
                 compensation.approved = true;
                 compensation.approvedBy = req.user;

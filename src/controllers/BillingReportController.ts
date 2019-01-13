@@ -16,6 +16,8 @@ export default class BillingReportController {
             .leftJoinAndSelect('billingReport.order', 'order')
             .leftJoinAndSelect('billingReport.compensations', 'compensations')
             .leftJoinAndSelect('compensations.member', 'member')
+            .leftJoinAndSelect('billingReport.els', 'els')
+            .leftJoinAndSelect('billingReport.drivers', 'drivers')
             .getMany()
 
         res.send(billingReports)
@@ -39,25 +41,33 @@ export default class BillingReportController {
     }
 
     public static async put(req: Express.Request, res: Express.Response): Promise<void> {
+        let contactRepo = getManager().getRepository(Contact)
+        let billingReportRepo = getManager().getRepository(BillingReport)
+
         let creator = await getManager().getRepository(User).findOneOrFail({ id: req.body.creatorId })
         let order = await getManager().getRepository(Order).findOneOrFail({ id: req.body.orderId })
+        let els = await contactRepo.findByIds(req.body.els)
+        let drivers = await contactRepo.findByIds(req.body.drivers)
 
         let billingReport = new BillingReport(
             creator,
             order,
             new Date(req.body.date),
             [],
+            els,
+            drivers,
             req.body.food,
             req.body.remarks,
             'pending'
         )
         billingReport.updatedBy = req.user
+        billingReport = await billingReportRepo.save(billingReport)
 
 
         let compensationEntries = []
         for (let i in req.body.compensationEntries) {
             let entry = req.body.compensationEntries[i]
-            let member = await getManager().getRepository(Contact).findOneOrFail({ id: parseInt(i) })
+            let member = await contactRepo.findOneOrFail({ id: parseInt(i) })
             let from = new Date("1970-01-01 " + entry.from)
             let until = new Date("1970-01-01 " + entry.until)
 
@@ -67,22 +77,28 @@ export default class BillingReportController {
                 billingReport.date,
                 billingReport,
                 from,
-                until
+                until,
+                0,
+                0,
+                entry.charge
             )
             compensationEntry.updatedBy = req.user
 
+            await getManager().getRepository(OrderCompensation).save(compensationEntry)
+            // reset the billing report to convert it to json (circular reference)
+            //@ts-ignore
+            compensationEntry.billingReport = {}
             compensationEntries.push(compensationEntry)
-            getManager().getRepository(OrderCompensation).save(compensationEntry)
         }
 
         billingReport.compensations = compensationEntries
-        getManager().getRepository(BillingReport).save(billingReport)
+        await billingReportRepo.save(billingReport)
         res.send(billingReport)
     }
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
         let billingReportRepo = getManager().getRepository(BillingReport)
-        let billingReport = await billingReportRepo.findOne({ id: req.body.id })
+        let billingReport = await billingReportRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne()
 
         if (billingReport) {
             getManager().transaction(async (transaction) => {

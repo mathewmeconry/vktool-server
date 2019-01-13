@@ -17,14 +17,17 @@ const User_1 = __importDefault(require("./User"));
 const Order_1 = __importDefault(require("./Order"));
 const Base_1 = __importDefault(require("./Base"));
 const OrderCompensation_1 = __importDefault(require("./OrderCompensation"));
+const Contact_1 = __importDefault(require("./Contact"));
 let BillingReport = class BillingReport extends Base_1.default {
-    constructor(creator, order, orderDate, compensations, food, remarks, state, approvedBy) {
+    constructor(creator, order, orderDate, compensations, els, drivers, food, remarks, state, approvedBy) {
         super();
         this.creator = creator;
         this.order = order;
         this.date = orderDate;
         this.compensations = compensations;
         this.approvedBy = approvedBy;
+        this.els = els;
+        this.drivers = drivers;
         this.food = food;
         this.remarks = remarks;
         this.state = state;
@@ -50,6 +53,16 @@ __decorate([
     __metadata("design:type", Array)
 ], BillingReport.prototype, "compensations", void 0);
 __decorate([
+    typeorm_1.ManyToMany(type => Contact_1.default, { eager: true }),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Array)
+], BillingReport.prototype, "els", void 0);
+__decorate([
+    typeorm_1.ManyToMany(type => Contact_1.default, { eager: true }),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Array)
+], BillingReport.prototype, "drivers", void 0);
+__decorate([
     typeorm_1.ManyToOne(type => User_1.default, { nullable: true, eager: true }),
     typeorm_1.JoinColumn(),
     __metadata("design:type", User_1.default)
@@ -73,7 +86,7 @@ __decorate([
 ], BillingReport.prototype, "updatedBy", void 0);
 BillingReport = __decorate([
     typeorm_1.Entity(),
-    __metadata("design:paramtypes", [User_1.default, Order_1.default, Date, Array, Boolean, String, String, User_1.default])
+    __metadata("design:paramtypes", [User_1.default, Order_1.default, Date, Array, Array, Array, Boolean, String, String, User_1.default])
 ], BillingReport);
 exports.default = BillingReport;
 //# sourceMappingURL=BillingReport.js.map

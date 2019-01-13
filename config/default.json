@@ -5,7 +5,7 @@
     "db": {
         "type": "mysql",
         "host": "localhost",
-        "port": 32777,
+        "port": 32768,
         "username": "root",
         "password": "password",
         "database": "vktool"

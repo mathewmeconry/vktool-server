@@ -54,7 +54,7 @@ export default class CompensationController {
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
         let compensationRepo = getManager().getRepository(Compensation)
-        let compensation = await compensationRepo.findOne(req.body.id)
+        let compensation = await compensationRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne()
 
         if (compensation) {
             compensation.approved = true

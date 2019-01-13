@@ -1,8 +1,9 @@
-import { Entity, Column, JoinColumn, OneToMany, ManyToOne } from 'typeorm'
+import { Entity, Column, JoinColumn, OneToMany, ManyToOne, ManyToMany, JoinTable } from 'typeorm'
 import User from './User';
 import Order from './Order';
 import Base from './Base';
 import OrderCompensation from './OrderCompensation';
+import Contact from './Contact';
 
 @Entity()
 export default class BillingReport extends Base {
@@ -21,6 +22,14 @@ export default class BillingReport extends Base {
     @JoinColumn()
     public compensations: Array<OrderCompensation>
 
+    @ManyToMany(type => Contact, { eager: true })
+    @JoinTable()
+    public els: Array<Contact>
+
+    @ManyToMany(type => Contact, { eager: true })
+    @JoinTable()
+    public drivers: Array<Contact>
+
     @ManyToOne(type => User, { nullable: true, eager: true })
     @JoinColumn()
     public approvedBy?: User
@@ -38,13 +47,15 @@ export default class BillingReport extends Base {
     @JoinColumn()
     public updatedBy: User
 
-    constructor(creator: User, order: Order, orderDate: Date, compensations: Array<OrderCompensation>, food: boolean, remarks: string, state: 'pending' | 'approved' | 'declined', approvedBy?: User) {
+    constructor(creator: User, order: Order, orderDate: Date, compensations: Array<OrderCompensation>, els: Array<Contact>, drivers: Array<Contact>, food: boolean, remarks: string, state: 'pending' | 'approved' | 'declined', approvedBy?: User) {
         super()
         this.creator = creator
         this.order = order
         this.date = orderDate
         this.compensations = compensations
         this.approvedBy = approvedBy
+        this.els = els
+        this.drivers = drivers
         this.food = food
         this.remarks = remarks
         this.state = state

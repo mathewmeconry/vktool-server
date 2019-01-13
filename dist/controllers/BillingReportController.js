@@ -26,6 +26,8 @@ class BillingReportController {
                 .leftJoinAndSelect('billingReport.order', 'order')
                 .leftJoinAndSelect('billingReport.compensations', 'compensations')
                 .leftJoinAndSelect('compensations.member', 'member')
+                .leftJoinAndSelect('billingReport.els', 'els')
+                .leftJoinAndSelect('billingReport.drivers', 'drivers')
                 .getMany();
             res.send(billingReports);
         });
@@ -47,30 +49,38 @@ class BillingReportController {
     }
     static put(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            let contactRepo = typeorm_1.getManager().getRepository(Contact_1.default);
+            let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
             let creator = yield typeorm_1.getManager().getRepository(User_1.default).findOneOrFail({ id: req.body.creatorId });
             let order = yield typeorm_1.getManager().getRepository(Order_1.default).findOneOrFail({ id: req.body.orderId });
-            let billingReport = new BillingReport_1.default(creator, order, new Date(req.body.date), [], req.body.food, req.body.remarks, 'pending');
+            let els = yield contactRepo.findByIds(req.body.els);
+            let drivers = yield contactRepo.findByIds(req.body.drivers);
+            let billingReport = new BillingReport_1.default(creator, order, new Date(req.body.date), [], els, drivers, req.body.food, req.body.remarks, 'pending');
             billingReport.updatedBy = req.user;
+            billingReport = yield billingReportRepo.save(billingReport);
             let compensationEntries = [];
             for (let i in req.body.compensationEntries) {
                 let entry = req.body.compensationEntries[i];
-                let member = yield typeorm_1.getManager().getRepository(Contact_1.default).findOneOrFail({ id: parseInt(i) });
+                let member = yield contactRepo.findOneOrFail({ id: parseInt(i) });
                 let from = new Date("1970-01-01 " + entry.from);
                 let until = new Date("1970-01-01 " + entry.until);
-                let compensationEntry = new OrderCompensation_1.default(member, creator, billingReport.date, billingReport, from, until);
+                let compensationEntry = new OrderCompensation_1.default(member, creator, billingReport.date, billingReport, from, until, 0, 0, entry.charge);
                 compensationEntry.updatedBy = req.user;
+                yield typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry);
+                // reset the billing report to convert it to json (circular reference)
+                //@ts-ignore
+                compensationEntry.billingReport = {};
                 compensationEntries.push(compensationEntry);
-                typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry);
             }
             billingReport.compensations = compensationEntries;
-            typeorm_1.getManager().getRepository(BillingReport_1.default).save(billingReport);
+            billingReportRepo.save(billingReport);
             res.send(billingReport);
         });
     }
     static approve(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
-            let billingReport = yield billingReportRepo.findOne({ id: req.body.id });
+            let billingReport = yield billingReportRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne();
             if (billingReport) {
                 typeorm_1.getManager().transaction((transaction) => __awaiter(this, void 0, void 0, function* () {
                     billingReport = billingReport;

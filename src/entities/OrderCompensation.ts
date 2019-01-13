@@ -16,19 +16,23 @@ export default class OrderCompensation extends Compensation {
     @Column('int', { default: 0 })
     public nightHours: number = 0
 
-    @Column('date')
+    @Column('datetime')
     public from: Date
 
-    @Column('date')
+    @Column('datetime')
     public until: Date
-    
-    constructor(member: Contact, creator: User, date: Date, billingReport: BillingReport, from: Date, until: Date, dayHours: number = 0, nightHours: number = 0, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {
+
+    @Column('boolean')
+    public charge: boolean
+
+    constructor(member: Contact, creator: User, date: Date, billingReport: BillingReport, from: Date, until: Date, dayHours: number = 0, nightHours: number = 0, charge: boolean = true, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {
         super(member, creator, 0, date, approved, paied, valutaDate, payout)
         this.billingReport = billingReport
         this.dayHours = dayHours
         this.nightHours = nightHours
         this.from = from
         this.until = until
+        this.charge = charge
     }
 
     @BeforeInsert()
