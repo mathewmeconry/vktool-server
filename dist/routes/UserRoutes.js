@@ -8,7 +8,7 @@ const UserController_1 = __importDefault(require("../controllers/UserController"
 const AuthRoles_1 = require("../interfaces/AuthRoles");
 function UserRoutes(app) {
     app.get('/api/me', UserController_1.default.me);
-    app.get('/api/users', AuthService_1.default.checkAuthorization(AuthRoles_1.AuthRoles.ADMIN), UserController_1.default.users);
+    app.get('/api/users', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.ADMIN]), UserController_1.default.users);
 }
 exports.default = UserRoutes;
 //# sourceMappingURL=UserRoutes.js.map

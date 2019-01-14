@@ -6,11 +6,13 @@ import User from '../entities/User';
 import { getManager } from 'typeorm';
 import OrderCompensation from '../entities/OrderCompensation';
 import Compensation from '../entities/Compensation';
+import AuthService from '../services/AuthService';
+import { AuthRoles } from '../interfaces/AuthRoles';
 
 
 export default class BillingReportController {
     public static async getBillingReports(req: Express.Request, res: Express.Response): Promise<void> {
-        let billingReports = await getManager().getRepository(BillingReport)
+        let billingReportsQuery = getManager().getRepository(BillingReport)
             .createQueryBuilder('billingReport')
             .leftJoinAndSelect('billingReport.creator', 'user')
             .leftJoinAndSelect('billingReport.order', 'order')
@@ -18,9 +20,12 @@ export default class BillingReportController {
             .leftJoinAndSelect('compensations.member', 'member')
             .leftJoinAndSelect('billingReport.els', 'els')
             .leftJoinAndSelect('billingReport.drivers', 'drivers')
-            .getMany()
 
-        res.send(billingReports)
+        if (!AuthService.isAuthorized(req, AuthRoles.BILLINGREPORTS_READ)) {
+            billingReportsQuery = billingReportsQuery.where('billingReport.creator = :id', { id: req.user.id })
+        }
+
+        res.send(await billingReportsQuery.getMany())
     }
 
     public static async getOpenOrders(req: Express.Request, res: Express.Response): Promise<void> {
@@ -96,20 +101,28 @@ export default class BillingReportController {
         res.send(billingReport)
     }
 
-    public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
+    public static async approveDecline(req: Express.Request, res: Express.Response): Promise<void> {
         let billingReportRepo = getManager().getRepository(BillingReport)
         let billingReport = await billingReportRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne()
+        let state = req.path.split('/')[req.path.split('/').length - 1]
 
         if (billingReport) {
             getManager().transaction(async (transaction) => {
                 billingReport = billingReport as BillingReport
-                await transaction.createQueryBuilder()
-                    .update(OrderCompensation)
-                    .set({ approved: true, updatedBy: req.user })
-                    .where('billingReport = :id', { id: billingReport.id })
-                    .execute()
 
-                billingReport.state = 'approved'
+                if (state === 'approve') {
+                    await transaction.createQueryBuilder()
+                        .update(OrderCompensation)
+                        .set({ approved: true, updatedBy: req.user })
+                        .where('billingReport = :id', { id: billingReport.id })
+                        .execute()
+                }
+
+                if (state === 'approve') {
+                    billingReport.state = 'approved'
+                } else {
+                    billingReport.state = 'declined'
+                }
                 billingReport.updatedBy = req.user
                 await transaction.save(billingReport)
                 res.send(billingReport)

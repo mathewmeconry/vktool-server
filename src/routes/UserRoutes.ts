@@ -5,5 +5,5 @@ import { AuthRoles } from "../interfaces/AuthRoles";
 
 export default function UserRoutes(app: Express.Application) {
     app.get('/api/me', UserController.me)
-    app.get('/api/users', AuthService.checkAuthorization(AuthRoles.ADMIN), UserController.users)
+    app.get('/api/users', AuthService.checkAuthorization([AuthRoles.ADMIN]), UserController.users)
 }

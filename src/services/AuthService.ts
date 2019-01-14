@@ -19,16 +19,19 @@ export default class AuthService {
         app.use(passport.session())
     }
 
-    public static checkAuthorization(role: AuthRoles): (req: Express.Request, res: Express.Response, next: Function) => void {
+    public static checkAuthorization(roles: Array<AuthRoles>): (req: Express.Request, res: Express.Response, next: Function) => void {
         return function (req, res, next) {
-            if (AuthService.isAuthorized(req, role)) {
-                next()
-            } else {
-                res.status(401)
-                res.send({
-                    error: 'Not authorized'
-                })
+            for (let role of roles) {
+                if (AuthService.isAuthorized(req, role)) {
+                    next()
+                    return
+                }
             }
+
+            res.status(401)
+            res.send({
+                error: 'Not authorized'
+            })
         }
     }
 

@@ -27,17 +27,18 @@ class AuthService {
         app.use(passport_1.default.initialize());
         app.use(passport_1.default.session());
     }
-    static checkAuthorization(role) {
+    static checkAuthorization(roles) {
         return function (req, res, next) {
-            if (AuthService.isAuthorized(req, role)) {
-                next();
+            for (let role of roles) {
+                if (AuthService.isAuthorized(req, role)) {
+                    next();
+                    return;
+                }
             }
-            else {
-                res.status(401);
-                res.send({
-                    error: 'Not authorized'
-                });
-            }
+            res.status(401);
+            res.send({
+                error: 'Not authorized'
+            });
         };
     }
     static isAuthorized(req, role) {

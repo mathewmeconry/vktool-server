@@ -17,19 +17,23 @@ const Order_1 = __importDefault(require("../entities/Order"));
 const User_1 = __importDefault(require("../entities/User"));
 const typeorm_1 = require("typeorm");
 const OrderCompensation_1 = __importDefault(require("../entities/OrderCompensation"));
+const AuthService_1 = __importDefault(require("../services/AuthService"));
+const AuthRoles_1 = require("../interfaces/AuthRoles");
 class BillingReportController {
     static getBillingReports(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let billingReports = yield typeorm_1.getManager().getRepository(BillingReport_1.default)
+            let billingReportsQuery = typeorm_1.getManager().getRepository(BillingReport_1.default)
                 .createQueryBuilder('billingReport')
                 .leftJoinAndSelect('billingReport.creator', 'user')
                 .leftJoinAndSelect('billingReport.order', 'order')
                 .leftJoinAndSelect('billingReport.compensations', 'compensations')
                 .leftJoinAndSelect('compensations.member', 'member')
                 .leftJoinAndSelect('billingReport.els', 'els')
-                .leftJoinAndSelect('billingReport.drivers', 'drivers')
-                .getMany();
-            res.send(billingReports);
+                .leftJoinAndSelect('billingReport.drivers', 'drivers');
+            if (!AuthService_1.default.isAuthorized(req, AuthRoles_1.AuthRoles.BILLINGREPORTS_READ)) {
+                billingReportsQuery = billingReportsQuery.where('billingReport.creator = :id', { id: req.user.id });
+            }
+            res.send(yield billingReportsQuery.getMany());
         });
     }
     static getOpenOrders(req, res) {
@@ -73,11 +77,11 @@ class BillingReportController {
                 compensationEntries.push(compensationEntry);
             }
             billingReport.compensations = compensationEntries;
-            billingReportRepo.save(billingReport);
+            yield billingReportRepo.save(billingReport);
             res.send(billingReport);
         });
     }
-    static approve(req, res) {
+    static approveDecline(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
             let billingReport = yield billingReportRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne();
@@ -89,7 +93,13 @@ class BillingReportController {
                         .set({ approved: true, updatedBy: req.user })
                         .where('billingReport = :id', { id: billingReport.id })
                         .execute();
-                    billingReport.state = 'approved';
+                    let state = req.path.split('/')[req.path.split('/').length - 1];
+                    if (state === 'approve') {
+                        billingReport.state = 'approved';
+                    }
+                    else {
+                        billingReport.state = 'declined';
+                    }
                     billingReport.updatedBy = req.user;
                     yield transaction.save(billingReport);
                     res.send(billingReport);
