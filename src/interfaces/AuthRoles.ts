@@ -23,5 +23,9 @@ export enum AuthRoles {
     BILLINGREPORTS_EDIT = 'billingreports_edit',
     BILLINGREPORTS_APPROVE = 'billingrepors_approve',
 
+    DRAFT_READ = 'draft_read',
+    DRAFT_CREATE = 'draft_create',
+    DRAFT_EDIT = 'draft_edit',
+
     ADMIN = 'admin'
 }

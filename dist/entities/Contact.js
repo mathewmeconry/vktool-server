@@ -18,6 +18,7 @@ const Compensation_1 = __importDefault(require("./Compensation"));
 const User_1 = __importDefault(require("./User"));
 const ContactType_1 = __importDefault(require("./ContactType"));
 const ContactGroup_1 = __importDefault(require("./ContactGroup"));
+const CollectionPoint_1 = __importDefault(require("./CollectionPoint"));
 let Contact = class Contact extends BexioBase_1.default {
 };
 __decorate([
@@ -98,6 +99,11 @@ __decorate([
     typeorm_1.OneToOne(type => User_1.default, user => user.bexioContact, { nullable: true }),
     __metadata("design:type", User_1.default)
 ], Contact.prototype, "user", void 0);
+__decorate([
+    typeorm_1.ManyToMany(type => CollectionPoint_1.default, { nullable: true }),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Promise)
+], Contact.prototype, "collectionPoints", void 0);
 Contact = __decorate([
     typeorm_1.Entity()
 ], Contact);

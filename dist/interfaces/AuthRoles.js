@@ -19,6 +19,9 @@ var AuthRoles;
     AuthRoles["BILLINGREPORTS_CREATE"] = "billingreports_create";
     AuthRoles["BILLINGREPORTS_EDIT"] = "billingreports_edit";
     AuthRoles["BILLINGREPORTS_APPROVE"] = "billingrepors_approve";
+    AuthRoles["DRAFT_READ"] = "draft_read";
+    AuthRoles["DRAFT_CREATE"] = "draft_create";
+    AuthRoles["DRAFT_EDIT"] = "draft_edit";
     AuthRoles["ADMIN"] = "admin";
 })(AuthRoles = exports.AuthRoles || (exports.AuthRoles = {}));
 //# sourceMappingURL=AuthRoles.js.map

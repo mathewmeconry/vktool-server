@@ -28,6 +28,7 @@ const config_1 = __importDefault(require("config"));
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const session_file_store_1 = __importDefault(require("session-file-store"));
+const CollectionPointsRoutes_1 = __importDefault(require("./routes/CollectionPointsRoutes"));
 //connect to db
 typeorm_1.createConnection(Object.assign({
     entities: [
@@ -66,6 +67,7 @@ typeorm_1.createConnection(Object.assign({
     OrdersRoutes_1.default(app);
     CompensationRoutes_1.default(app);
     BillingReportRoutes_1.default(app);
+    CollectionPointsRoutes_1.default(app);
     BexioService_1.BexioService.addExpressHandlers(app);
     app.use(express.static(path_1.default.join(__dirname, '/../public/')));
     app.get('*', (req, res) => {

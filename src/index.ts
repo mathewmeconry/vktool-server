@@ -17,6 +17,7 @@ import config from 'config'
 import "reflect-metadata";
 import { createConnection, ConnectionOptions } from 'typeorm';
 import FileStore from 'session-file-store'
+import CollectionPointsRoutes from './routes/CollectionPointsRoutes';
 
 //connect to db
 
@@ -67,6 +68,7 @@ createConnection(
     OrdersRoutes(app)
     CompensationRoutes(app)
     BillingReportRoutes(app)
+    CollectionPointsRoutes(app)
     BexioService.addExpressHandlers(app)
 
     app.use(express.static(path.join(__dirname, '/../public/')));

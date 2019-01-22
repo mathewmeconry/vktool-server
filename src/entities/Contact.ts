@@ -4,6 +4,7 @@ import Compensation from "./Compensation";
 import User from "./User";
 import ContactType from "./ContactType";
 import ContactGroup from "./ContactGroup";
+import CollectionPoint from "./CollectionPoint";
 
 @Entity()
 export default class Contact extends BexioBase {
@@ -65,4 +66,8 @@ export default class Contact extends BexioBase {
 
     @OneToOne(type => User, user => user.bexioContact, { nullable: true })
     public user?: User
+
+    @ManyToOne(type => CollectionPoint, { nullable: true })
+    @JoinColumn()
+    public collectionPoint: CollectionPoint
 }

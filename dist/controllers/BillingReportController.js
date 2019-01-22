@@ -85,15 +85,17 @@ class BillingReportController {
         return __awaiter(this, void 0, void 0, function* () {
             let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
             let billingReport = yield billingReportRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne();
+            let state = req.path.split('/')[req.path.split('/').length - 1];
             if (billingReport) {
                 typeorm_1.getManager().transaction((transaction) => __awaiter(this, void 0, void 0, function* () {
                     billingReport = billingReport;
-                    yield transaction.createQueryBuilder()
-                        .update(OrderCompensation_1.default)
-                        .set({ approved: true, updatedBy: req.user })
-                        .where('billingReport = :id', { id: billingReport.id })
-                        .execute();
-                    let state = req.path.split('/')[req.path.split('/').length - 1];
+                    if (state === 'approve') {
+                        yield transaction.createQueryBuilder()
+                            .update(OrderCompensation_1.default)
+                            .set({ approved: true, updatedBy: req.user })
+                            .where('billingReport = :id', { id: billingReport.id })
+                            .execute();
+                    }
                     if (state === 'approve') {
                         billingReport.state = 'approved';
                     }
