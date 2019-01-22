@@ -57,8 +57,8 @@ class BillingReportController {
             let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
             let creator = yield typeorm_1.getManager().getRepository(User_1.default).findOneOrFail({ id: req.body.creatorId });
             let order = yield typeorm_1.getManager().getRepository(Order_1.default).findOneOrFail({ id: req.body.orderId });
-            let els = yield contactRepo.findByIds(req.body.els);
-            let drivers = yield contactRepo.findByIds(req.body.drivers);
+            let els = yield contactRepo.findByIds(req.body.els.map(el => el.id));
+            let drivers = yield contactRepo.findByIds(req.body.drivers.map(driver => driver.id));
             let billingReport = new BillingReport_1.default(creator, order, new Date(req.body.date), [], els, drivers, req.body.food, req.body.remarks, 'pending');
             billingReport.updatedBy = req.user;
             billingReport = yield billingReportRepo.save(billingReport);

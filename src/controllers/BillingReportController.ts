@@ -51,8 +51,8 @@ export default class BillingReportController {
 
         let creator = await getManager().getRepository(User).findOneOrFail({ id: req.body.creatorId })
         let order = await getManager().getRepository(Order).findOneOrFail({ id: req.body.orderId })
-        let els = await contactRepo.findByIds(req.body.els)
-        let drivers = await contactRepo.findByIds(req.body.drivers)
+        let els = await contactRepo.findByIds((req.body.els as Array<Contact>).map(el => el.id))
+        let drivers = await contactRepo.findByIds((req.body.drivers as Array<Contact>).map(driver => driver.id))
 
         let billingReport = new BillingReport(
             creator,

@@ -100,10 +100,10 @@ __decorate([
     __metadata("design:type", User_1.default)
 ], Contact.prototype, "user", void 0);
 __decorate([
-    typeorm_1.ManyToMany(type => CollectionPoint_1.default, { nullable: true }),
-    typeorm_1.JoinTable(),
-    __metadata("design:type", Promise)
-], Contact.prototype, "collectionPoints", void 0);
+    typeorm_1.ManyToOne(type => CollectionPoint_1.default, { nullable: true }),
+    typeorm_1.JoinColumn(),
+    __metadata("design:type", CollectionPoint_1.default)
+], Contact.prototype, "collectionPoint", void 0);
 Contact = __decorate([
     typeorm_1.Entity()
 ], Contact);
