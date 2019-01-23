@@ -11,7 +11,7 @@ function BillingReportRoutes(app) {
     app.get('/api/billing-reports/open', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.BILLINGREPORTS_CREATE, AuthRoles_1.AuthRoles.BILLINGREPORTS_EDIT]), BillingReportController_1.default.getOpenOrders);
     app.post('/api/billing-reports/approve', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.BILLINGREPORTS_APPROVE]), BillingReportController_1.default.approveDecline);
     app.post('/api/billing-reports/decline', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.BILLINGREPORTS_APPROVE]), BillingReportController_1.default.approveDecline);
-    app.post('/api/billing-reports', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.BILLINGREPORTS_EDIT]), BillingReportController_1.default.edit);
+    app.post('/api/billing-reports', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.BILLINGREPORTS_EDIT, AuthRoles_1.AuthRoles.BILLINGREPORTS_CREATE]), BillingReportController_1.default.edit);
     app.put('/api/billing-reports', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.BILLINGREPORTS_CREATE]), BillingReportController_1.default.put);
 }
 exports.default = BillingReportRoutes;

@@ -142,16 +142,28 @@ export default class BillingReportController {
 
     public static async edit(req: Express.Request, res: Express.Response): Promise<void> {
         let billingReportRepo = getManager().getRepository(BillingReport)
-        let billingReport = await billingReportRepo.findOne({ id: req.body._id })
-        if (billingReport) {
-            for (let i of req.body) {
-                //@ts-ignore
-                billingReport[i] = req.body[i]
-            }
+        let billingReport = await billingReportRepo.createQueryBuilder('billingReport').where('id = :id', { id: req.body.id }).getOne()
 
-            billingReport.updatedBy = req.user
-            await billingReportRepo.save(billingReport)
-            res.send(billingReport)
+        if (billingReport) {
+            if (AuthService.isAuthorized(req, AuthRoles.BILLINGREPORTS_EDIT) ||
+                (billingReport.creator.id == req.user.id && billingReport.state === 'pending')) {
+                for (let i in req.body) {
+                    if (i !== 'id') {
+                        //@ts-ignore
+                        billingReport[i] = req.body[i]
+                    }
+                }
+
+                billingReport.date = new Date(billingReport.date)
+                billingReport.updatedBy = req.user
+                await billingReportRepo.save(billingReport)
+                res.send(billingReport)
+            } else {
+                res.status(403)
+                res.send({
+                    message: 'Not Authorized'
+                })
+            }
         } else {
             res.status(500)
             res.send({

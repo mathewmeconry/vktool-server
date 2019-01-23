@@ -15,6 +15,9 @@ export default class BillingReport extends Base {
     @JoinColumn()
     public order: Order
 
+    @Column({ nullable: true })
+    public orderId?: number;
+
     @Column("date")
     public date: Date
 

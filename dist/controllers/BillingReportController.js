@@ -123,15 +123,27 @@ class BillingReportController {
     static edit(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
-            let billingReport = yield billingReportRepo.findOne({ id: req.body._id });
+            let billingReport = yield billingReportRepo.createQueryBuilder('billingReport').where('id = :id', { id: req.body.id }).getOne();
             if (billingReport) {
-                for (let i of req.body) {
-                    //@ts-ignore
-                    billingReport[i] = req.body[i];
+                if (AuthService_1.default.isAuthorized(req, AuthRoles_1.AuthRoles.BILLINGREPORTS_EDIT) ||
+                    (billingReport.creator.id == req.user.id && billingReport.state === 'pending')) {
+                    for (let i in req.body) {
+                        if (i !== 'id') {
+                            //@ts-ignore
+                            billingReport[i] = req.body[i];
+                        }
+                    }
+                    billingReport.date = new Date(billingReport.date);
+                    billingReport.updatedBy = req.user;
+                    yield billingReportRepo.save(billingReport);
+                    res.send(billingReport);
                 }
-                billingReport.updatedBy = req.user;
-                yield billingReportRepo.save(billingReport);
-                res.send(billingReport);
+                else {
+                    res.status(403);
+                    res.send({
+                        message: 'Not Authorized'
+                    });
+                }
             }
             else {
                 res.status(500);

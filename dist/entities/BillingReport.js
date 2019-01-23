@@ -44,6 +44,10 @@ __decorate([
     __metadata("design:type", Order_1.default)
 ], BillingReport.prototype, "order", void 0);
 __decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Number)
+], BillingReport.prototype, "orderId", void 0);
+__decorate([
     typeorm_1.Column("date"),
     __metadata("design:type", Date)
 ], BillingReport.prototype, "date", void 0);
