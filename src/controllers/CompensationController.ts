@@ -41,7 +41,6 @@ export default class CompensationController {
             getManager().getRepository(Compensation).save(entry).then(() => {
                 res.send(entry)
             }).catch((err) => {
-                console.error(err)
                 res.status(500)
                 res.send({
                     message: 'sorry man...'
