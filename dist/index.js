@@ -41,7 +41,7 @@ typeorm_1.createConnection(Object.assign({
     // CORS Headers
     app.use(function (req, res, next) {
         res.header("Access-Control-Allow-Origin", config_1.default.get('clientHost'));
-        res.header("Access-Control-Allow-Methods", "GET, POST, PUT");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         res.header("Access-Control-Allow-Credentials", "true");
         next();
