@@ -29,7 +29,8 @@ class BillingReportController {
                 .leftJoinAndSelect('billingReport.compensations', 'compensations')
                 .leftJoinAndSelect('compensations.member', 'member')
                 .leftJoinAndSelect('billingReport.els', 'els')
-                .leftJoinAndSelect('billingReport.drivers', 'drivers');
+                .leftJoinAndSelect('billingReport.drivers', 'drivers')
+                .where('compensations.deletedAt IS NULL');
             if (!AuthService_1.default.isAuthorized(req, AuthRoles_1.AuthRoles.BILLINGREPORTS_READ)) {
                 billingReportsQuery = billingReportsQuery.where('billingReport.creator = :id', { id: req.user.id });
             }
@@ -94,6 +95,7 @@ class BillingReportController {
                             .update(OrderCompensation_1.default)
                             .set({ approved: true, updatedBy: req.user })
                             .where('billingReport = :id', { id: billingReport.id })
+                            .andWhere('deletedAt IS NULL')
                             .execute();
                     }
                     if (state === 'approve') {

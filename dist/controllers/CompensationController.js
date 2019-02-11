@@ -27,6 +27,7 @@ class CompensationController {
                 .leftJoinAndSelect('compensation.creator', 'creator')
                 .leftJoinAndSelect('compensation.billingReport', 'billingReport')
                 .leftJoinAndSelect('billingReport.order', 'order')
+                .where('deletedAt IS NULL')
                 .getMany());
         });
     }
@@ -65,6 +66,24 @@ class CompensationController {
                 compensation.approved = true;
                 compensation.approvedBy = req.user;
                 compensation.updatedBy = req.user;
+                yield compensationRepo.save(compensation);
+                res.send({ success: true });
+            }
+            else {
+                res.status(500);
+                res.send({
+                    message: 'sorry man...'
+                });
+            }
+        });
+    }
+    static delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let compensationRepo = typeorm_1.getManager().getRepository(Compensation_1.default);
+            let compensation = yield compensationRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne();
+            if (compensation) {
+                compensation.deletedAt = new Date();
+                compensation.deletedBy = req.user;
                 yield compensationRepo.save(compensation);
                 res.send(compensation);
             }

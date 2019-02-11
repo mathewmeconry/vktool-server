@@ -97,6 +97,15 @@ __decorate([
     typeorm_1.JoinColumn(),
     __metadata("design:type", User_1.default)
 ], Compensation.prototype, "updatedBy", void 0);
+__decorate([
+    typeorm_1.Column('date', { nullable: true }),
+    __metadata("design:type", Date)
+], Compensation.prototype, "deletedAt", void 0);
+__decorate([
+    typeorm_1.ManyToOne(type => User_1.default, { eager: true }),
+    typeorm_1.JoinColumn(),
+    __metadata("design:type", User_1.default)
+], Compensation.prototype, "deletedBy", void 0);
 Compensation = __decorate([
     typeorm_1.Entity(),
     typeorm_1.TableInheritance({ column: { type: "varchar", name: "type" } }),

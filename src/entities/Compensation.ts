@@ -44,6 +44,13 @@ export default class Compensation extends Base {
     @JoinColumn()
     public updatedBy: User
 
+    @Column('date', { nullable: true })
+    public deletedAt?: Date
+
+    @ManyToOne(type => User, { eager: true })
+    @JoinColumn()
+    public deletedBy: User
+
     constructor(member: Contact, creator: User, amount: number, date: Date, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {
         super()
         this.member = member

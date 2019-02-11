@@ -20,6 +20,7 @@ export default class BillingReportController {
             .leftJoinAndSelect('compensations.member', 'member')
             .leftJoinAndSelect('billingReport.els', 'els')
             .leftJoinAndSelect('billingReport.drivers', 'drivers')
+            .where('compensations.deletedAt IS NULL')
 
         if (!AuthService.isAuthorized(req, AuthRoles.BILLINGREPORTS_READ)) {
             billingReportsQuery = billingReportsQuery.where('billingReport.creator = :id', { id: req.user.id })
@@ -115,6 +116,7 @@ export default class BillingReportController {
                         .update(OrderCompensation)
                         .set({ approved: true, updatedBy: req.user })
                         .where('billingReport = :id', { id: billingReport.id })
+                        .andWhere('deletedAt IS NULL')
                         .execute()
                 }
 

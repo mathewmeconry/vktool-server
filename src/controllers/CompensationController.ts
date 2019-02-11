@@ -16,6 +16,7 @@ export default class CompensationController {
                 .leftJoinAndSelect('compensation.creator', 'creator')
                 .leftJoinAndSelect('compensation.billingReport', 'billingReport')
                 .leftJoinAndSelect('billingReport.order', 'order')
+                .where('deletedAt IS NULL')
                 .getMany()
         )
     }
@@ -60,6 +61,23 @@ export default class CompensationController {
             compensation.approved = true
             compensation.approvedBy = req.user
             compensation.updatedBy = req.user
+            await compensationRepo.save(compensation)
+            res.send({ success: true })
+        } else {
+            res.status(500)
+            res.send({
+                message: 'sorry man...'
+            })
+        }
+    }
+
+    public static async delete(req: Express.Request, res: Express.Response): Promise<void> {
+        let compensationRepo = getManager().getRepository(Compensation)
+        let compensation = await compensationRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne()
+
+        if (compensation) {
+            compensation.deletedAt = new Date()
+            compensation.deletedBy = req.user
             await compensationRepo.save(compensation)
             res.send(compensation)
         } else {
