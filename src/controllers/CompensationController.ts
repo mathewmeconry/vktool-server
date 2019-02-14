@@ -142,6 +142,13 @@ export default class CompensationController {
             compensation.deletedAt = new Date()
             compensation.deletedBy = req.user
             await compensationRepo.save(compensation)
+
+            if(compensation instanceof OrderCompensation) {
+                let billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: compensation.billingReportId }).getOne()
+                billingReport.updatedBy = req.user
+                await getManager().getRepository(BillingReport).save(billingReport)
+            }
+
             res.send(compensation)
         } else {
             res.status(500)

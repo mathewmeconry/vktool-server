@@ -10,6 +10,9 @@ export default class OrderCompensation extends Compensation {
     @ManyToOne(type => BillingReport, billingreport => billingreport.compensations)
     public billingReport: BillingReport
 
+    @Column('int')
+    public billingReportId: number
+
     @Column('int', { default: 0 })
     public dayHours: number = 0
 
