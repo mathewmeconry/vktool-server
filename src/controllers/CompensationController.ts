@@ -90,6 +90,8 @@ export default class CompensationController {
 
                     promises.push(getManager().getRepository(OrderCompensation).save(compensationEntry))
                 }
+                billingReport.updatedBy = req.user
+                await getManager().getRepository(BillingReport).save(billingReport)
             } else {
                 for (let entry of req.body.entries) {
                     let member = await contactRepo.findOneOrFail({ id: parseInt(entry.id) })
