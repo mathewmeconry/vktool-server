@@ -5,6 +5,8 @@ import { AuthRoles } from "../interfaces/AuthRoles";
 import { getManager } from "typeorm";
 import Compensation from "../entities/Compensation";
 import CustomCompensation from "../entities/CustomCompensation";
+import BillingReport from "../entities/BillingReport";
+import OrderCompensation from "../entities/OrderCompensation";
 
 export default class CompensationController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
@@ -49,6 +51,66 @@ export default class CompensationController {
         } else {
             res.status(500)
             res.send({ message: 'Sorry man...' })
+        }
+    }
+
+    public static async addBulk(req: Express.Request, res: Express.Response): Promise<void> {
+        if (!req.body.hasOwnProperty('billingReportId') && !req.user.roles.includes(AuthRoles.COMPENSATIONS_CREATE)) {
+            res.status(403)
+            res.send({
+                error: 'Not authorized'
+            })
+        } else {
+            let billingReport = undefined;
+            let contactRepo = getManager().getRepository(Contact)
+            let promises = []
+
+            if (req.body.hasOwnProperty('billingReportId')) {
+                billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne()
+            }
+
+            if (billingReport) {
+                for (let entry of req.body.entries) {
+                    let member = await contactRepo.findOneOrFail({ id: entry.id })
+                    let from = new Date("1970-01-01 " + entry.from)
+                    let until = new Date("1970-01-01 " + entry.until)
+
+                    let compensationEntry = new OrderCompensation(
+                        member,
+                        req.user,
+                        billingReport.date,
+                        billingReport,
+                        from,
+                        until,
+                        0,
+                        0,
+                        entry.charge,
+                        (billingReport.state === 'approved') ? true : false
+                    )
+
+                    promises.push(getManager().getRepository(OrderCompensation).save(compensationEntry))
+                }
+            } else {
+                for (let entry of req.body.entries) {
+                    let member = await contactRepo.findOneOrFail({ id: parseInt(entry.id) })
+
+                    let compensationEntry = new CustomCompensation(
+                        member,
+                        req.user,
+                        entry.amount,
+                        entry.date,
+                        entry.description
+                    )
+
+                    promises.push(getManager().getRepository(CustomCompensation).save(compensationEntry))
+                }
+            }
+
+            await Promise.all<OrderCompensation | CustomCompensation>(promises)
+            res.status(200)
+            res.send({
+                success: true
+            })
         }
     }
 

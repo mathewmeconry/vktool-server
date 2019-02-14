@@ -17,6 +17,8 @@ const AuthRoles_1 = require("../interfaces/AuthRoles");
 const typeorm_1 = require("typeorm");
 const Compensation_1 = __importDefault(require("../entities/Compensation"));
 const CustomCompensation_1 = __importDefault(require("../entities/CustomCompensation"));
+const BillingReport_1 = __importDefault(require("../entities/BillingReport"));
+const OrderCompensation_1 = __importDefault(require("../entities/OrderCompensation"));
 class CompensationController {
     static getAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -45,7 +47,6 @@ class CompensationController {
                 typeorm_1.getManager().getRepository(Compensation_1.default).save(entry).then(() => {
                     res.send(entry);
                 }).catch((err) => {
-                    console.error(err);
                     res.status(500);
                     res.send({
                         message: 'sorry man...'
@@ -55,6 +56,45 @@ class CompensationController {
             else {
                 res.status(500);
                 res.send({ message: 'Sorry man...' });
+            }
+        });
+    }
+    static addBulk(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.body.hasOwnProperty('billingReportId') && !req.user.roles.includes(AuthRoles_1.AuthRoles.COMPENSATIONS_CREATE)) {
+                res.status(403);
+                res.send({
+                    error: 'Not authorized'
+                });
+            }
+            else {
+                let billingReport = undefined;
+                let contactRepo = typeorm_1.getManager().getRepository(Contact_1.default);
+                let promises = [];
+                if (req.body.hasOwnProperty('billingReportId')) {
+                    billingReport = yield typeorm_1.getManager().getRepository(BillingReport_1.default).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne();
+                }
+                if (billingReport) {
+                    for (let entry of req.body.entries) {
+                        let member = yield contactRepo.findOneOrFail({ id: entry.id });
+                        let from = new Date("1970-01-01 " + entry.from);
+                        let until = new Date("1970-01-01 " + entry.until);
+                        let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, from, until, 0, 0, entry.charge, (billingReport.state === 'approved') ? true : false);
+                        promises.push(typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry));
+                    }
+                }
+                else {
+                    for (let entry of req.body.entries) {
+                        let member = yield contactRepo.findOneOrFail({ id: parseInt(entry.id) });
+                        let compensationEntry = new CustomCompensation_1.default(member, req.user, entry.amount, entry.date, entry.description);
+                        promises.push(typeorm_1.getManager().getRepository(CustomCompensation_1.default).save(compensationEntry));
+                    }
+                }
+                yield Promise.all(promises);
+                res.status(200);
+                res.send({
+                    success: true
+                });
             }
         });
     }
