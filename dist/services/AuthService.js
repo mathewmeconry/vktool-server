@@ -35,7 +35,7 @@ class AuthService {
                     return;
                 }
             }
-            res.status(401);
+            res.status(403);
             res.send({
                 error: 'Not authorized'
             });
