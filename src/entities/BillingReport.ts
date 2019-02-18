@@ -46,7 +46,7 @@ export default class BillingReport extends Base {
     @Column("text")
     public state: 'pending' | 'approved' | 'declined'
 
-    @ManyToOne(type => User, { eager: true })
+    @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
 

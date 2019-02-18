@@ -40,7 +40,7 @@ export default class Compensation extends Base {
     @ManyToOne(type => Payout, payout => payout.compensations, { nullable: true, eager: true })
     public payout?: Payout
 
-    @ManyToOne(type => User, { eager: true })
+    @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
 

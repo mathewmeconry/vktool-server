@@ -12,7 +12,7 @@ export default class Payout extends Base {
     @JoinColumn()
     public compensations: Array<Compensation>
 
-    @ManyToOne(type => User, { eager: true })
+    @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
 }
