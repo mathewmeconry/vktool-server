@@ -72,6 +72,10 @@ export default class Contact extends BexioBase {
     public entryDate?: Date
     public exitDate?: Date
 
+    public isMember(): boolean {
+        return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false
+    }
+
     @AfterLoad()
     private async loadOverride(): Promise<boolean> {
         let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })
@@ -90,7 +94,7 @@ export default class Contact extends BexioBase {
 
     @BeforeInsert()
     @BeforeUpdate()
-    private async storeOverride(): Promise<boolean> {
+    public async storeOverride(): Promise<boolean> {
         let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })
         if (!override || Object.keys(override).length < 1) override = new ContactExtension()
 
