@@ -8,7 +8,9 @@ const AuthService_1 = __importDefault(require("../services/AuthService"));
 const AuthRoles_1 = require("../interfaces/AuthRoles");
 function ContactsRoutes(app) {
     app.get('/api/contacts', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.CONTACTS_READ]), ContactsController_1.default.getContacts);
+    app.post('/api/contacts', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.CONTACTS_EDIT]), ContactsController_1.default.postContact);
     app.get('/api/members', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.MEMBERS_READ]), ContactsController_1.default.getMembers);
+    app.post('/api/members', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.CONTACTS_EDIT]), ContactsController_1.default.postContact);
     app.get('/api/ranks', AuthService_1.default.checkAuthorization([AuthRoles_1.AuthRoles.RANKS_READ]), ContactsController_1.default.getRanks);
 }
 exports.default = ContactsRoutes;

@@ -93,7 +93,7 @@ __decorate([
     __metadata("design:type", Payout_1.default)
 ], Compensation.prototype, "payout", void 0);
 __decorate([
-    typeorm_1.ManyToOne(type => User_1.default, { eager: true }),
+    typeorm_1.ManyToOne(type => User_1.default),
     typeorm_1.JoinColumn(),
     __metadata("design:type", User_1.default)
 ], Compensation.prototype, "updatedBy", void 0);

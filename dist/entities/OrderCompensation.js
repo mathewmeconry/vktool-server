@@ -78,6 +78,10 @@ __decorate([
     __metadata("design:type", BillingReport_1.default)
 ], OrderCompensation.prototype, "billingReport", void 0);
 __decorate([
+    typeorm_1.Column('int'),
+    __metadata("design:type", Number)
+], OrderCompensation.prototype, "billingReportId", void 0);
+__decorate([
     typeorm_1.Column('int', { default: 0 }),
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "dayHours", void 0);
