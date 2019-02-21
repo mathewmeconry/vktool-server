@@ -2,6 +2,7 @@ import * as Express from 'express'
 import Contact from '../entities/Contact';
 import { getManager, In } from 'typeorm';
 import ContactGroup from '../entities/ContactGroup';
+import CollectionPoint from '../entities/CollectionPoint';
 
 export default class ContactsController {
     public static async getContacts(req: Express.Request, res: Express.Response): Promise<void> {
@@ -18,5 +19,29 @@ export default class ContactsController {
         let contactGroups = await getManager().getRepository(ContactGroup).find(filter)
 
         res.send(contactGroups)
+    }
+
+    public static async postContact(req: Express.Request, res: Express.Response): Promise<void> {
+        let contact = await getManager().getRepository(Contact).findOne({ id: req.body.id })
+
+        if (contact) {
+            if (req.url.indexOf('members') > -1 && !contact.isMember()) {
+                res.status(403)
+                res.send({
+                    message: 'Not Authorized'
+                })
+                return
+            }
+
+            contact.collectionPoint = await getManager().getRepository(CollectionPoint).findOne({ id: req.body.collectionPointId })
+            await getManager().getRepository(Contact).save(contact)
+            await contact.storeOverride()
+            res.send(contact)
+        } else {
+            res.status(500)
+            res.send({
+                message: 'sorry man...'
+            })
+        }
     }
 }

@@ -82,6 +82,8 @@ class CompensationController {
                         let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, from, until, 0, 0, entry.charge, (billingReport.state === 'approved') ? true : false);
                         promises.push(typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry));
                     }
+                    billingReport.updatedBy = req.user;
+                    yield typeorm_1.getManager().getRepository(BillingReport_1.default).save(billingReport);
                 }
                 else {
                     for (let entry of req.body.entries) {
@@ -125,6 +127,20 @@ class CompensationController {
                 compensation.deletedAt = new Date();
                 compensation.deletedBy = req.user;
                 yield compensationRepo.save(compensation);
+                if (compensation instanceof OrderCompensation_1.default) {
+                    let billingReport = yield typeorm_1.getManager().getRepository(BillingReport_1.default).createQueryBuilder('billingReport').where('id = :id', { id: compensation.billingReportId }).getOne();
+                    if (billingReport) {
+                        billingReport.updatedBy = req.user;
+                        yield typeorm_1.getManager().getRepository(BillingReport_1.default).save(billingReport);
+                    }
+                    else {
+                        res.status(500);
+                        res.send({
+                            message: 'sorry man...'
+                        });
+                        return;
+                    }
+                }
                 res.send(compensation);
             }
             else {

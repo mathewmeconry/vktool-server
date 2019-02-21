@@ -145,6 +145,7 @@ export default class CompensationController {
 
             if (compensation instanceof OrderCompensation) {
                 let billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: compensation.billingReportId }).getOne()
+
                 if (billingReport) {
                     billingReport.updatedBy = req.user
                     await getManager().getRepository(BillingReport).save(billingReport)
@@ -153,6 +154,7 @@ export default class CompensationController {
                     res.send({
                         message: 'sorry man...'
                     })
+                    return
                 }
             }
 

@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Contact_1 = __importDefault(require("../entities/Contact"));
 const typeorm_1 = require("typeorm");
 const ContactGroup_1 = __importDefault(require("../entities/ContactGroup"));
+const CollectionPoint_1 = __importDefault(require("../entities/CollectionPoint"));
 class ContactsController {
     static getContacts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -31,6 +32,30 @@ class ContactsController {
             let filter = { 'bexioId': typeorm_1.In([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14]) };
             let contactGroups = yield typeorm_1.getManager().getRepository(ContactGroup_1.default).find(filter);
             res.send(contactGroups);
+        });
+    }
+    static postContact(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let contact = yield typeorm_1.getManager().getRepository(Contact_1.default).findOne({ id: req.body.id });
+            if (contact) {
+                if (req.url.indexOf('members') > -1 && !contact.isMember()) {
+                    res.status(403);
+                    res.send({
+                        message: 'Not Authorized'
+                    });
+                    return;
+                }
+                contact.collectionPoint = yield typeorm_1.getManager().getRepository(CollectionPoint_1.default).findOne({ id: req.body.collectionPointId });
+                yield typeorm_1.getManager().getRepository(Contact_1.default).save(contact);
+                yield contact.storeOverride();
+                res.send(contact);
+            }
+            else {
+                res.status(500);
+                res.send({
+                    message: 'sorry man...'
+                });
+            }
         });
     }
 }

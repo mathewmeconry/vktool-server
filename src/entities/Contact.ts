@@ -1,10 +1,11 @@
-import { Entity, Column, OneToMany, JoinColumn, ManyToOne, ManyToMany, OneToOne, JoinTable } from "typeorm";
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne, ManyToMany, OneToOne, JoinTable, AfterLoad, getManager, BeforeUpdate, BeforeInsert } from "typeorm";
 import BexioBase from "./BexioBase";
 import Compensation from "./Compensation";
 import User from "./User";
 import ContactType from "./ContactType";
 import ContactGroup from "./ContactGroup";
 import CollectionPoint from "./CollectionPoint";
+import ContactExtension, { ContactExtensionInterface } from "./ContactExtension";
 
 @Entity()
 export default class Contact extends BexioBase {
@@ -67,7 +68,48 @@ export default class Contact extends BexioBase {
     @OneToOne(type => User, user => user.bexioContact, { nullable: true })
     public user?: User
 
-    @ManyToOne(type => CollectionPoint, { nullable: true })
-    @JoinColumn()
-    public collectionPoint: CollectionPoint
+    public collectionPoint?: CollectionPoint
+    public entryDate?: Date
+    public exitDate?: Date
+
+    public isMember(): boolean {
+        return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false
+    }
+
+    @AfterLoad()
+    private async loadOverride(): Promise<boolean> {
+        let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })
+        if (override) {
+            for (let i in ContactExtensionInterface) {
+                if (override.hasOwnProperty(i)) {
+                    //@ts-ignore
+                    this[i] = override[i]
+                }
+            }
+        }
+
+        return true
+    }
+
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    public async storeOverride(): Promise<boolean> {
+        let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })
+        if (!override || Object.keys(override).length < 1) override = new ContactExtension()
+
+        override.contact = this
+
+        for (let i in ContactExtensionInterface) {
+            if (this.hasOwnProperty(i)) {
+                //@ts-ignore
+                override[i] = this[i]
+                //@ts-ignore
+                delete this[i]
+            }
+        }
+
+        await getManager().getRepository(ContactExtension).save(override)
+        return true
+    }
 }

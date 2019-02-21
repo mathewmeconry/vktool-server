@@ -8,8 +8,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
@@ -18,8 +33,43 @@ const Compensation_1 = __importDefault(require("./Compensation"));
 const User_1 = __importDefault(require("./User"));
 const ContactType_1 = __importDefault(require("./ContactType"));
 const ContactGroup_1 = __importDefault(require("./ContactGroup"));
-const CollectionPoint_1 = __importDefault(require("./CollectionPoint"));
+const ContactExtension_1 = __importStar(require("./ContactExtension"));
 let Contact = class Contact extends BexioBase_1.default {
+    isMember() {
+        return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false;
+    }
+    loadOverride() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let override = yield typeorm_1.getManager().getRepository(ContactExtension_1.default).findOne({ contactId: this.id });
+            if (override) {
+                for (let i in ContactExtension_1.ContactExtensionInterface) {
+                    if (override.hasOwnProperty(i)) {
+                        //@ts-ignore
+                        this[i] = override[i];
+                    }
+                }
+            }
+            return true;
+        });
+    }
+    storeOverride() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let override = yield typeorm_1.getManager().getRepository(ContactExtension_1.default).findOne({ contactId: this.id });
+            if (!override || Object.keys(override).length < 1)
+                override = new ContactExtension_1.default();
+            override.contact = this;
+            for (let i in ContactExtension_1.ContactExtensionInterface) {
+                if (this.hasOwnProperty(i)) {
+                    //@ts-ignore
+                    override[i] = this[i];
+                    //@ts-ignore
+                    delete this[i];
+                }
+            }
+            yield typeorm_1.getManager().getRepository(ContactExtension_1.default).save(override);
+            return true;
+        });
+    }
 };
 __decorate([
     typeorm_1.Column('text'),
@@ -100,10 +150,18 @@ __decorate([
     __metadata("design:type", User_1.default)
 ], Contact.prototype, "user", void 0);
 __decorate([
-    typeorm_1.ManyToOne(type => CollectionPoint_1.default, { nullable: true }),
-    typeorm_1.JoinColumn(),
-    __metadata("design:type", CollectionPoint_1.default)
-], Contact.prototype, "collectionPoint", void 0);
+    typeorm_1.AfterLoad(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], Contact.prototype, "loadOverride", null);
+__decorate([
+    typeorm_1.BeforeInsert(),
+    typeorm_1.BeforeUpdate(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], Contact.prototype, "storeOverride", null);
 Contact = __decorate([
     typeorm_1.Entity()
 ], Contact);
