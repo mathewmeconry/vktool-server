@@ -1,6 +1,7 @@
 import { Entity, Column, OneToOne, JoinColumn, AfterLoad } from "typeorm";
 import Base from "./Base";
 import Contact from "./Contact";
+import { AuthRolesByRank } from "../interfaces/AuthRoles";
 
 @Entity()
 export default class User extends Base {
@@ -25,6 +26,9 @@ export default class User extends Base {
 
     @AfterLoad()
     public enrichPermissions(): void {
-        
+        if (this.bexioContact) {
+            const rank = this.bexioContact.getRank() || { bexioId: -1 }
+            this.roles = this.roles.concat(AuthRolesByRank[rank.bexioId] || [])
+        }
     }
 }

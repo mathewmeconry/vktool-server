@@ -36,8 +36,7 @@ export default class AuthService {
     }
 
     public static isAuthorized(req: Express.Request, role: AuthRoles): boolean {
-        const roles = req.user.roles.concat(AuthService.addRolesByRank(req.user))
-        if (req.isAuthenticated() && (roles.indexOf(role) > -1 || roles.indexOf(AuthRoles.ADMIN) > -1)) {
+        if (req.isAuthenticated() && (req.user.roles.indexOf(role) > -1 || req.user.roles.indexOf(AuthRoles.ADMIN) > -1)) {
             return true
         }
 
@@ -130,14 +129,5 @@ export default class AuthService {
                 }
             }
         ));
-    }
-
-    private static addRolesByRank(user: User): Array<AuthRoles> {
-        if (user.bexioContact) {
-            const rank = user.bexioContact.getRank()
-            if (rank) return AuthRolesByRank[rank.bexioId]
-        }
-
-        return []
     }
 }
