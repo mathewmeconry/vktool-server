@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, JoinColumn } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, AfterLoad } from "typeorm";
 import Base from "./Base";
 import Contact from "./Contact";
 
@@ -22,4 +22,9 @@ export default class User extends Base {
     @OneToOne(type => Contact, contact => contact.user, { nullable: true, eager: true })
     @JoinColumn()
     public bexioContact?: Contact
+
+    @AfterLoad()
+    public enrichPermissions(): void {
+        
+    }
 }

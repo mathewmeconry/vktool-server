@@ -76,6 +76,16 @@ export default class Contact extends BexioBase {
         return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false
     }
 
+    public getRank(): ContactGroup | null {
+        const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14]
+
+        if (this.contactGroups) {
+            return this.contactGroups.find(group => rankGroups.indexOf(group.bexioId) > -1) || null
+        }
+
+        return null
+    }
+
     @AfterLoad()
     private async loadOverride(): Promise<boolean> {
         let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })

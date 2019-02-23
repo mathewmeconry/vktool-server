@@ -1,6 +1,6 @@
 export enum AuthRoles {
     AUTHENTICATED = 'authenticated',
-    
+
     CONTACTS_READ = 'contacts_read',
     CONTACTS_EDIT = 'contacts_edit',
 
@@ -28,4 +28,105 @@ export enum AuthRoles {
     DRAFT_EDIT = 'draft_edit',
 
     ADMIN = 'admin'
+}
+
+export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
+    // VK
+    10: [],
+    // KA
+    11: [],
+    // KS
+    12: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.BILLINGREPORTS_CREATE
+    ],
+    // GF
+    13: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.BILLINGREPORTS_CREATE
+    ],
+    // ZF
+    14: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.BILLINGREPORTS_CREATE
+    ],
+    // OZF
+    15: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.CONTACTS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.BILLINGREPORTS_CREATE,
+        AuthRoles.BILLINGREPORTS_READ,
+        AuthRoles.ORDERS_READ,
+        AuthRoles.COMPENSATIONS_READ,
+    ],
+    // Leiter Stv.
+    29: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.MEMBERS_EDIT,
+        AuthRoles.CONTACTS_EDIT,
+        AuthRoles.CONTACTS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.RANKS_EDIT,
+        AuthRoles.BILLINGREPORTS_CREATE,
+        AuthRoles.BILLINGREPORTS_READ,
+        AuthRoles.BILLINGREPORTS_APPROVE,
+        AuthRoles.BILLINGREPORTS_EDIT,
+        AuthRoles.ORDERS_READ,
+        AuthRoles.ORDERS_EDIT,
+        AuthRoles.COMPENSATIONS_READ,
+        AuthRoles.COMPENSATIONS_CREATE,
+        AuthRoles.COMPENSATIONS_APPROVE,
+        AuthRoles.COMPENSATIONS_EDIT,
+        AuthRoles.DRAFT_READ,
+        AuthRoles.DRAFT_EDIT,
+        AuthRoles.DRAFT_READ
+    ],
+    // Leiter
+    28: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.MEMBERS_EDIT,
+        AuthRoles.CONTACTS_EDIT,
+        AuthRoles.CONTACTS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.RANKS_EDIT,
+        AuthRoles.BILLINGREPORTS_CREATE,
+        AuthRoles.BILLINGREPORTS_READ,
+        AuthRoles.BILLINGREPORTS_APPROVE,
+        AuthRoles.BILLINGREPORTS_EDIT,
+        AuthRoles.ORDERS_READ,
+        AuthRoles.ORDERS_EDIT,
+        AuthRoles.COMPENSATIONS_READ,
+        AuthRoles.COMPENSATIONS_CREATE,
+        AuthRoles.COMPENSATIONS_APPROVE,
+        AuthRoles.COMPENSATIONS_EDIT,
+        AuthRoles.DRAFT_READ,
+        AuthRoles.DRAFT_EDIT,
+        AuthRoles.DRAFT_READ
+    ],
+    // VST
+    16: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.MEMBERS_EDIT,
+        AuthRoles.CONTACTS_EDIT,
+        AuthRoles.CONTACTS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.RANKS_EDIT,
+        AuthRoles.BILLINGREPORTS_CREATE,
+        AuthRoles.BILLINGREPORTS_READ,
+        AuthRoles.BILLINGREPORTS_APPROVE,
+        AuthRoles.BILLINGREPORTS_EDIT,
+        AuthRoles.ORDERS_READ,
+        AuthRoles.ORDERS_EDIT,
+        AuthRoles.COMPENSATIONS_READ,
+        AuthRoles.COMPENSATIONS_CREATE,
+        AuthRoles.COMPENSATIONS_APPROVE,
+        AuthRoles.COMPENSATIONS_EDIT,
+        AuthRoles.DRAFT_READ,
+        AuthRoles.DRAFT_EDIT,
+        AuthRoles.DRAFT_READ
+    ],
 }
