@@ -38,6 +38,13 @@ let Contact = class Contact extends BexioBase_1.default {
     isMember() {
         return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false;
     }
+    getRank() {
+        const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14];
+        if (this.contactGroups) {
+            return this.contactGroups.find(group => rankGroups.indexOf(group.bexioId) > -1) || null;
+        }
+        return null;
+    }
     loadOverride() {
         return __awaiter(this, void 0, void 0, function* () {
             let override = yield typeorm_1.getManager().getRepository(ContactExtension_1.default).findOne({ contactId: this.id });

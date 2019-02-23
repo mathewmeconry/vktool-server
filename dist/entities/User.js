@@ -16,6 +16,8 @@ const typeorm_1 = require("typeorm");
 const Base_1 = __importDefault(require("./Base"));
 const Contact_1 = __importDefault(require("./Contact"));
 let User = class User extends Base_1.default {
+    enrichPermissions() {
+    }
 };
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
@@ -42,6 +44,12 @@ __decorate([
     typeorm_1.JoinColumn(),
     __metadata("design:type", Contact_1.default)
 ], User.prototype, "bexioContact", void 0);
+__decorate([
+    typeorm_1.AfterLoad(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], User.prototype, "enrichPermissions", null);
 User = __decorate([
     typeorm_1.Entity()
 ], User);

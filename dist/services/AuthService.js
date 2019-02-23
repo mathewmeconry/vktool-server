@@ -42,7 +42,8 @@ class AuthService {
         };
     }
     static isAuthorized(req, role) {
-        if (req.isAuthenticated() && (req.user.roles.indexOf(role) > -1 || req.user.roles.indexOf(AuthRoles_1.AuthRoles.ADMIN) > -1)) {
+        const roles = req.user.roles.concat(AuthService.addRolesByRank(req.user));
+        if (req.isAuthenticated() && (roles.indexOf(role) > -1 || roles.indexOf(AuthRoles_1.AuthRoles.ADMIN) > -1)) {
             return true;
         }
         return false;
@@ -102,7 +103,7 @@ class AuthService {
                             accessToken: accessToken,
                             refreshToken: '',
                             displayName: profile.displayName,
-                            roles: [AuthRoles_1.AuthRoles.MEMBERS_READ, AuthRoles_1.AuthRoles.AUTHENTICATED],
+                            roles: [AuthRoles_1.AuthRoles.AUTHENTICATED],
                             bexioContact: contact || undefined
                         };
                     }).catch(() => {
@@ -110,7 +111,7 @@ class AuthService {
                             outlookId: profile.id,
                             accessToken: accessToken,
                             displayName: profile.displayName,
-                            roles: [AuthRoles_1.AuthRoles.MEMBERS_READ, AuthRoles_1.AuthRoles.AUTHENTICATED],
+                            roles: [AuthRoles_1.AuthRoles.AUTHENTICATED],
                             refreshToken: ''
                         };
                     }).then(() => __awaiter(this, void 0, void 0, function* () {
@@ -132,6 +133,14 @@ class AuthService {
                 }
             });
         }));
+    }
+    static addRolesByRank(user) {
+        if (user.bexioContact) {
+            const rank = user.bexioContact.getRank();
+            if (rank)
+                return AuthRoles_1.AuthRolesByRank[rank.bexioId];
+        }
+        return [];
     }
 }
 exports.default = AuthService;
