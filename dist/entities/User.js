@@ -18,7 +18,7 @@ const Contact_1 = __importDefault(require("./Contact"));
 const AuthRoles_1 = require("../interfaces/AuthRoles");
 let User = class User extends Base_1.default {
     enrichPermissions() {
-        if (this.bexioContact) {
+        if (this.bexioContact && this.bexioContact.hasOwnProperty('getRank')) {
             const rank = this.bexioContact.getRank() || { bexioId: -1 };
             this.roles = this.roles.concat(AuthRoles_1.AuthRolesByRank[rank.bexioId] || []);
         }

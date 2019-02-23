@@ -26,7 +26,7 @@ export default class User extends Base {
 
     @AfterLoad()
     public enrichPermissions(): void {
-        if (this.bexioContact) {
+        if (this.bexioContact && this.bexioContact.hasOwnProperty('getRank')) {
             const rank = this.bexioContact.getRank() || { bexioId: -1 }
             this.roles = this.roles.concat(AuthRolesByRank[rank.bexioId] || [])
         }
