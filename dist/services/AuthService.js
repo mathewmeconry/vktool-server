@@ -42,8 +42,7 @@ class AuthService {
         };
     }
     static isAuthorized(req, role) {
-        const roles = req.user.roles.concat(AuthService.addRolesByRank(req.user));
-        if (req.isAuthenticated() && (roles.indexOf(role) > -1 || roles.indexOf(AuthRoles_1.AuthRoles.ADMIN) > -1)) {
+        if (req.isAuthenticated() && (req.user.roles.indexOf(role) > -1 || req.user.roles.indexOf(AuthRoles_1.AuthRoles.ADMIN) > -1)) {
             return true;
         }
         return false;
@@ -133,14 +132,6 @@ class AuthService {
                 }
             });
         }));
-    }
-    static addRolesByRank(user) {
-        if (user.bexioContact) {
-            const rank = user.bexioContact.getRank();
-            if (rank)
-                return AuthRoles_1.AuthRolesByRank[rank.bexioId];
-        }
-        return [];
     }
 }
 exports.default = AuthService;
