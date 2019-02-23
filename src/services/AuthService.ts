@@ -1,4 +1,4 @@
-import { AuthRoles } from "../interfaces/AuthRoles";
+import { AuthRoles, AuthRolesByRank } from "../interfaces/AuthRoles";
 import passport from 'passport'
 import * as Express from 'express'
 //@ts-ignore
@@ -36,7 +36,8 @@ export default class AuthService {
     }
 
     public static isAuthorized(req: Express.Request, role: AuthRoles): boolean {
-        if (req.isAuthenticated() && (req.user.roles.indexOf(role) > -1 || req.user.roles.indexOf(AuthRoles.ADMIN) > -1)) {
+        const roles = req.user.roles.concat(AuthService.addRolesByRank(req.user))
+        if (req.isAuthenticated() && (roles.indexOf(role) > -1 || roles.indexOf(AuthRoles.ADMIN) > -1)) {
             return true
         }
 
@@ -99,7 +100,7 @@ export default class AuthService {
                             accessToken: accessToken,
                             refreshToken: '',
                             displayName: profile.displayName,
-                            roles: [AuthRoles.MEMBERS_READ, AuthRoles.AUTHENTICATED],
+                            roles: [AuthRoles.AUTHENTICATED],
                             bexioContact: contact || undefined
                         }
                     }).catch(() => {
@@ -107,7 +108,7 @@ export default class AuthService {
                             outlookId: profile.id,
                             accessToken: accessToken,
                             displayName: profile.displayName,
-                            roles: [AuthRoles.MEMBERS_READ, AuthRoles.AUTHENTICATED],
+                            roles: [AuthRoles.AUTHENTICATED],
                             refreshToken: ''
                         }
                     }).then(async () => {
@@ -129,5 +130,14 @@ export default class AuthService {
                 }
             }
         ));
+    }
+
+    private static addRolesByRank(user: User): Array<AuthRoles> {
+        if (user.bexioContact) {
+            const rank = user.bexioContact.getRank()
+            if (rank) return AuthRolesByRank[rank.bexioId]
+        }
+
+        return []
     }
 }
