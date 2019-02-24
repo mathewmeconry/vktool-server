@@ -31,14 +31,14 @@ export default class BillingReportController {
 
     public static async getOpenOrders(req: Express.Request, res: Express.Response): Promise<void> {
         let now = new Date()
-        let before14Days = now
+        let before14Days = new Date()
         before14Days.setDate(before14Days.getDate() - 14)
 
         let orders = await getManager()
             .getRepository(Order)
             .createQueryBuilder('order')
             .leftJoinAndSelect('order.positions', 'position')
-            .where('order.validFrom <= :date', { date: now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() })
+            .where('order.validFrom <= :date', { date: now.toISOString() })
             .getMany()
 
         orders = orders.filter(order => order.execDates.find(execDate => execDate >= before14Days))
