@@ -62,6 +62,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.BILLINGREPORTS_READ,
         AuthRoles.ORDERS_READ,
         AuthRoles.COMPENSATIONS_READ,
+        AuthRoles.COMPENSATIONS_CREATE
     ],
     // Leiter Stv.
     29: [
