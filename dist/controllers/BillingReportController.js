@@ -40,13 +40,13 @@ class BillingReportController {
     static getOpenOrders(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let now = new Date();
-            let before14Days = now;
+            let before14Days = new Date();
             before14Days.setDate(before14Days.getDate() - 14);
             let orders = yield typeorm_1.getManager()
                 .getRepository(Order_1.default)
                 .createQueryBuilder('order')
                 .leftJoinAndSelect('order.positions', 'position')
-                .where('order.validFrom <= :date', { date: now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() })
+                .where('order.validFrom <= :date', { date: now.toISOString() })
                 .getMany();
             orders = orders.filter(order => order.execDates.find(execDate => execDate >= before14Days));
             res.send(orders.filter(order => order.execDates.length >= (order.billingReports || []).length));
