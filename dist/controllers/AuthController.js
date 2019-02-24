@@ -48,6 +48,10 @@ class AuthController {
             })(req, res, next);
         });
     }
+    static logout(req, res) {
+        req.logout();
+        res.redirect('/');
+    }
 }
 exports.default = AuthController;
 //# sourceMappingURL=AuthController.js.map

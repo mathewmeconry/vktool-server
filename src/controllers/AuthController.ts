@@ -35,6 +35,6 @@ export default class AuthController {
 
     public static logout(req: Express.Request, res: Express.Response): void {
         req.logout()
-        res.redirect('/')
+        res.redirect('/login')
     }
 }
