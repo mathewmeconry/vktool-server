@@ -51,5 +51,7 @@ export default class Order extends BexioBase {
                 }
             }
         }
+
+        this.execDates = this.execDates.concat(moment((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate())
     }
 }
