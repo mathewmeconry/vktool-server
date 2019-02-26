@@ -13,20 +13,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
+const moment_1 = __importDefault(require("moment"));
 const BexioBase_1 = __importDefault(require("./BexioBase"));
 const Contact_1 = __importDefault(require("./Contact"));
 const Position_1 = __importDefault(require("./Position"));
 const BillingReport_1 = __importDefault(require("./BillingReport"));
 let Order = class Order extends BexioBase_1.default {
     findExecDates() {
-        let dateRegex = /(\d{2})\.(\d{2})\.(\d{4})/mg;
+        let dateRegex = /((\d{2})\.(\d{2})\.(\d{4}))/mg;
         this.execDates = [];
         if (this.positions) {
             for (let position of this.positions) {
                 if (position.text) {
-                    let match = dateRegex.exec(position.text);
-                    if (match) {
-                        this.execDates = this.execDates.concat(new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1])));
+                    let matches = position.text.match(dateRegex) || [];
+                    for (let match of matches) {
+                        this.execDates = this.execDates.concat(moment_1.default(match, 'DD.MM.YYYY').toDate());
                     }
                 }
             }

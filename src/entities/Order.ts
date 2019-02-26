@@ -1,4 +1,5 @@
 import { Entity, JoinColumn, ManyToOne, OneToMany, Column, AfterLoad } from "typeorm";
+import moment from 'moment'
 import BexioBase from "./BexioBase";
 import Contact from "./Contact";
 import Position from "./Position";
@@ -37,15 +38,15 @@ export default class Order extends BexioBase {
 
     @AfterLoad()
     public findExecDates(): void {
-        let dateRegex = /(\d{2})\.(\d{2})\.(\d{4})/mg
-        this.execDates = []
+        let dateRegex = /((\d{2})\.(\d{2})\.(\d{4}))/mg
 
+        this.execDates = []
         if (this.positions) {
             for (let position of this.positions) {
                 if (position.text) {
-                    let match = dateRegex.exec(position.text)
-                    if (match) {
-                        this.execDates = this.execDates.concat(new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1])))
+                    let matches = position.text.match(dateRegex) || []
+                    for (let match of matches) {
+                        this.execDates = this.execDates.concat(moment(match, 'DD.MM.YYYY').toDate())
                     }
                 }
             }
