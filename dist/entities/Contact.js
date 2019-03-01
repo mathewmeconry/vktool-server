@@ -65,7 +65,6 @@ let Contact = class Contact extends BexioBase_1.default {
             if (!override || Object.keys(override).length < 1)
                 override = new ContactExtension_1.default();
             override.contact = this;
-            override.contactId = this.id;
             for (let i in ContactExtension_1.ContactExtensionInterface) {
                 if (this.hasOwnProperty(i)) {
                     //@ts-ignore

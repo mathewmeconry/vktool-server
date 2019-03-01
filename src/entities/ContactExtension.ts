@@ -17,7 +17,7 @@ export default class ContactExtension extends Base {
     @JoinColumn()
     public contact: Contact
 
-    @Column('int')
+    @Column('int', { nullable: true })
     public contactId: number
 
     @ManyToOne(type => CollectionPoint, { nullable: true, eager: true })

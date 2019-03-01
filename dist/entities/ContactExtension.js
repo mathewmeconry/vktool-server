@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Contact_1.default)
 ], ContactExtension.prototype, "contact", void 0);
 __decorate([
-    typeorm_1.Column('int'),
+    typeorm_1.Column('int', { nullable: true }),
     __metadata("design:type", Number)
 ], ContactExtension.prototype, "contactId", void 0);
 __decorate([
