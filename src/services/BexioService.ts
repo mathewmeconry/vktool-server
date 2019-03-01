@@ -212,7 +212,7 @@ export namespace BexioService {
                                 validFrom: new Date(bexioOrder.is_valid_from),
                                 title: bexioOrder.title,
                                 contact: contact,
-                                total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : null,
+                                total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : 0,
                                 user: user,
                                 positions: [],
                             })
