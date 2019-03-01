@@ -32,6 +32,7 @@ let Order = class Order extends BexioBase_1.default {
                 }
             }
         }
+        this.execDates = this.execDates.concat(moment_1.default((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate());
     }
 };
 __decorate([

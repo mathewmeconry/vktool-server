@@ -50,7 +50,7 @@ class AuthController {
     }
     static logout(req, res) {
         req.logout();
-        res.redirect('/login');
+        res.redirect(config_1.default.get('clientHost') + '/login');
     }
 }
 exports.default = AuthController;
