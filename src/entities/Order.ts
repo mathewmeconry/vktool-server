@@ -39,6 +39,8 @@ export default class Order extends BexioBase {
     @AfterLoad()
     public findExecDates(): void {
         let dateRegex = /((\d{2})\.(\d{2})\.(\d{4}))/mg
+        let dateTextRegex = /(\d{2}\.( |)(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)( |)\d{4})/mgi
+        moment.locale('de')
 
         this.execDates = []
         if (this.positions) {
@@ -48,10 +50,16 @@ export default class Order extends BexioBase {
                     for (let match of matches) {
                         this.execDates = this.execDates.concat(moment(match, 'DD.MM.YYYY').toDate())
                     }
+
+                    matches = position.text.match(dateTextRegex) || []
+                    for (let match of matches) {
+                        this.execDates = this.execDates.concat(moment(match, 'DD MMMM YYYY').toDate())
+                    }
                 }
             }
         }
 
-        this.execDates = this.execDates.concat(moment((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate())
+        let titleMatch = moment((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate()
+        if (titleMatch instanceof Date && !isNaN(titleMatch.getTime())) this.execDates = this.execDates.concat(titleMatch)
     }
 }
