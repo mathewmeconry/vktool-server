@@ -61,5 +61,8 @@ export default class Order extends BexioBase {
 
         let titleMatch = moment((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate()
         if (titleMatch instanceof Date && !isNaN(titleMatch.getTime())) this.execDates = this.execDates.concat(titleMatch)
+
+        titleMatch = moment((this.title.match(dateTextRegex) || [])[0], 'DD MMMM YYYY').toDate()
+        if (titleMatch instanceof Date && !isNaN(titleMatch.getTime())) this.execDates = this.execDates.concat(titleMatch)
     }
 }

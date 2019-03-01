@@ -41,6 +41,9 @@ let Order = class Order extends BexioBase_1.default {
         let titleMatch = moment_1.default((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate();
         if (titleMatch instanceof Date && !isNaN(titleMatch.getTime()))
             this.execDates = this.execDates.concat(titleMatch);
+        titleMatch = moment_1.default((this.title.match(dateTextRegex) || [])[0], 'DD MMMM YYYY').toDate();
+        if (titleMatch instanceof Date && !isNaN(titleMatch.getTime()))
+            this.execDates = this.execDates.concat(titleMatch);
     }
 };
 __decorate([
