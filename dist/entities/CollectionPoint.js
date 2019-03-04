@@ -15,13 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Base_1 = __importDefault(require("./Base"));
 const typeorm_1 = require("typeorm");
 let CollectionPoint = class CollectionPoint extends Base_1.default {
-    constructor(address, postcode, city) {
+    constructor(name, address, postcode, city) {
         super();
+        this.name = name;
         this.address = address;
         this.postcode = postcode;
         this.city = city;
     }
 };
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], CollectionPoint.prototype, "name", void 0);
 __decorate([
     typeorm_1.Column('text'),
     __metadata("design:type", String)
@@ -36,7 +41,7 @@ __decorate([
 ], CollectionPoint.prototype, "city", void 0);
 CollectionPoint = __decorate([
     typeorm_1.Entity(),
-    __metadata("design:paramtypes", [String, String, String])
+    __metadata("design:paramtypes", [String, String, String, String])
 ], CollectionPoint);
 exports.default = CollectionPoint;
 //# sourceMappingURL=CollectionPoint.js.map
