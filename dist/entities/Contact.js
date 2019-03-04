@@ -45,6 +45,13 @@ let Contact = class Contact extends BexioBase_1.default {
         }
         return null;
     }
+    getFunctions() {
+        const functionGroups = [22, 9, 16];
+        if (this.contactGroups) {
+            return this.contactGroups.filter(group => functionGroups.indexOf(group.bexioId) > -1);
+        }
+        return [];
+    }
     loadOverride() {
         return __awaiter(this, void 0, void 0, function* () {
             let override = yield typeorm_1.getManager().getRepository(ContactExtension_1.default).findOne({ contactId: this.id });
@@ -56,6 +63,8 @@ let Contact = class Contact extends BexioBase_1.default {
                     }
                 }
             }
+            this.rank = (this.getRank() || { name: '' }).name;
+            this.functions = this.getFunctions().map(func => func.name);
             return true;
         });
     }

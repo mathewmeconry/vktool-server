@@ -68,6 +68,8 @@ export default class Contact extends BexioBase {
     @OneToOne(type => User, user => user.bexioContact, { nullable: true })
     public user?: User
 
+    public rank?: string
+    public functions?: Array<string>
     public collectionPoint?: CollectionPoint
     public entryDate?: Date
     public exitDate?: Date
@@ -86,6 +88,16 @@ export default class Contact extends BexioBase {
         return null
     }
 
+    public getFunctions(): Array<ContactGroup> {
+        const functionGroups = [22, 9, 16]
+
+        if (this.contactGroups) {
+            return this.contactGroups.filter(group => functionGroups.indexOf(group.bexioId) > -1)
+        }
+
+        return []
+    }
+
     @AfterLoad()
     private async loadOverride(): Promise<boolean> {
         let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })
@@ -97,6 +109,9 @@ export default class Contact extends BexioBase {
                 }
             }
         }
+
+        this.rank = (this.getRank() || { name: '' }).name
+        this.functions = this.getFunctions().map(func => func.name)
 
         return true
     }
