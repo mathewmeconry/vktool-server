@@ -2,7 +2,7 @@ import Contact from "../entities/Contact";
 import * as Express from 'express'
 import AuthService from "../services/AuthService";
 import { AuthRoles } from "../interfaces/AuthRoles";
-import { getManager } from "typeorm";
+import { getManager, IsNull } from "typeorm";
 import Compensation from "../entities/Compensation";
 import CustomCompensation from "../entities/CustomCompensation";
 import BillingReport from "../entities/BillingReport";
@@ -24,7 +24,7 @@ export default class CompensationController {
     }
 
     public static async getUser(req: Express.Request, res: Express.Response): Promise<void> {
-        res.send(await getManager().getRepository(Compensation).find({ member: req.params.member }))
+        res.send(await getManager().getRepository(Compensation).find({ memberId: parseInt(req.params.member), deletedAt: IsNull() }))
     }
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {

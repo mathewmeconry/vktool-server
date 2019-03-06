@@ -35,7 +35,7 @@ class CompensationController {
     }
     static getUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.send(yield typeorm_1.getManager().getRepository(Compensation_1.default).find({ member: req.params.member }));
+            res.send(yield typeorm_1.getManager().getRepository(Compensation_1.default).find({ memberId: parseInt(req.params.member), deletedAt: typeorm_1.IsNull() }));
         });
     }
     static add(req, res) {
