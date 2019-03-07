@@ -72,16 +72,14 @@ export default class CompensationController {
             if (billingReport) {
                 for (let entry of req.body.entries) {
                     let member = await contactRepo.findOneOrFail({ id: entry.id })
-                    let from = new Date("1970-01-01 " + entry.from)
-                    let until = new Date("1970-01-01 " + entry.until)
 
                     let compensationEntry = new OrderCompensation(
                         member,
                         req.user,
                         billingReport.date,
                         billingReport,
-                        from,
-                        until,
+                        new Date(entry.from),
+                        new Date(entry.until),
                         0,
                         0,
                         entry.charge,

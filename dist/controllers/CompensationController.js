@@ -77,9 +77,7 @@ class CompensationController {
                 if (billingReport) {
                     for (let entry of req.body.entries) {
                         let member = yield contactRepo.findOneOrFail({ id: entry.id });
-                        let from = new Date("1970-01-01 " + entry.from);
-                        let until = new Date("1970-01-01 " + entry.until);
-                        let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, from, until, 0, 0, entry.charge, (billingReport.state === 'approved') ? true : false);
+                        let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge, (billingReport.state === 'approved') ? true : false);
                         promises.push(typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry));
                     }
                     billingReport.updatedBy = req.user;

@@ -67,9 +67,7 @@ class BillingReportController {
             for (let i in req.body.compensationEntries) {
                 let entry = req.body.compensationEntries[i];
                 let member = yield contactRepo.findOneOrFail({ id: parseInt(i) });
-                let from = new Date("1970-01-01 " + entry.from);
-                let until = new Date("1970-01-01 " + entry.until);
-                let compensationEntry = new OrderCompensation_1.default(member, creator, billingReport.date, billingReport, from, until, 0, 0, entry.charge);
+                let compensationEntry = new OrderCompensation_1.default(member, creator, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge);
                 compensationEntry.updatedBy = req.user;
                 yield typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry);
                 // reset the billing report to convert it to json (circular reference)
