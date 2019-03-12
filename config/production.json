@@ -3,7 +3,6 @@
     "apiEndpoint": "https://app.vkazu.ch",
     "clientHost": "https://app.vkazu.ch",
     "db": {
-        "type": "mysql",
         "host": "vktool-db.mariadb.database.azure.com",
         "port": 3306,
         "username": "vktool@vktool-db",

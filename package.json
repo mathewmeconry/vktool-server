@@ -1,7 +1,8 @@
 {
   "scripts": {
     "prepare": "./node_modules/typescript/bin/tsc",
-    "dev": "npm run prepare && node --inspect dist/index.js"
+    "dev": "npm run prepare && node --inspect dist/index.js",
+    "typeorm": "node ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
     "@types/config": "^0.0.34",
