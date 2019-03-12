@@ -26,7 +26,21 @@ export namespace BexioService {
 
         app.get('/bexio/callback', async (req, res) => {
             await bexioAPI.generateAccessToken(req.query)
+            console.log('Got callback')
             res.send('Done')
+        })
+
+        app.get('/bexio/fakelogin', async (req, res) => {
+            await bexioAPI.fakeLogin('mathias.scherer@vkazu.ch', 'z98u!uGUd%%k')
+            res.send('Done')
+        })
+
+        app.get('/bexio/initialized', async (req, res) => {
+            if (!bexioAPI.isInitialized()) {
+                res.send('Nop')
+            } else {
+                res.send('Jep')
+            }
         })
 
         app.get('/bexio/sync/contactTypes', (req, res) => {
@@ -214,6 +228,7 @@ export namespace BexioService {
                                 contact: contact,
                                 total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : 0,
                                 user: user,
+                                deliveryAddress: bexioOrder.delivery_address,
                                 positions: [],
                             })
 
