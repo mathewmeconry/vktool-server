@@ -1,10 +1,9 @@
-import { PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, UpdateDateColumn } from "typeorm";
-import User from "./User";
+import { PrimaryGeneratedColumn, UpdateDateColumn, Column } from "typeorm";
 
 export default abstract class Base {
     @PrimaryGeneratedColumn()
     public id: number
 
-    @UpdateDateColumn()
+    @Column({ precision: 6, type: "timestamp", nullable: true })
     public updatedAt: Date
 }

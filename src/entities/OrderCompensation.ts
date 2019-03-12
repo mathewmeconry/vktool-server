@@ -19,10 +19,10 @@ export default class OrderCompensation extends Compensation {
     @Column('int', { default: 0 })
     public nightHours: number = 0
 
-    @Column('datetime')
+    @Column('datetime', { precision: 6 })
     public from: Date
 
-    @Column('datetime')
+    @Column('datetime', { precision: 6 })
     public until: Date
 
     @Column('boolean')
