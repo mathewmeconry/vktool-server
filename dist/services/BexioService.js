@@ -226,6 +226,7 @@ var BexioService;
                                     contact: contact,
                                     total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : 0,
                                     user: user,
+                                    deliveryAddress: bexioOrder.delivery_address,
                                     positions: [],
                                 });
                                 yield orderRepo.save(orderDB);

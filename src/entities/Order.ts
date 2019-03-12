@@ -19,6 +19,9 @@ export default class Order extends BexioBase {
     @Column('date', { nullable: true })
     public validFrom?: Date
 
+    @Column('text')
+    public deliveryAddress: string
+
     @ManyToOne(type => Contact, { eager: true })
     @JoinColumn()
     public contact: Contact
