@@ -44,7 +44,20 @@ var BexioService;
         }));
         app.get('/bexio/callback', (req, res) => __awaiter(this, void 0, void 0, function* () {
             yield bexioAPI.generateAccessToken(req.query);
+            console.log('Got callback');
             res.send('Done');
+        }));
+        app.get('/bexio/fakelogin', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield bexioAPI.fakeLogin('mathias.scherer@vkazu.ch', 'z98u!uGUd%%k');
+            res.send('Done');
+        }));
+        app.get('/bexio/initialized', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (!bexioAPI.isInitialized()) {
+                res.send('Nop');
+            }
+            else {
+                res.send('Jep');
+            }
         }));
         app.get('/bexio/sync/contactTypes', (req, res) => {
             BexioService.syncContactTypes().then(() => {
