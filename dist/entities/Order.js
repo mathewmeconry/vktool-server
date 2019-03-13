@@ -72,11 +72,6 @@ __decorate([
     __metadata("design:type", Contact_1.default)
 ], Order.prototype, "contact", void 0);
 __decorate([
-    typeorm_1.ManyToOne(type => Contact_1.default, { eager: true }),
-    typeorm_1.JoinColumn(),
-    __metadata("design:type", Contact_1.default)
-], Order.prototype, "user", void 0);
-__decorate([
     typeorm_1.OneToMany(type => Position_1.default, position => position.order, { eager: true }),
     typeorm_1.JoinColumn(),
     __metadata("design:type", Array)

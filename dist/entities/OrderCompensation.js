@@ -90,11 +90,11 @@ __decorate([
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "nightHours", void 0);
 __decorate([
-    typeorm_1.Column('datetime'),
+    typeorm_1.Column('datetime', { precision: 6 }),
     __metadata("design:type", Date)
 ], OrderCompensation.prototype, "from", void 0);
 __decorate([
-    typeorm_1.Column('datetime'),
+    typeorm_1.Column('datetime', { precision: 6 }),
     __metadata("design:type", Date)
 ], OrderCompensation.prototype, "until", void 0);
 __decorate([

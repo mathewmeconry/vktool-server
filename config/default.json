@@ -2,7 +2,5 @@
     "port": 8000,
     "apiEndpoint": "http://localhost:8000",
     "clientHost": "http://localhost:3000",
-    "db": {
-        
-    }
+    "db": {}
 }

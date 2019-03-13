@@ -17,7 +17,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Base.prototype, "id", void 0);
 __decorate([
-    typeorm_1.UpdateDateColumn(),
+    typeorm_1.UpdateDateColumn({ precision: 6, type: "timestamp", nullable: true }),
     __metadata("design:type", Date)
 ], Base.prototype, "updatedAt", void 0);
 exports.default = Base;
