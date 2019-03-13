@@ -1,7 +1,7 @@
 {
     "port": 8080,
-    "apiEndpoint": "https://app.vkazu.ch",
-    "clientHost": "https://app.vkazu.ch",
+    "apiEndpoint": "https://stage.vkazu.ch",
+    "clientHost": "https://stage.vkazu.ch",
     "db": {
         "host": "vktool-db.mariadb.database.azure.com",
         "port": 3306,
