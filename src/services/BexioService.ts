@@ -118,7 +118,6 @@ export namespace BexioService {
                     phoneMobile: contact.phone_mobile,
                     remarks: contact.remarks,
                     contactGroups: contactGroups,
-                    userId: contact.user_id,
                     ownerId: contact.owner_id
                 })
 
@@ -213,7 +212,6 @@ export namespace BexioService {
                 let bexioOrder = await bexioAPI.orders.show({}, order.id.toString())
                 if (bexioOrder) {
                     let contact = await contactRepo.findOne({ bexioId: bexioOrder.contact_id })
-                    let user = await contactRepo.findOne({ bexioId: bexioOrder.user_id })
 
                     savePromises.push(getManager().transaction(async transaction => {
                         return new Promise<void>(async (resolve, reject) => {
@@ -227,7 +225,6 @@ export namespace BexioService {
                                 title: bexioOrder.title,
                                 contact: contact,
                                 total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : 0,
-                                user: user,
                                 deliveryAddress: bexioOrder.delivery_address,
                                 positions: [],
                             })

@@ -26,10 +26,6 @@ export default class Order extends BexioBase {
     @JoinColumn()
     public contact: Contact
 
-    @ManyToOne(type => Contact, { eager: true })
-    @JoinColumn()
-    public user: Contact
-
     @OneToMany(type => Position, position => position.order, { eager: true })
     @JoinColumn()
     public positions: Array<Position>

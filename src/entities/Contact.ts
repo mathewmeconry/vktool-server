@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany, JoinColumn, ManyToOne, ManyToMany, OneToOne, JoinTable, AfterLoad, getManager, BeforeUpdate, BeforeInsert } from "typeorm";
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne, ManyToMany, OneToOne, JoinTable, AfterLoad, getManager, BeforeUpdate, BeforeInsert, AfterInsert, AfterUpdate } from "typeorm";
 import BexioBase from "./BexioBase";
 import Compensation from "./Compensation";
 import User from "./User";
@@ -57,9 +57,6 @@ export default class Contact extends BexioBase {
     public contactGroups: Array<ContactGroup>
 
     @Column('int')
-    public userId: number
-
-    @Column('int')
     public ownerId: number
 
     @OneToMany(type => Compensation, compensation => compensation.member, { nullable: true })
@@ -68,6 +65,7 @@ export default class Contact extends BexioBase {
     @OneToOne(type => User, user => user.bexioContact, { nullable: true })
     public user?: User
 
+    // custom fields stored in contactExtension entity
     public rank?: string
     public functions?: Array<string>
     public collectionPoint?: CollectionPoint
@@ -116,9 +114,8 @@ export default class Contact extends BexioBase {
         return true
     }
 
-
-    @BeforeInsert()
-    @BeforeUpdate()
+    @AfterInsert()
+    @AfterUpdate()
     public async storeOverride(): Promise<boolean> {
         let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })
         if (!override || Object.keys(override).length < 1) override = new ContactExtension()
@@ -129,12 +126,10 @@ export default class Contact extends BexioBase {
             if (this.hasOwnProperty(i)) {
                 //@ts-ignore
                 override[i] = this[i]
-                //@ts-ignore
-                delete this[i]
             }
         }
 
-        await getManager().getRepository(ContactExtension).save(override)
+        getManager().getRepository(ContactExtension).save(override)
         return true
     }
 }
