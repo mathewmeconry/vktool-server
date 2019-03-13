@@ -20,12 +20,11 @@ import FileStore from 'session-file-store'
 import CollectionPointsRoutes from './routes/CollectionPointsRoutes';
 
 async function main() {
-    createConnection(
-        Object.assign(
-            await getConnectionOptions(),
-            config.get('db') as ConnectionOptions
-        )
-    ).then(connection => {
+    let connectionOptions = await getConnectionOptions()
+
+    // @ts-ignore
+    if (process.env.NODE_ENV === 'production') connectionOptions['ssl'] = true
+    createConnection(connectionOptions).then(connection => {
         let app: Express.Application = express()
         const server = createServer(app)
 

@@ -39,7 +39,11 @@ const session_file_store_1 = __importDefault(require("session-file-store"));
 const CollectionPointsRoutes_1 = __importDefault(require("./routes/CollectionPointsRoutes"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        typeorm_1.createConnection(Object.assign(yield typeorm_1.getConnectionOptions(), config_1.default.get('db'))).then(connection => {
+        let connectionOptions = yield typeorm_1.getConnectionOptions();
+        // @ts-ignore
+        if (process.env.NODE_ENV === 'production')
+            connectionOptions['ssl'] = true;
+        typeorm_1.createConnection(connectionOptions).then(connection => {
             let app = express();
             const server = http_1.createServer(app);
             // CORS Headers
