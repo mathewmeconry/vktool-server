@@ -1,0 +1,13 @@
+{
+    "port": 8080,
+    "apiEndpoint": "https://app.vkazu.ch",
+    "clientHost": "https://app.vkazu.ch",
+    "db": {
+        "host": "vktool-db.mariadb.database.azure.com",
+        "port": 3306,
+        "username": "vktool@vktool-db",
+        "password": "lf9OvIViFp0Q",
+        "database": "vktool-stage",
+        "ssl": true
+    }   
+}
