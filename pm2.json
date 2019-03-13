@@ -1,0 +1,9 @@
+{
+    "apps": [
+      {
+        "name": "vktool",
+        "script": "npm",
+        "args": "start"
+      }
+    ]
+  }
