@@ -3,7 +3,8 @@
     "prepare": "./node_modules/typescript/bin/tsc",
     "migrate": "node ./node_modules/typeorm/cli.js migration:run",
     "dev": "npm run prepare && npm run migrate && node --inspect dist/index.js",
-    "prestart": "npm run migrate",
+    "prestart": "npm run prepare && npm run migrate",
+    "start": "node dist/index.js",
     "typeorm": "node ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
