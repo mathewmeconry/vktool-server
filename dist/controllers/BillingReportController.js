@@ -26,11 +26,10 @@ class BillingReportController {
                 .createQueryBuilder('billingReport')
                 .leftJoinAndSelect('billingReport.creator', 'user')
                 .leftJoinAndSelect('billingReport.order', 'order')
-                .leftJoinAndSelect('billingReport.compensations', 'compensations')
+                .leftJoinAndSelect('billingReport.compensations', 'compensations', 'compensations.deletedAt IS NULL')
                 .leftJoinAndSelect('compensations.member', 'member')
                 .leftJoinAndSelect('billingReport.els', 'els')
-                .leftJoinAndSelect('billingReport.drivers', 'drivers')
-                .where('compensations.deletedAt IS NULL');
+                .leftJoinAndSelect('billingReport.drivers', 'drivers');
             if (!AuthService_1.default.isAuthorized(req, AuthRoles_1.AuthRoles.BILLINGREPORTS_READ)) {
                 billingReportsQuery = billingReportsQuery.where('billingReport.creator = :id', { id: req.user.id });
             }
