@@ -5,7 +5,6 @@ import Order from '../entities/Order';
 import User from '../entities/User';
 import { getManager } from 'typeorm';
 import OrderCompensation from '../entities/OrderCompensation';
-import Compensation from '../entities/Compensation';
 import AuthService from '../services/AuthService';
 import { AuthRoles } from '../interfaces/AuthRoles';
 
@@ -16,11 +15,10 @@ export default class BillingReportController {
             .createQueryBuilder('billingReport')
             .leftJoinAndSelect('billingReport.creator', 'user')
             .leftJoinAndSelect('billingReport.order', 'order')
-            .leftJoinAndSelect('billingReport.compensations', 'compensations')
+            .leftJoinAndSelect('billingReport.compensations', 'compensations', 'compensations.deletedAt IS NULL')
             .leftJoinAndSelect('compensations.member', 'member')
             .leftJoinAndSelect('billingReport.els', 'els')
             .leftJoinAndSelect('billingReport.drivers', 'drivers')
-            .where('compensations.deletedAt IS NULL')
 
         if (!AuthService.isAuthorized(req, AuthRoles.BILLINGREPORTS_READ)) {
             billingReportsQuery = billingReportsQuery.where('billingReport.creator = :id', { id: req.user.id })
