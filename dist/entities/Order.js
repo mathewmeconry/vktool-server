@@ -63,15 +63,14 @@ __decorate([
     __metadata("design:type", Date)
 ], Order.prototype, "validFrom", void 0);
 __decorate([
-    typeorm_1.ManyToOne(type => Contact_1.default, { eager: true }),
-    typeorm_1.JoinColumn(),
-    __metadata("design:type", Contact_1.default)
-], Order.prototype, "contact", void 0);
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], Order.prototype, "deliveryAddress", void 0);
 __decorate([
     typeorm_1.ManyToOne(type => Contact_1.default, { eager: true }),
     typeorm_1.JoinColumn(),
     __metadata("design:type", Contact_1.default)
-], Order.prototype, "user", void 0);
+], Order.prototype, "contact", void 0);
 __decorate([
     typeorm_1.OneToMany(type => Position_1.default, position => position.order, { eager: true }),
     typeorm_1.JoinColumn(),

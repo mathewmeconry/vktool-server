@@ -26,7 +26,21 @@ export namespace BexioService {
 
         app.get('/bexio/callback', async (req, res) => {
             await bexioAPI.generateAccessToken(req.query)
+            console.log('Got callback')
             res.send('Done')
+        })
+
+        app.get('/bexio/fakelogin', async (req, res) => {
+            await bexioAPI.fakeLogin('mathias.scherer@vkazu.ch', 'z98u!uGUd%%k')
+            res.send('Done')
+        })
+
+        app.get('/bexio/initialized', async (req, res) => {
+            if (!bexioAPI.isInitialized()) {
+                res.send('Nop')
+            } else {
+                res.send('Jep')
+            }
         })
 
         app.get('/bexio/sync/contactTypes', (req, res) => {
@@ -104,7 +118,6 @@ export namespace BexioService {
                     phoneMobile: contact.phone_mobile,
                     remarks: contact.remarks,
                     contactGroups: contactGroups,
-                    userId: contact.user_id,
                     ownerId: contact.owner_id
                 })
 
@@ -199,7 +212,6 @@ export namespace BexioService {
                 let bexioOrder = await bexioAPI.orders.show({}, order.id.toString())
                 if (bexioOrder) {
                     let contact = await contactRepo.findOne({ bexioId: bexioOrder.contact_id })
-                    let user = await contactRepo.findOne({ bexioId: bexioOrder.user_id })
 
                     savePromises.push(getManager().transaction(async transaction => {
                         return new Promise<void>(async (resolve, reject) => {
@@ -213,7 +225,7 @@ export namespace BexioService {
                                 title: bexioOrder.title,
                                 contact: contact,
                                 total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : 0,
-                                user: user,
+                                deliveryAddress: bexioOrder.delivery_address,
                                 positions: [],
                             })
 

@@ -44,7 +44,20 @@ var BexioService;
         }));
         app.get('/bexio/callback', (req, res) => __awaiter(this, void 0, void 0, function* () {
             yield bexioAPI.generateAccessToken(req.query);
+            console.log('Got callback');
             res.send('Done');
+        }));
+        app.get('/bexio/fakelogin', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield bexioAPI.fakeLogin('mathias.scherer@vkazu.ch', 'z98u!uGUd%%k');
+            res.send('Done');
+        }));
+        app.get('/bexio/initialized', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (!bexioAPI.isInitialized()) {
+                res.send('Nop');
+            }
+            else {
+                res.send('Jep');
+            }
         }));
         app.get('/bexio/sync/contactTypes', (req, res) => {
             BexioService.syncContactTypes().then(() => {
@@ -118,7 +131,6 @@ var BexioService;
                         phoneMobile: contact.phone_mobile,
                         remarks: contact.remarks,
                         contactGroups: contactGroups,
-                        userId: contact.user_id,
                         ownerId: contact.owner_id
                     });
                     savePromises.push(contactRepo.save(contactDB));
@@ -211,7 +223,6 @@ var BexioService;
                     let bexioOrder = yield bexioAPI.orders.show({}, order.id.toString());
                     if (bexioOrder) {
                         let contact = yield contactRepo.findOne({ bexioId: bexioOrder.contact_id });
-                        let user = yield contactRepo.findOne({ bexioId: bexioOrder.user_id });
                         savePromises.push(typeorm_1.getManager().transaction((transaction) => __awaiter(this, void 0, void 0, function* () {
                             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                                 let orderRepo = transaction.getRepository(Order_1.default);
@@ -225,7 +236,7 @@ var BexioService;
                                     title: bexioOrder.title,
                                     contact: contact,
                                     total: (parseFloat(bexioOrder.total)) ? parseFloat(bexioOrder.total) : 0,
-                                    user: user,
+                                    deliveryAddress: bexioOrder.delivery_address,
                                     positions: [],
                                 });
                                 yield orderRepo.save(orderDB);

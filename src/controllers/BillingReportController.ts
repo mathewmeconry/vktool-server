@@ -36,6 +36,7 @@ export default class BillingReportController {
             .getRepository(Order)
             .createQueryBuilder('order')
             .leftJoinAndSelect('order.positions', 'position')
+            .leftJoinAndSelect('order.contact', 'contact')
             .where('order.validFrom <= :date', { date: now.toISOString() })
             .getMany()
 

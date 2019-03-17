@@ -78,11 +78,9 @@ let Contact = class Contact extends BexioBase_1.default {
                 if (this.hasOwnProperty(i)) {
                     //@ts-ignore
                     override[i] = this[i];
-                    //@ts-ignore
-                    delete this[i];
                 }
             }
-            yield typeorm_1.getManager().getRepository(ContactExtension_1.default).save(override);
+            typeorm_1.getManager().getRepository(ContactExtension_1.default).save(override);
             return true;
         });
     }
@@ -152,10 +150,6 @@ __decorate([
 __decorate([
     typeorm_1.Column('int'),
     __metadata("design:type", Number)
-], Contact.prototype, "userId", void 0);
-__decorate([
-    typeorm_1.Column('int'),
-    __metadata("design:type", Number)
 ], Contact.prototype, "ownerId", void 0);
 __decorate([
     typeorm_1.OneToMany(type => Compensation_1.default, compensation => compensation.member, { nullable: true }),
@@ -163,7 +157,9 @@ __decorate([
 ], Contact.prototype, "compensations", void 0);
 __decorate([
     typeorm_1.OneToOne(type => User_1.default, user => user.bexioContact, { nullable: true }),
-    __metadata("design:type", User_1.default)
+    __metadata("design:type", User_1.default
+    // custom fields stored in contactExtension entity
+    )
 ], Contact.prototype, "user", void 0);
 __decorate([
     typeorm_1.AfterLoad(),
@@ -172,8 +168,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], Contact.prototype, "loadOverride", null);
 __decorate([
-    typeorm_1.BeforeInsert(),
-    typeorm_1.BeforeUpdate(),
+    typeorm_1.AfterInsert(),
+    typeorm_1.AfterUpdate(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

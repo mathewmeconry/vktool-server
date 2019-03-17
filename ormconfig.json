@@ -1,0 +1,22 @@
+{
+    "type": "mariadb",
+    "host": "localhost",
+    "port": 32768,
+    "username": "root",
+    "password": "password",
+    "database": "vktool",
+    "entities": [
+        "dist/entities/*.js"
+    ],
+    "subscribers": [
+        "dist/subscribers/*.js"
+    ],
+    "migrations": [
+        "dist/migrations/*.js"
+    ],
+    "cli": {
+        "entitiesDir": "src/entities",
+        "migrationsDir": "src/migrations",
+        "subscribersDir": "src/subscribers"
+    }
+}

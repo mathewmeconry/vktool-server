@@ -19,13 +19,12 @@ export default class Order extends BexioBase {
     @Column('date', { nullable: true })
     public validFrom?: Date
 
-    @ManyToOne(type => Contact, { eager: true })
-    @JoinColumn()
-    public contact: Contact
+    @Column('text')
+    public deliveryAddress: string
 
     @ManyToOne(type => Contact, { eager: true })
     @JoinColumn()
-    public user: Contact
+    public contact: Contact
 
     @OneToMany(type => Position, position => position.order, { eager: true })
     @JoinColumn()
