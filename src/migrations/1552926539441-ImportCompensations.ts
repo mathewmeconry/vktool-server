@@ -8,7 +8,7 @@ export class ImportCompensations1552926539441 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         let manager = queryRunner.manager
-        let user = await manager.findOneOrFail(User, 2)
+        let user = await manager.findOneOrFail(User, { where: { 'displayName': 'Mathias Scherer' } })
 
         let data = fs.readFileSync('src/migrations/compensations_20190318.json')
         let parsed = JSON.parse(data.toString())
