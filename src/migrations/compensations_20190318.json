@@ -1,0 +1,1816 @@
+{
+    "type": "table",
+    "name": "sold",
+    "database": "vkazuch_bexio",
+    "data": [
+        {
+            "bemerkung": "Entsch\u00e4digung Material",
+            "datum": "2018-12-24",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "527"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digung Material",
+            "datum": "2018-12-24",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "640"
+        },
+        {
+            "bemerkung": "Weihnachtsfenster Schulhaus N\u00e4gelimoos Kloten",
+            "datum": "2018-12-17",
+            "von": "1970-01-01 17:15:00",
+            "bis": "1970-01-01 18:30:00",
+            "tarif": "10",
+            "total": "12.50",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Weihnachtsfenster Schulhaus N\u00e4gelimoos Kloten",
+            "datum": "2018-12-17",
+            "von": "1970-01-01 17:15:00",
+            "bis": "1970-01-01 18:30:00",
+            "tarif": "10",
+            "total": "12.50",
+            "bexioID": "834"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "465"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "888"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "517"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "835"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "1055"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "834"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 09:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "110.00",
+            "bexioID": "791"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "527"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "640"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "900"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "619"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "473"
+        },
+        {
+            "bemerkung": "Silversterlauf",
+            "datum": "2018-12-16",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 20:30:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Christbaumverkauf Winkel",
+            "datum": "2018-12-15",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "50.00",
+            "bexioID": "640"
+        },
+        {
+            "bemerkung": "Christbaumverkauf Winkel",
+            "datum": "2018-12-15",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "50.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Chlauslauf Neerach",
+            "datum": "2018-12-06",
+            "von": "1970-01-01 07:00:00",
+            "bis": "1970-01-01 08:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "334"
+        },
+        {
+            "bemerkung": "Chlauslauf Neerach",
+            "datum": "2018-12-06",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 09:45:00",
+            "tarif": "10",
+            "total": "17.50",
+            "bexioID": "334"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 07:30:00",
+            "bis": "1970-01-01 08:00:00",
+            "tarif": "15",
+            "total": "7.50",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 17:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 07:30:00",
+            "bis": "1970-01-01 08:00:00",
+            "tarif": "15",
+            "total": "7.50",
+            "bexioID": "619"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 17:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "619"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 07:30:00",
+            "bis": "1970-01-01 08:00:00",
+            "tarif": "15",
+            "total": "7.50",
+            "bexioID": "843"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 17:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "843"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 07:30:00",
+            "bis": "1970-01-01 08:00:00",
+            "tarif": "15",
+            "total": "7.50",
+            "bexioID": "706"
+        },
+        {
+            "bemerkung": "Landi F\u00fcrstenland AG",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 17:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "706"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 23:00:00",
+            "tarif": "15",
+            "total": "30.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 16:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "50.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 23:00:00",
+            "tarif": "15",
+            "total": "30.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 16:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "50.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 23:00:00",
+            "tarif": "15",
+            "total": "30.00",
+            "bexioID": "834"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 16:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "50.00",
+            "bexioID": "834"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 23:00:00",
+            "tarif": "15",
+            "total": "30.00",
+            "bexioID": "791"
+        },
+        {
+            "bemerkung": "Weihnachtslauf Gossau",
+            "datum": "2018-12-01",
+            "von": "1970-01-01 16:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "50.00",
+            "bexioID": "791"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Trogen",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 18:00:00",
+            "tarif": "10",
+            "total": "100.00",
+            "bexioID": "838"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Trogen",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 18:00:00",
+            "tarif": "10",
+            "total": "100.00",
+            "bexioID": "565"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Trogen",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 18:00:00",
+            "tarif": "10",
+            "total": "100.00",
+            "bexioID": "714"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Trogen",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 18:00:00",
+            "tarif": "10",
+            "total": "100.00",
+            "bexioID": "544"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Bremgarten",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 11:00:00",
+            "bis": "1970-01-01 20:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "1055"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Bremgarten",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 11:00:00",
+            "bis": "1970-01-01 20:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "1056"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Bremgarten",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 11:00:00",
+            "bis": "1970-01-01 20:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "473"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Bremgarten",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 11:00:00",
+            "bis": "1970-01-01 20:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "1045"
+        },
+        {
+            "bemerkung": "Weihnachtsmarkt Bremgarten",
+            "datum": "2018-12-08",
+            "von": "1970-01-01 11:00:00",
+            "bis": "1970-01-01 20:00:00",
+            "tarif": "10",
+            "total": "90.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "FC Kloten",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 13:00:00",
+            "bis": "1970-01-01 19:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "767"
+        },
+        {
+            "bemerkung": "FC Kloten",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 13:00:00",
+            "bis": "1970-01-01 19:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "714"
+        },
+        {
+            "bemerkung": "FC Kloten",
+            "datum": "2018-11-25",
+            "von": "1970-01-01 12:30:00",
+            "bis": "1970-01-01 14:30:00",
+            "tarif": "10",
+            "total": "20.00",
+            "bexioID": "623"
+        },
+        {
+            "bemerkung": "FC Kloten",
+            "datum": "2018-11-25",
+            "von": "1970-01-01 12:30:00",
+            "bis": "1970-01-01 14:30:00",
+            "tarif": "10",
+            "total": "20.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "541"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "541"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "890"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "890"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "848"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "848"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "881"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "881"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "838"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "838"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "835"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "835"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "901"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "901"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 22:00:00",
+            "tarif": "15",
+            "total": "15.00",
+            "bexioID": "851"
+        },
+        {
+            "bemerkung": "Stadtlauf Basel",
+            "datum": "2018-11-24",
+            "von": "1970-01-01 15:15:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "57.50",
+            "bexioID": "851"
+        },
+        {
+            "bemerkung": "R\u00e4beliechtli Umzug",
+            "datum": "2018-11-15",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 19:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "R\u00e4beliechtli Umzug",
+            "datum": "2018-11-15",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 19:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "640"
+        },
+        {
+            "bemerkung": "R\u00e4beliechtli Umzug",
+            "datum": "2018-11-15",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 19:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "622"
+        },
+        {
+            "bemerkung": "R\u00e4beliechtli Umzug",
+            "datum": "2018-11-15",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 19:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Technorama",
+            "datum": "2018-11-11",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Technorama",
+            "datum": "2018-11-11",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "542"
+        },
+        {
+            "bemerkung": "Schmohl AG Glattbrugg",
+            "datum": "2018-11-08",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "900"
+        },
+        {
+            "bemerkung": "Schmohl AG Glattbrugg",
+            "datum": "2018-11-08",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Schmohl AG Glattbrugg",
+            "datum": "2018-11-08",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "843"
+        },
+        {
+            "bemerkung": "KLS M\u00fcller",
+            "datum": "2018-11-01",
+            "von": "1970-01-01 17:00:00",
+            "bis": "1970-01-01 18:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "622"
+        },
+        {
+            "bemerkung": "KLS M\u00fcller",
+            "datum": "2018-11-01",
+            "von": "1970-01-01 17:00:00",
+            "bis": "1970-01-01 18:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "888"
+        },
+        {
+            "bemerkung": "KLS M\u00fcller",
+            "datum": "2018-11-01",
+            "von": "1970-01-01 17:00:00",
+            "bis": "1970-01-01 18:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "334"
+        },
+        {
+            "bemerkung": "KLS M\u00fcller",
+            "datum": "2018-11-01",
+            "von": "1970-01-01 17:00:00",
+            "bis": "1970-01-01 18:30:00",
+            "tarif": "10",
+            "total": "15.00",
+            "bexioID": "542"
+        },
+        {
+            "bemerkung": "Coop Rhymarkt",
+            "datum": "2018-12-22",
+            "von": "1970-01-01 13:00:00",
+            "bis": "1970-01-01 20:00:00",
+            "tarif": "10",
+            "total": "70.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Coop Rhymarkt",
+            "datum": "2018-12-22",
+            "von": "1970-01-01 13:00:00",
+            "bis": "1970-01-01 20:00:00",
+            "tarif": "10",
+            "total": "70.00",
+            "bexioID": "1069"
+        },
+        {
+            "bemerkung": "Frisch-Fisch",
+            "datum": "2018-12-24",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:00:00",
+            "tarif": "10",
+            "total": "70.00",
+            "bexioID": "622"
+        },
+        {
+            "bemerkung": "Frisch-Fisch",
+            "datum": "2018-12-24",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:00:00",
+            "tarif": "10",
+            "total": "70.00",
+            "bexioID": "1054"
+        },
+        {
+            "bemerkung": "Frisch-Fisch",
+            "datum": "2018-12-23",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:00:00",
+            "tarif": "10",
+            "total": "70.00",
+            "bexioID": "563"
+        },
+        {
+            "bemerkung": "Frisch-Fisch",
+            "datum": "2018-12-23",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:00:00",
+            "tarif": "10",
+            "total": "70.00",
+            "bexioID": "542"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Kadersitzung",
+            "datum": "2018-11-22",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "491"
+        },
+        {
+            "bemerkung": "K.M\u00fcller",
+            "datum": "2018-12-22",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:30:00",
+            "tarif": "10",
+            "total": "75.00",
+            "bexioID": "640"
+        },
+        {
+            "bemerkung": "K.M\u00fcller",
+            "datum": "2018-12-22",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:30:00",
+            "tarif": "10",
+            "total": "75.00",
+            "bexioID": "622"
+        },
+        {
+            "bemerkung": "K.M\u00fcller",
+            "datum": "2018-12-22",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 13:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "623"
+        },
+        {
+            "bemerkung": "K.M\u00fcller",
+            "datum": "2018-12-22",
+            "von": "1970-01-01 13:00:00",
+            "bis": "1970-01-01 16:30:00",
+            "tarif": "10",
+            "total": "35.00",
+            "bexioID": "517"
+        },
+        {
+            "bemerkung": "K.M\u00fcller",
+            "datum": "2018-12-29",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:30:00",
+            "tarif": "10",
+            "total": "75.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "K.M\u00fcller",
+            "datum": "2018-12-29",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:30:00",
+            "tarif": "10",
+            "total": "75.00",
+            "bexioID": "1043"
+        },
+        {
+            "bemerkung": "K.M\u00fcller",
+            "datum": "2018-12-29",
+            "von": "1970-01-01 09:00:00",
+            "bis": "1970-01-01 16:30:00",
+            "tarif": "10",
+            "total": "75.00",
+            "bexioID": "542"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1051"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1051"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1053"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1053"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1070"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1070"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1052"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1052"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1045"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1045"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1055"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1055"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1054"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1054"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1050"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1050"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1071"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1071"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1046"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1046"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1043"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1043"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1069"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1069"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1048"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1048"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-100.00",
+            "bexioID": "1056"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + T-Shirt",
+            "datum": "2018-12-01",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "1056"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Frisch Fisch, Dietlikon",
+            "datum": "2018-12-24",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-170.00",
+            "bexioID": "845"
+        },
+        {
+            "bemerkung": "Silvester, Urn\u00e4sch AR",
+            "datum": "2018-12-31",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "55.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Silvester, Urn\u00e4sch AR",
+            "datum": "2018-12-31",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "55.00",
+            "bexioID": "621"
+        },
+        {
+            "bemerkung": "Silvester, Urn\u00e4sch AR",
+            "datum": "2018-12-31",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "55.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-28",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-28",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "622"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-28",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "888"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-29",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "851"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-29",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "640"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-29",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-27",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-27",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "888"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2018-12-27",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "1046"
+        },
+        {
+            "bemerkung": "Unterlandstafette B\u00fclach",
+            "datum": "2019-01-27",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "35.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Unterlandstafette B\u00fclach",
+            "datum": "2019-01-27",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "35.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Unterlandstafette B\u00fclach",
+            "datum": "2019-01-27",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "35.00",
+            "bexioID": "623"
+        },
+        {
+            "bemerkung": "Unterlandstafette B\u00fclach",
+            "datum": "2019-01-27",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "35.00",
+            "bexioID": "900"
+        },
+        {
+            "bemerkung": "Unterlandstafette B\u00fclach",
+            "datum": "2019-01-27",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "35.00",
+            "bexioID": "1056"
+        },
+        {
+            "bemerkung": "Unterlandstafette B\u00fclach",
+            "datum": "2019-01-27",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 13:30:00",
+            "tarif": "10",
+            "total": "35.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-02",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-02",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "1056"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-02",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "1048"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-02",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 12:00:00",
+            "tarif": "10",
+            "total": "40.00",
+            "bexioID": "900"
+        },
+        {
+            "bemerkung": "Ina Kess",
+            "datum": "2019-02-09",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 16:00:00",
+            "tarif": "10",
+            "total": "45.00",
+            "bexioID": "706"
+        },
+        {
+            "bemerkung": "Ina Kess",
+            "datum": "2019-02-09",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 16:00:00",
+            "tarif": "10",
+            "total": "45.00",
+            "bexioID": "848"
+        },
+        {
+            "bemerkung": "Ina Kess",
+            "datum": "2019-02-09",
+            "von": "1970-01-01 11:30:00",
+            "bis": "1970-01-01 16:00:00",
+            "tarif": "10",
+            "total": "45.00",
+            "bexioID": "834"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerm\u00fctze + Regenhut",
+            "datum": "2018-12-30",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-115.00",
+            "bexioID": "640"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ T-Shirt",
+            "datum": "2018-11-26",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-40.00",
+            "bexioID": "1069"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digunsabzug \/ Sommerm\u00fctze + Winterm\u00fctze + Sommerhandschuhe",
+            "datum": "2018-11-19",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-57.00",
+            "bexioID": "840"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ T-Shirt",
+            "datum": "2018-12-08",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-40.00",
+            "bexioID": "791"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2019-02-13",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "841"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2019-02-13",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "886"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2019-02-13",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "844"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2019-02-13",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "852"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2019-02-13",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "836"
+        },
+        {
+            "bemerkung": "Kaution",
+            "datum": "2019-02-13",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "100.00",
+            "bexioID": "881"
+        },
+        {
+            "bemerkung": "Gutschrift Kaution \/ Winterm\u00fctze fehlt",
+            "datum": "2019-02-13",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "87.00",
+            "bexioID": "890"
+        },
+        {
+            "bemerkung": "Aldi Neuer\u00f6ffnung",
+            "datum": "2019-02-14",
+            "von": "1970-01-01 07:30:00",
+            "bis": "1970-01-01 19:00:00",
+            "tarif": "10",
+            "total": "115.00",
+            "bexioID": "618"
+        },
+        {
+            "bemerkung": "Aldi Neuer\u00f6ffnung",
+            "datum": "2019-02-14",
+            "von": "1970-01-01 07:30:00",
+            "bis": "1970-01-01 19:00:00",
+            "tarif": "10",
+            "total": "115.00",
+            "bexioID": "1048"
+        },
+        {
+            "bemerkung": "Aldi Neuer\u00f6ffnung",
+            "datum": "2019-02-14",
+            "von": "1970-01-01 07:30:00",
+            "bis": "1970-01-01 19:00:00",
+            "tarif": "10",
+            "total": "115.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-17",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "507"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-17",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "563"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-17",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "542"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-17",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "1051"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-17",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "1050"
+        },
+        {
+            "bemerkung": "Amriville, Amriswil",
+            "datum": "2019-02-23",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 15:30:00",
+            "tarif": "10",
+            "total": "55.00",
+            "bexioID": "848"
+        },
+        {
+            "bemerkung": "Amriville, Amriswil",
+            "datum": "2019-02-23",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 15:30:00",
+            "tarif": "10",
+            "total": "55.00",
+            "bexioID": "834"
+        },
+        {
+            "bemerkung": "Amriville, Amriswil",
+            "datum": "2019-02-23",
+            "von": "1970-01-01 10:00:00",
+            "bis": "1970-01-01 15:30:00",
+            "tarif": "10",
+            "total": "55.00",
+            "bexioID": "619"
+        },
+        {
+            "bemerkung": "Amriville, Amriswil Verpflegung",
+            "datum": "2019-02-23",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "15.00",
+            "bexioID": "848"
+        },
+        {
+            "bemerkung": "Amriville, Amriswil Verpflegung",
+            "datum": "2019-02-23",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "15.00",
+            "bexioID": "834"
+        },
+        {
+            "bemerkung": "Amriville, Amriswil Verpflegung",
+            "datum": "2019-02-23",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "15.00",
+            "bexioID": "619"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-23",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "563"
+        },
+        {
+            "bemerkung": "Kabinenbahn, Wildhaus",
+            "datum": "2019-02-23",
+            "von": "1970-01-01 08:00:00",
+            "bis": "1970-01-01 14:00:00",
+            "tarif": "10",
+            "total": "60.00",
+            "bexioID": "892"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 00:00:00",
+            "tarif": "15",
+            "total": "45.00",
+            "bexioID": "623"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "623"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 00:00:00",
+            "tarif": "15",
+            "total": "45.00",
+            "bexioID": "527"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "527"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 00:00:00",
+            "tarif": "15",
+            "total": "45.00",
+            "bexioID": "544"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "544"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 00:00:00",
+            "tarif": "15",
+            "total": "45.00",
+            "bexioID": "526"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "526"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 21:00:00",
+            "bis": "1970-01-01 00:00:00",
+            "tarif": "15",
+            "total": "45.00",
+            "bexioID": "473"
+        },
+        {
+            "bemerkung": "Fasnacht, Sins",
+            "datum": "2019-03-02",
+            "von": "1970-01-01 18:00:00",
+            "bis": "1970-01-01 21:00:00",
+            "tarif": "10",
+            "total": "30.00",
+            "bexioID": "473"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Skiweekend 2019",
+            "datum": "2019-02-16",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-170.00",
+            "bexioID": "308"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Skiweekend 2019",
+            "datum": "2019-02-16",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-170.00",
+            "bexioID": "315"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Skiweekend 2019",
+            "datum": "2019-02-16",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-170.00",
+            "bexioID": "517"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Skiweekend 2019",
+            "datum": "2019-02-16",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-170.00",
+            "bexioID": "843"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Skiweekend 2019",
+            "datum": "2019-02-16",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-170.00",
+            "bexioID": "473"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Skiweekend 2019",
+            "datum": "2019-02-16",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-170.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Winterm\u00fctze + neue LED Lenser Lampe",
+            "datum": "2019-03-09",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-78.00",
+            "bexioID": "791"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ T-Shirt",
+            "datum": "2019-03-09",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-40.00",
+            "bexioID": "1046"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ T-Shirt",
+            "datum": "2019-03-04",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-40.00",
+            "bexioID": "1049"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Regenhut",
+            "datum": "2019-03-04",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-65.00",
+            "bexioID": "623"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ T-Shirt",
+            "datum": "2019-02-25",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-160.00",
+            "bexioID": "1051"
+        },
+        {
+            "bemerkung": "Entsch\u00e4digungsabzug \/ Sommerhandschuhe",
+            "datum": "2019-02-18",
+            "von": null,
+            "bis": null,
+            "tarif": null,
+            "total": "-4.00",
+            "bexioID": "848"
+        }
+    ]
+}
