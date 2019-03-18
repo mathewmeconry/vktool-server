@@ -27,6 +27,8 @@ let Order = class Order extends BexioBase_1.default {
         if (this.positions) {
             for (let position of this.positions) {
                 if (position.text) {
+                    // little hack for märz which is the only month with a umlaut
+                    position.text = position.text.replace('&auml;', 'ä');
                     let matches = position.text.match(dateRegex) || [];
                     for (let match of matches) {
                         this.execDates = this.execDates.concat(moment_1.default(match, 'DD.MM.YYYY').toDate());
@@ -41,7 +43,7 @@ let Order = class Order extends BexioBase_1.default {
         let titleMatch = moment_1.default((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate();
         if (titleMatch instanceof Date && !isNaN(titleMatch.getTime()))
             this.execDates = this.execDates.concat(titleMatch);
-        titleMatch = moment_1.default((this.title.match(dateTextRegex) || [])[0], 'DD MMMM YYYY').toDate();
+        titleMatch = moment_1.default((this.title.replace('&auml;', 'ä').match(dateTextRegex) || [])[0], 'DD MMMM YYYY').toDate();
         if (titleMatch instanceof Date && !isNaN(titleMatch.getTime()))
             this.execDates = this.execDates.concat(titleMatch);
     }
