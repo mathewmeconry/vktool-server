@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, getManager, createConnection, getConnectionOptions, getConnection } from "typeorm";
+import { MigrationInterface, QueryRunner, getConnection } from "typeorm";
 import CustomCompensation from "../entities/CustomCompensation";
 import fs from 'fs'
 import Contact from "../entities/Contact";
@@ -7,8 +7,7 @@ import User from "../entities/User";
 export class ImportCompensations1552926539441 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
-        await createConnection(await getConnectionOptions())
-        let manager = getManager()
+        let manager = queryRunner.manager
         let user = await manager.findOneOrFail(User, 2)
 
         let data = fs.readFileSync('src/migrations/compensations_20190318.json')
@@ -31,8 +30,7 @@ export class ImportCompensations1552926539441 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await createConnection(await getConnectionOptions())
-        let manager = getManager()
+        let manager = queryRunner.manager
 
         let data = fs.readFileSync('src/migrations/compensations_20190318.json')
         let parsed = JSON.parse(data.toString())
@@ -46,7 +44,7 @@ export class ImportCompensations1552926539441 implements MigrationInterface {
                 .where('memberId = :contact', { contact: contact.id })
                 .andWhere('amount = :amount', { amount: parseFloat(record.total) })
                 .andWhere('date = :date', { date: record.datum })
-                .andWhere('description = :desc', {desc: this.genDescription(record.bemerkung, record.von, record.bis)})
+                .andWhere('description = :desc', { desc: this.genDescription(record.bemerkung, record.von, record.bis) })
                 .execute()
         }
 
