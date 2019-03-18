@@ -22,15 +22,47 @@ const OrderCompensation_1 = __importDefault(require("../entities/OrderCompensati
 class CompensationController {
     static getAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.send(yield typeorm_1.getManager()
-                .getRepository(Compensation_1.default)
-                .createQueryBuilder('compensation')
-                .leftJoinAndSelect('compensation.member', 'member')
-                .leftJoinAndSelect('compensation.creator', 'creator')
-                .leftJoinAndSelect('compensation.billingReport', 'billingReport')
-                .leftJoinAndSelect('billingReport.order', 'order')
-                .where('deletedAt IS NULL')
-                .getMany());
+            Promise.all([
+                typeorm_1.getManager()
+                    .getRepository(OrderCompensation_1.default)
+                    .createQueryBuilder('compensation')
+                    .select([
+                    'compensation.id',
+                    'compensation.amount',
+                    'compensation.date',
+                    'compensation.approved',
+                    'compensation.approvedBy',
+                    'compensation.paied',
+                    'compensation.valutaDate',
+                    'compensation.from',
+                    'compensation.until'
+                ])
+                    .leftJoinAndSelect('compensation.member', 'member')
+                    .leftJoinAndSelect('compensation.creator', 'creator')
+                    .leftJoinAndSelect('compensation.billingReport', 'billingReport')
+                    .leftJoinAndSelect('billingReport.order', 'order')
+                    .where('deletedAt IS NULL')
+                    .getMany(),
+                typeorm_1.getManager()
+                    .getRepository(CustomCompensation_1.default)
+                    .createQueryBuilder('compensation')
+                    .select([
+                    'compensation.id',
+                    'compensation.description',
+                    'compensation.amount',
+                    'compensation.date',
+                    'compensation.approved',
+                    'compensation.approvedBy',
+                    'compensation.paied',
+                    'compensation.valutaDate'
+                ])
+                    .leftJoinAndSelect('compensation.member', 'member')
+                    .leftJoinAndSelect('compensation.creator', 'creator')
+                    .where('deletedAt IS NULL')
+                    .getMany()
+            ]).then(data => {
+                res.send(data[0].concat(data[1]));
+            });
         });
     }
     static getUser(req, res) {

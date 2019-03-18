@@ -61,8 +61,12 @@ class ImportCompensations1552926539441 {
         });
     }
     genDescription(bemerkung, von, bis) {
-        if (von && bis)
-            return `${bemerkung} (${(new Date(von)).toTimeString()} - ${(new Date(bis)).toTimeString()})`;
+        if (von && bis) {
+            let v = new Date(von);
+            let b = new Date(bis);
+            //@ts-ignore
+            return `${bemerkung} (${v.getHours().toString().padStart(2, '0')}:${v.getMinutes().toString().padStart(2, '0')} - ${b.getHours().toString().padStart(2, '0')}:${b.getMinutes().toString().padStart(2, '0')})`;
+        }
         return bemerkung;
     }
 }
