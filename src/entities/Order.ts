@@ -45,6 +45,8 @@ export default class Order extends BexioBase {
         if (this.positions) {
             for (let position of this.positions) {
                 if (position.text) {
+                    // little hack for märz which is the only month with a umlaut
+                    position.text = position.text.replace('&auml;', 'ä')
                     let matches = position.text.match(dateRegex) || []
                     for (let match of matches) {
                         this.execDates = this.execDates.concat(moment(match, 'DD.MM.YYYY').toDate())
