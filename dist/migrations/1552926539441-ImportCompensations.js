@@ -19,8 +19,7 @@ const User_1 = __importDefault(require("../entities/User"));
 class ImportCompensations1552926539441 {
     up(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield typeorm_1.createConnection(yield typeorm_1.getConnectionOptions());
-            let manager = typeorm_1.getManager();
+            let manager = queryRunner.manager;
             let user = yield manager.findOneOrFail(User_1.default, 2);
             let data = fs_1.default.readFileSync('src/migrations/compensations_20190318.json');
             let parsed = JSON.parse(data.toString());
@@ -43,8 +42,7 @@ class ImportCompensations1552926539441 {
     }
     down(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield typeorm_1.createConnection(yield typeorm_1.getConnectionOptions());
-            let manager = typeorm_1.getManager();
+            let manager = queryRunner.manager;
             let data = fs_1.default.readFileSync('src/migrations/compensations_20190318.json');
             let parsed = JSON.parse(data.toString());
             for (let record of parsed.data) {

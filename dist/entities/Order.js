@@ -21,14 +21,14 @@ const BillingReport_1 = __importDefault(require("./BillingReport"));
 let Order = class Order extends BexioBase_1.default {
     findExecDates() {
         let dateRegex = /((\d{2})\.(\d{2})\.(\d{4}))/mg;
-        let dateTextRegex = /(\d{2}\.( |)(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)( |)\d{4})/mgi;
+        let dateTextRegex = /(\d{2}(\.|)( |)(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)( |)\d{4})/mgi;
         moment_1.default.locale('de');
         this.execDates = [];
         if (this.positions) {
             for (let position of this.positions) {
                 if (position.text) {
-                    // little hack for märz which is the only month with a umlaut
-                    position.text = position.text.replace('&auml;', 'ä');
+                    // little hack for märz which is the only month with a umlaut and fixe some other typos of my collegues
+                    position.text = position.text.replace(/&auml;/g, 'ä').replace(/&nbsp;/g, ' ');
                     let matches = position.text.match(dateRegex) || [];
                     for (let match of matches) {
                         this.execDates = this.execDates.concat(moment_1.default(match, 'DD.MM.YYYY').toDate());
@@ -43,7 +43,7 @@ let Order = class Order extends BexioBase_1.default {
         let titleMatch = moment_1.default((this.title.match(dateRegex) || [])[0], 'DD.MM.YYYY').toDate();
         if (titleMatch instanceof Date && !isNaN(titleMatch.getTime()))
             this.execDates = this.execDates.concat(titleMatch);
-        titleMatch = moment_1.default((this.title.replace('&auml;', 'ä').match(dateTextRegex) || [])[0], 'DD MMMM YYYY').toDate();
+        titleMatch = moment_1.default((this.title.replace(/&auml;/g, 'ä').replace(/&nbsp;/g, ' ').match(dateTextRegex) || [])[0], 'DD MMMM YYYY').toDate();
         if (titleMatch instanceof Date && !isNaN(titleMatch.getTime()))
             this.execDates = this.execDates.concat(titleMatch);
     }
