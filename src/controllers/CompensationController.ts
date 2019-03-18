@@ -10,17 +10,47 @@ import OrderCompensation from "../entities/OrderCompensation";
 
 export default class CompensationController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
-        res.send(
-            await getManager()
-                .getRepository(Compensation)
+        Promise.all([
+            getManager()
+                .getRepository(OrderCompensation)
                 .createQueryBuilder('compensation')
+                .select([
+                    'compensation.id',
+                    'compensation.amount',
+                    'compensation.date',
+                    'compensation.approved',
+                    'compensation.approvedBy',
+                    'compensation.paied',
+                    'compensation.valutaDate',
+                    'compensation.from',
+                    'compensation.until'
+                ])
                 .leftJoinAndSelect('compensation.member', 'member')
                 .leftJoinAndSelect('compensation.creator', 'creator')
                 .leftJoinAndSelect('compensation.billingReport', 'billingReport')
                 .leftJoinAndSelect('billingReport.order', 'order')
                 .where('deletedAt IS NULL')
+                .getMany(),
+            getManager()
+                .getRepository(CustomCompensation)
+                .createQueryBuilder('compensation')
+                .select([
+                    'compensation.id',
+                    'compensation.description',
+                    'compensation.amount',
+                    'compensation.date',
+                    'compensation.approved',
+                    'compensation.approvedBy',
+                    'compensation.paied',
+                    'compensation.valutaDate'
+                ])
+                .leftJoinAndSelect('compensation.member', 'member')
+                .leftJoinAndSelect('compensation.creator', 'creator')
+                .where('deletedAt IS NULL')
                 .getMany()
-        )
+        ]).then(data => {
+            res.send((data[0] as any).concat(data[1]))
+        })
     }
 
     public static async getUser(req: Express.Request, res: Express.Response): Promise<void> {
