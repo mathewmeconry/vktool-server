@@ -67,7 +67,49 @@ class CompensationController {
     }
     static getUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.send(yield typeorm_1.getManager().getRepository(Compensation_1.default).find({ memberId: parseInt(req.params.member), deletedAt: typeorm_1.IsNull() }));
+            Promise.all([
+                typeorm_1.getManager()
+                    .getRepository(OrderCompensation_1.default)
+                    .createQueryBuilder('compensation')
+                    .select([
+                    'compensation.id',
+                    'compensation.amount',
+                    'compensation.date',
+                    'compensation.approved',
+                    'compensation.approvedBy',
+                    'compensation.paied',
+                    'compensation.valutaDate',
+                    'compensation.from',
+                    'compensation.until'
+                ])
+                    .leftJoinAndSelect('compensation.member', 'member')
+                    .leftJoinAndSelect('compensation.creator', 'creator')
+                    .leftJoinAndSelect('compensation.billingReport', 'billingReport')
+                    .leftJoinAndSelect('billingReport.order', 'order')
+                    .where('deletedAt IS NULL')
+                    .andWhere('memberId = :id', { id: parseInt(req.params.member) })
+                    .getMany(),
+                typeorm_1.getManager()
+                    .getRepository(CustomCompensation_1.default)
+                    .createQueryBuilder('compensation')
+                    .select([
+                    'compensation.id',
+                    'compensation.description',
+                    'compensation.amount',
+                    'compensation.date',
+                    'compensation.approved',
+                    'compensation.approvedBy',
+                    'compensation.paied',
+                    'compensation.valutaDate'
+                ])
+                    .leftJoinAndSelect('compensation.member', 'member')
+                    .leftJoinAndSelect('compensation.creator', 'creator')
+                    .where('deletedAt IS NULL')
+                    .andWhere('memberId = :id', { id: parseInt(req.params.member) })
+                    .getMany()
+            ]).then(data => {
+                res.send(data[0].concat(data[1]));
+            });
         });
     }
     static add(req, res) {
