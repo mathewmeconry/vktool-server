@@ -9,7 +9,8 @@ import config from 'config'
 import { getManager, In } from 'typeorm';
 
 export namespace BexioService {
-    let bexioAPI = new Bexio('6317446720.apps.bexio.com', 'Q5+mns0qH/vgB8/Q9phFV9cjpCU=', config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW])
+    let bexioAPI = new Bexio(config.get('bexio.clientId'), config.get('bexio.clientSecret'), config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW])
+    let fakeloginInProgress = false
 
     export function isInitialized(): boolean {
         return bexioAPI.isInitialized()
@@ -25,14 +26,18 @@ export namespace BexioService {
         })
 
         app.get('/bexio/callback', async (req, res) => {
+            if (fakeloginInProgress) return
+
             await bexioAPI.generateAccessToken(req.query)
             console.log('Got callback')
             res.send('Done')
         })
 
         app.get('/bexio/fakelogin', async (req, res) => {
-            await bexioAPI.fakeLogin('mathias.scherer@vkazu.ch', 'z98u!uGUd%%k')
+            fakeloginInProgress = true
+            await bexioAPI.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             res.send('Done')
+            fakeloginInProgress = false
         })
 
         app.get('/bexio/initialized', async (req, res) => {

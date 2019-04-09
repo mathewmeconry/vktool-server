@@ -1,5 +1,11 @@
 {
     "port": 8000,
     "apiEndpoint": "http://localhost:8000",
-    "clientHost": "http://localhost:3000"
+    "clientHost": "http://localhost:3000",
+    "bexio": {
+        "clientId": "6317446720.apps.bexio.com",
+        "clientSecret": "Q5+mns0qH/vgB8/Q9phFV9cjpCU=",
+        "username": "mathias.scherer@vkazu.ch",
+        "password": "z98u!uGUd%%k"
+    }
 }
