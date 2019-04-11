@@ -142,16 +142,12 @@ var BexioService;
             }
         }));
         app.get('/bexio/sync/all', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (req.header('X-Azure'))
+                res.send('started');
             if (!bexioAPI.isInitialized() && req.header('X-Azure'))
                 yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
-            try {
-                yield Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
-                yield Promise.all([BexioService.syncContacts(), BexioService.syncOrders()]);
-                res.send('done');
-            }
-            catch (err) {
-                res.send('Errored!');
-            }
+            yield Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
+            yield Promise.all([BexioService.syncContacts(), BexioService.syncOrders()]);
         }));
         app.get('/bexio/sync/contactTypes', (req, res) => __awaiter(this, void 0, void 0, function* () {
             if (!bexioAPI.isInitialized() && req.header('X-Azure'))
