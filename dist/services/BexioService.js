@@ -28,11 +28,91 @@ const config_1 = __importDefault(require("config"));
 const typeorm_1 = require("typeorm");
 var BexioService;
 (function (BexioService) {
-    let bexioAPI = new bexio_1.default('6317446720.apps.bexio.com', 'Q5+mns0qH/vgB8/Q9phFV9cjpCU=', config_1.default.get('apiEndpoint') + '/bexio/callback', [bexio_1.Scopes.CONTACT_SHOW, bexio_1.Scopes.KB_ORDER_SHOW]);
+    let bexioAPI = new bexio_1.default(config_1.default.get('bexio.clientId'), config_1.default.get('bexio.clientSecret'), config_1.default.get('apiEndpoint') + '/bexio/callback', [bexio_1.Scopes.CONTACT_SHOW, bexio_1.Scopes.KB_ORDER_SHOW]);
+    let fakeloginInProgress = false;
     function isInitialized() {
         return bexioAPI.isInitialized();
     }
     BexioService.isInitialized = isInitialized;
+    function addCommandline(yargs) {
+        yargs
+            .command({
+            command: 'bexio',
+            describe: 'Functions of the bexio service',
+            builder: (yargs) => {
+                return yargs
+                    .command({
+                    command: 'sync [force]',
+                    describe: 'Sync command',
+                    builder: (yargs) => {
+                        return yargs
+                            .middleware(() => {
+                            if (fakeloginInProgress)
+                                return;
+                            if (BexioService.isInitialized())
+                                return;
+                            console.log(`logging in with user: ${config_1.default.get('bexio.username')}`);
+                            return BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
+                        })
+                            .command({
+                            command: 'contacts',
+                            builder: {
+                                force: {
+                                    alias: 'f'
+                                }
+                            },
+                            handler: () => __awaiter(this, void 0, void 0, function* () {
+                                yield BexioService.syncContacts();
+                                console.log('sync completed');
+                                process.exit(0);
+                            })
+                        })
+                            .command({
+                            command: 'contactGroups',
+                            builder: {
+                                force: {
+                                    alias: 'f'
+                                }
+                            },
+                            handler: () => {
+                                console.log('done');
+                                process.exit(0);
+                            }
+                        })
+                            .command({
+                            command: 'contactTypes',
+                            builder: {
+                                force: {
+                                    alias: 'f'
+                                }
+                            },
+                            handler: () => __awaiter(this, void 0, void 0, function* () {
+                                yield BexioService.syncContactTypes();
+                                console.log('sync completed');
+                                process.exit(0);
+                            })
+                        })
+                            .command({
+                            command: 'orders',
+                            builder: {
+                                force: {
+                                    alias: 'f'
+                                }
+                            },
+                            handler: () => __awaiter(this, void 0, void 0, function* () {
+                                yield BexioService.syncOrders();
+                                console.log('sync completed');
+                                process.exit(0);
+                            })
+                        });
+                    },
+                    handler: () => { }
+                });
+            },
+            handler: () => { }
+        });
+    }
+    BexioService.addCommandline = addCommandline;
     function addExpressHandlers(app) {
         app.get('/bexio/init', (req, res) => __awaiter(this, void 0, void 0, function* () {
             if (!bexioAPI.isInitialized()) {
@@ -43,13 +123,15 @@ var BexioService;
             }
         }));
         app.get('/bexio/callback', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (fakeloginInProgress)
+                return;
             yield bexioAPI.generateAccessToken(req.query);
             console.log('Got callback');
             res.send('Done');
         }));
         app.get('/bexio/fakelogin', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            yield bexioAPI.fakeLogin('mathias.scherer@vkazu.ch', 'z98u!uGUd%%k');
-            res.send('Done');
+            yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
+            res.send('done');
         }));
         app.get('/bexio/initialized', (req, res) => __awaiter(this, void 0, void 0, function* () {
             if (!bexioAPI.isInitialized()) {
@@ -93,6 +175,17 @@ var BexioService;
         return bexioAPI.getAuthUrl();
     }
     BexioService.getAuthUrl = getAuthUrl;
+    function fakeLogin(username, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (fakeloginInProgress)
+                return;
+            fakeloginInProgress = true;
+            yield bexioAPI.fakeLogin(username, password);
+            fakeloginInProgress = false;
+            return;
+        });
+    }
+    BexioService.fakeLogin = fakeLogin;
     /**
      * syncs active contacts as contacts
      *
