@@ -31,6 +31,7 @@ export namespace BexioService {
                                 return yargs
                                     .middleware(() => {
                                         if (fakeloginInProgress) return
+                                        if (BexioService.isInitialized()) return
 
                                         console.log(`logging in with user: ${config.get('bexio.username')}`)
                                         return BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
@@ -45,7 +46,7 @@ export namespace BexioService {
                                         handler: async () => {
                                             await BexioService.syncContacts()
                                             console.log('sync completed')
-                                            return 0
+                                            process.exit(0)
                                         }
                                     })
                                     .command({
@@ -56,7 +57,8 @@ export namespace BexioService {
                                             }
                                         },
                                         handler: () => {
-                                            console.log('done')
+                                            console.log('sync completed')
+                                            process.exit(0) 
                                         }
                                     })
                                     .command({
@@ -69,7 +71,7 @@ export namespace BexioService {
                                         handler: async () => {
                                             await BexioService.syncContactTypes()
                                             console.log('sync completed')
-                                            return
+                                            process.exit(0)
                                         }
                                     })
                                     .command({
@@ -82,14 +84,14 @@ export namespace BexioService {
                                         handler: async () => {
                                             await BexioService.syncOrders()
                                             console.log('sync completed')
-                                            return
+                                            process.exit(0)
                                         }
                                     })
                             },
-                            handler: () => { }
+                            handler: () => {  }
                         })
                 },
-                handler: () => { }
+                handler: () => {  }
             })
 
     }
