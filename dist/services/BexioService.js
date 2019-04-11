@@ -141,6 +141,18 @@ var BexioService;
                 res.send('Jep');
             }
         }));
+        app.get('/bexio/sync/all', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (!bexioAPI.isInitialized() && req.header('X-Azure'))
+                yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
+            try {
+                yield Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
+                yield Promise.all([BexioService.syncContacts(), BexioService.syncOrders()]);
+                res.send('done');
+            }
+            catch (err) {
+                res.send('Errored!');
+            }
+        }));
         app.get('/bexio/sync/contactTypes', (req, res) => __awaiter(this, void 0, void 0, function* () {
             if (!bexioAPI.isInitialized() && req.header('X-Azure'))
                 yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
