@@ -4,7 +4,7 @@ import { createConnection, getConnectionOptions } from 'typeorm';
 import yargs from 'yargs'
 import CliController from './controllers/CliController';
 
-async function conntectDB() {
+async function init() {
     let connectionOptions = await getConnectionOptions()
 
     // @ts-ignore
@@ -24,4 +24,4 @@ async function conntectDB() {
     yargs.argv
 }
 
-conntectDB()
+init()
