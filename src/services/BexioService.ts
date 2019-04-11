@@ -7,6 +7,7 @@ import Order from '../entities/Order';
 import Position from '../entities/Position';
 import config from 'config'
 import { getManager, In } from 'typeorm';
+import yargs from 'yargs'
 
 export namespace BexioService {
     let bexioAPI = new Bexio(config.get('bexio.clientId'), config.get('bexio.clientSecret'), config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW])
@@ -14,6 +15,85 @@ export namespace BexioService {
 
     export function isInitialized(): boolean {
         return bexioAPI.isInitialized()
+    }
+
+    export function addCommandline(yargs: yargs.Argv): void {
+        yargs
+            .command({
+                command: 'bexio',
+                describe: 'Functions of the bexio service',
+                builder: (yargs) => {
+                    return yargs
+                        .command({
+                            command: 'sync [force]',
+                            describe: 'Sync command',
+                            builder: (yargs) => {
+                                return yargs
+                                    .middleware(() => {
+                                        if (fakeloginInProgress) return
+                                        if (BexioService.isInitialized()) return
+
+                                        console.log(`logging in with user: ${config.get('bexio.username')}`)
+                                        return BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+                                    })
+                                    .command({
+                                        command: 'contacts',
+                                        builder: {
+                                            force: {
+                                                alias: 'f'
+                                            }
+                                        },
+                                        handler: async () => {
+                                            await BexioService.syncContacts()
+                                            console.log('sync completed')
+                                            process.exit(0)
+                                        }
+                                    })
+                                    .command({
+                                        command: 'contactGroups',
+                                        builder: {
+                                            force: {
+                                                alias: 'f'
+                                            }
+                                        },
+                                        handler: () => {
+                                            console.log('sync completed')
+                                            process.exit(0)
+                                        }
+                                    })
+                                    .command({
+                                        command: 'contactTypes',
+                                        builder: {
+                                            force: {
+                                                alias: 'f'
+                                            }
+                                        },
+                                        handler: async () => {
+                                            await BexioService.syncContactTypes()
+                                            console.log('sync completed')
+                                            process.exit(0)
+                                        }
+                                    })
+                                    .command({
+                                        command: 'orders',
+                                        builder: {
+                                            force: {
+                                                alias: 'f'
+                                            }
+                                        },
+                                        handler: async () => {
+                                            await BexioService.syncOrders()
+                                            console.log('sync completed')
+                                            process.exit(0)
+                                        }
+                                    })
+                            },
+                            handler: () => { }
+                        })
+                },
+                handler: () => { }
+            })
+
     }
 
     export function addExpressHandlers(app: Express.Application): void {
@@ -34,10 +114,8 @@ export namespace BexioService {
         })
 
         app.get('/bexio/fakelogin', async (req, res) => {
-            fakeloginInProgress = true
-            await bexioAPI.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
-            res.send('Done')
-            fakeloginInProgress = false
+            await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+            res.send('done')
         })
 
         app.get('/bexio/initialized', async (req, res) => {
@@ -48,7 +126,8 @@ export namespace BexioService {
             }
         })
 
-        app.get('/bexio/sync/contactTypes', (req, res) => {
+        app.get('/bexio/sync/contactTypes', async (req, res) => {
+            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncContactTypes().then(() => {
                 res.send('Synced')
             }).catch(() => {
@@ -56,7 +135,8 @@ export namespace BexioService {
             })
         })
 
-        app.get('/bexio/sync/contactGroups', (req, res) => {
+        app.get('/bexio/sync/contactGroups', async (req, res) => {
+            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncContactGroups().then(() => {
                 res.send('Synced')
             }).catch(() => {
@@ -64,7 +144,8 @@ export namespace BexioService {
             })
         })
 
-        app.get('/bexio/sync/contacts', (req, res) => {
+        app.get('/bexio/sync/contacts', async (req, res) => {
+            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncContacts().then(() => {
                 res.send('Synced')
             }).catch(() => {
@@ -72,7 +153,8 @@ export namespace BexioService {
             })
         })
 
-        app.get('/bexio/sync/orders', (req, res) => {
+        app.get('/bexio/sync/orders', async (req, res) => {
+            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncOrders().then(() => {
                 res.send('Synced')
             }).catch(() => {
@@ -83,6 +165,15 @@ export namespace BexioService {
 
     export function getAuthUrl(): string {
         return bexioAPI.getAuthUrl()
+    }
+
+    export async function fakeLogin(username: string, password: string): Promise<void> {
+        if (fakeloginInProgress) return
+
+        fakeloginInProgress = true
+        await bexioAPI.fakeLogin(username, password)
+        fakeloginInProgress = false
+        return
     }
 
     /**
