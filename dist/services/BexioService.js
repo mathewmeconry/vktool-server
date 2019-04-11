@@ -75,7 +75,7 @@ var BexioService;
                                 }
                             },
                             handler: () => {
-                                console.log('done');
+                                console.log('sync completed');
                                 process.exit(0);
                             }
                         })
@@ -141,34 +141,42 @@ var BexioService;
                 res.send('Jep');
             }
         }));
-        app.get('/bexio/sync/contactTypes', (req, res) => {
+        app.get('/bexio/sync/contactTypes', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (!bexioAPI.isInitialized())
+                yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncContactTypes().then(() => {
                 res.send('Synced');
             }).catch(() => {
                 res.send('Something went wrong!');
             });
-        });
-        app.get('/bexio/sync/contactGroups', (req, res) => {
+        }));
+        app.get('/bexio/sync/contactGroups', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (!bexioAPI.isInitialized())
+                yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncContactGroups().then(() => {
                 res.send('Synced');
             }).catch(() => {
                 res.send('Something went wrong!');
             });
-        });
-        app.get('/bexio/sync/contacts', (req, res) => {
+        }));
+        app.get('/bexio/sync/contacts', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (!bexioAPI.isInitialized())
+                yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncContacts().then(() => {
                 res.send('Synced');
             }).catch(() => {
                 res.send('Something went wrong!');
             });
-        });
-        app.get('/bexio/sync/orders', (req, res) => {
+        }));
+        app.get('/bexio/sync/orders', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (!bexioAPI.isInitialized())
+                yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncOrders().then(() => {
                 res.send('Synced');
             }).catch(() => {
                 res.send('Something went wrong!');
             });
-        });
+        }));
     }
     BexioService.addExpressHandlers = addExpressHandlers;
     function getAuthUrl() {
