@@ -72,9 +72,9 @@ class CliController {
             BillingReportRoutes_1.default(app);
             CollectionPointsRoutes_1.default(app);
             BexioService_1.BexioService.addExpressHandlers(app);
-            app.use(express.static(path_1.default.join(__dirname, '/../public/')));
+            app.use(express.static(path_1.default.join(__dirname, '/../../public/')));
             app.get('*', (req, res) => {
-                res.sendFile(path_1.default.join(__dirname + '/../public/index.html'));
+                res.sendFile(path_1.default.join(__dirname + '/../../public/index.html'));
             });
             server.listen(process.env.PORT || config_1.default.get('port'), () => {
                 console.log('Listening on port: ' + (process.env.PORT || config_1.default.get('port')));
