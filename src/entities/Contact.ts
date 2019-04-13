@@ -6,10 +6,12 @@ import ContactType from "./ContactType";
 import ContactGroup from "./ContactGroup";
 import CollectionPoint from "./CollectionPoint";
 import ContactExtension, { ContactExtensionInterface } from "./ContactExtension";
+import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from "class-validator";
 
 @Entity()
-export default class Contact extends BexioBase {
+export default class Contact extends BexioBase<Contact> {
     @Column('text')
+    @IsString()
     public nr: string
 
     @ManyToOne(type => ContactType, { eager: true })
@@ -17,39 +19,56 @@ export default class Contact extends BexioBase {
     public contactType: ContactType
 
     @Column('text')
+    @IsString()
     public firstname: string
 
     @Column('text')
+    @IsString()
     public lastname: string
 
     @Column('date')
+    @IsDate()
     public birthday: Date
 
     @Column('text')
+    @IsString()
     public address: string
 
     @Column('text')
+    @IsString()
     public postcode: string
 
     @Column('text')
+    @IsString()
     public city: string
 
     @Column('text')
+    @IsString()
     public mail: string
 
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsEmail()
     public mailSecond?: string
 
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsPhoneNumber('CH')
     public phoneFixed?: string
 
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsPhoneNumber('CH')
     public phoneFixedSecond?: string
 
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsPhoneNumber('CH')
     public phoneMobile?: string
 
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsString()
     public remarks?: string
 
     @ManyToMany(type => ContactGroup, { eager: true })
@@ -60,7 +79,7 @@ export default class Contact extends BexioBase {
     public ownerId: number
 
     @OneToMany(type => Compensation, compensation => compensation.member, { nullable: true })
-    public compensations: Promise<Array<Compensation>>
+    public compensations: Promise<Array<Compensation<any>>>
 
     @OneToOne(type => User, user => user.bexioContact, { nullable: true })
     public user?: User
@@ -96,6 +115,12 @@ export default class Contact extends BexioBase {
         return []
     }
 
+    public async save(): Promise<Contact> {
+        await super.save()
+        await this.storeOverride()
+        return this
+    }
+
     @AfterLoad()
     private async loadOverride(): Promise<boolean> {
         let override = await getManager().getRepository(ContactExtension).findOne({ contactId: this.id })
@@ -129,7 +154,7 @@ export default class Contact extends BexioBase {
             }
         }
 
-        getManager().getRepository(ContactExtension).save(override)
+        override.save()
         return true
     }
 }

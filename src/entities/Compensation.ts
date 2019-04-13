@@ -5,26 +5,32 @@ import User from "./User";
 import Base from "./Base";
 import OrderCompensation from "./OrderCompensation";
 import CustomCompensation from "./CustomCompensation";
+import { IsOptional, IsNumber, IsDate, IsBoolean } from "class-validator";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
-export default class Compensation extends Base {
+export default class Compensation<T> extends Base<T> {
     @ManyToOne(type => Contact, contact => contact.compensations, { eager: true })
     public member: Contact
 
     @Column({ nullable: true })
+    @IsOptional()
+    @IsNumber()
     public memberId?: number;
 
     @ManyToOne(type => User, { eager: true })
     public creator: User
 
     @Column('decimal', { precision: 10, scale: 2 })
+    @IsNumber()
     public amount: number
 
     @Column('date')
+    @IsDate()
     public date: Date
 
     @Column('boolean')
+    @IsBoolean()
     public approved: boolean
 
     @ManyToOne(type => User, { eager: true, nullable: true })
@@ -32,9 +38,12 @@ export default class Compensation extends Base {
     public approvedBy?: User
 
     @Column('boolean')
+    @IsBoolean()
     public paied: boolean
 
     @Column('date', { nullable: true })
+    @IsOptional()
+    @IsDate()
     public valutaDate?: Date
 
     @ManyToOne(type => Payout, payout => payout.compensations, { nullable: true, eager: true })
@@ -45,6 +54,8 @@ export default class Compensation extends Base {
     public updatedBy: User
 
     @Column('date', { nullable: true })
+    @IsOptional()
+    @IsDate()
     public deletedAt?: Date
 
     @ManyToOne(type => User, { eager: true })
@@ -67,14 +78,14 @@ export default class Compensation extends Base {
         this.member = (await getManager().getRepository(Contact).findOne(this.memberId)) as Contact
     }
 
-    public static isOrderBased(compensation: Compensation): compensation is OrderCompensation {
+    public static isOrderBased(compensation: Compensation<any>): compensation is OrderCompensation {
         return (
             (<OrderCompensation>compensation).billingReport !== undefined &&
             (<OrderCompensation>compensation).billingReport !== null
         )
     }
 
-    public static isCustom(compensation: Compensation): compensation is CustomCompensation {
+    public static isCustom(compensation: Compensation<any>): compensation is CustomCompensation {
         return (
             (<CustomCompensation>compensation).description !== undefined &&
             (<CustomCompensation>compensation).description !== null

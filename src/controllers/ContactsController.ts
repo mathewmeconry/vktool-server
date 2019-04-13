@@ -34,8 +34,7 @@ export default class ContactsController {
             }
 
             contact.collectionPoint = await getManager().getRepository(CollectionPoint).findOne({ id: req.body.collectionPointId })
-            await getManager().getRepository(Contact).save(contact)
-            await contact.storeOverride()
+            await contact.save()
             res.send(contact)
         } else {
             res.status(500)

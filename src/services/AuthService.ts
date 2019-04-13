@@ -89,8 +89,7 @@ export default class AuthService {
                     user.accessToken = accessToken,
                         user.refreshToken = refreshToken
                     user.displayName = profile.displayName
-                    await getManager().getRepository(User).save(user)
-                    return done(null, user)
+                    return done(null, await user.save())
                 } else {
                     let userInfo = {};
                     getManager().getRepository(Contact).findOne({ mail: profile.emails[0].value }).then(contact => {
@@ -120,7 +119,7 @@ export default class AuthService {
                         if (!user) user = new User()
                         user = Object.assign(user, userInfo)
 
-                        getManager().getRepository(User).save(user).then(user => {
+                        user.save().then(user => {
                             return done(null, user)
                         }).catch(err => {
                             return done(err)

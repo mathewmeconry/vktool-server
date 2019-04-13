@@ -9,7 +9,6 @@ export default class CollectionPointsController {
 
     public static async addCollectionPoint(req: Express.Request, res: Express.Response): Promise<void> {
         let collectionPoint = new CollectionPoint(req.body.name, req.body.address, req.body.postcode, req.body.city)
-        await getManager().getRepository(CollectionPoint).save(collectionPoint)
-        res.send(collectionPoint)
+        res.send(await collectionPoint.save())
     }
 }

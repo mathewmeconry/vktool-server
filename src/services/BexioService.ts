@@ -127,7 +127,7 @@ export namespace BexioService {
         })
 
         app.get('/bexio/sync/all', async (req, res) => {
-            if(req.header('X-Azure')) res.send('started')
+            if (req.header('X-Azure')) res.send('started')
             if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             await Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()])
             await Promise.all([BexioService.syncContacts(), BexioService.syncOrders()])
@@ -224,7 +224,7 @@ export namespace BexioService {
                     ownerId: contact.owner_id
                 })
 
-                savePromises.push(contactRepo.save(contactDB))
+                savePromises.push(contactDB.save())
 
                 console.log('synced ' + savePromises.length)
             }
@@ -256,7 +256,7 @@ export namespace BexioService {
                 groupDB.bexioId = group.id
                 groupDB.name = group.name
 
-                savePromises.push(contactGroupRepo.save(groupDB))
+                savePromises.push(groupDB.save())
             }
 
             Promise.all(savePromises).then(() => {
@@ -286,7 +286,7 @@ export namespace BexioService {
                 typeDB.bexioId = type.id
                 typeDB.name = type.name
 
-                savePromises.push(contactTypeRepo.save(typeDB))
+                savePromises.push(typeDB.save())
             }
 
             Promise.all(savePromises).then(() => {
@@ -332,8 +332,7 @@ export namespace BexioService {
                                 positions: [],
                             })
 
-                            await orderRepo.save(orderDB)
-
+                            orderDB = await orderDB.save()
                             //first sync all positions 
                             let positionPromises = []
                             if (bexioOrder.positions) {
@@ -352,15 +351,15 @@ export namespace BexioService {
                                         positionTotal: (parseFloat(position.position_total)) ? parseFloat(position.position_total) : null,
                                         order: orderDB
                                     })
-                                    positionPromises.push(positionRepo.save(positionDB))
+                                    positionPromises.push(positionDB.save())
                                 }
                             }
 
                             Promise.all(positionPromises).then(async (positions) => {
                                 if (orderDB) {
                                     orderDB.positions = positions
-                                    await orderRepo.save(orderDB)
-
+                                    await orderDB.save()
+                                    
                                     console.log('Synced ' + savePromises.length)
                                     resolve()
                                 }
