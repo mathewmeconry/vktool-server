@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, UpdateDateColumn, getManager } from "typeorm";
+import { PrimaryGeneratedColumn, UpdateDateColumn, getManager, BeforeInsert, BeforeUpdate } from "typeorm";
 import { validate } from "class-validator";
 
 export default abstract class Base<T> {
@@ -9,10 +9,18 @@ export default abstract class Base<T> {
     public updatedAt: Date
 
     public async save(): Promise<T> {
+        this.nullAll()
         const errors = await validate(this)
-        if (errors.length > 0) throw errors
+        if (errors.length > 0) throw new Error(JSON.stringify(errors))
 
         //@ts-ignore
         return getManager().save<T>(this as T)
+    }
+
+    private nullAll(): void {
+        for(let i in this) {
+            //@ts-ignore
+            if(!this[i]) this[i] = undefined
+        }
     }
 }

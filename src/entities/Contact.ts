@@ -19,30 +19,37 @@ export default class Contact extends BexioBase<Contact> {
     public contactType: ContactType
 
     @Column('text')
+    @IsOptional()
     @IsString()
     public firstname: string
 
     @Column('text')
+    @IsOptional()
     @IsString()
     public lastname: string
 
     @Column('date')
+    @IsOptional()
     @IsDate()
     public birthday: Date
 
     @Column('text')
+    @IsOptional()
     @IsString()
     public address: string
 
     @Column('text')
+    @IsOptional()
     @IsString()
     public postcode: string
 
     @Column('text')
+    @IsOptional()
     @IsString()
     public city: string
 
     @Column('text')
+    @IsOptional()
     @IsString()
     public mail: string
 
