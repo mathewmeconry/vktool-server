@@ -1,9 +1,8 @@
 import { PrimaryGeneratedColumn, UpdateDateColumn, getManager } from "typeorm";
-import { IsNumber, validate } from "class-validator";
+import { validate } from "class-validator";
 
 export default abstract class Base<T> {
     @PrimaryGeneratedColumn()
-    @IsNumber()
     public id: number
 
     @UpdateDateColumn({ precision: 6, type: "timestamp", nullable: true })
