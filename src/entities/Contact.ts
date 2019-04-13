@@ -53,17 +53,17 @@ export default class Contact extends BexioBase<Contact> {
 
     @Column('text', { nullable: true })
     @IsOptional()
-    @IsPhoneNumber('CH')
+    @IsString()
     public phoneFixed?: string
 
     @Column('text', { nullable: true })
     @IsOptional()
-    @IsPhoneNumber('CH')
+    @IsString()
     public phoneFixedSecond?: string
 
     @Column('text', { nullable: true })
     @IsOptional()
-    @IsPhoneNumber('CH')
+    @IsString()
     public phoneMobile?: string
 
     @Column('text', { nullable: true })
@@ -90,6 +90,9 @@ export default class Contact extends BexioBase<Contact> {
     public collectionPoint?: CollectionPoint
     public entryDate?: Date
     public exitDate?: Date
+    public bankName?: string
+    public iban?: string
+    public accountHolder?: string
 
     public isMember(): boolean {
         return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false
@@ -137,6 +140,11 @@ export default class Contact extends BexioBase<Contact> {
         this.functions = this.getFunctions().map(func => func.name)
 
         return true
+    }
+
+    @AfterLoad()
+    private ajustDates(): void {
+        this.birthday = new Date(this.birthday)
     }
 
     @AfterInsert()

@@ -10,7 +10,10 @@ import IsIBAN from "../validators/IsIBAN";
 export enum ContactExtensionInterface {
     collectionPoint,
     entryDate,
-    exitDate
+    exitDate,
+    bankName,
+    iban,
+    accountHolder
 }
 
 @Entity()

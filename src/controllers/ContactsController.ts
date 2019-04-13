@@ -33,9 +33,23 @@ export default class ContactsController {
                 return
             }
 
-            contact.collectionPoint = await getManager().getRepository(CollectionPoint).findOne({ id: req.body.collectionPointId })
-            await contact.save()
-            res.send(contact)
+            contact.collectionPoint = await getManager().getRepository(CollectionPoint).findOne({ id: req.body.collectionPointId }) || contact.collectionPoint
+            contact.entryDate = new Date(req.body.entryDate || contact.entryDate)
+            contact.exitDate = new Date(req.body.exitDate || contact.exitDate)
+            contact.bankName = req.body.bankName || contact.bankName
+            contact.iban = req.body.iban || contact.iban
+            contact.accountHolder = req.body.accountHolder || contact.accountHolder
+
+            try {
+                await contact.save()
+                res.send(contact)
+            } catch (err) {
+                res.status(500)
+                res.send({
+                    message: 'sorry man...',
+                    errors: err
+                })
+            }
         } else {
             res.status(500)
             res.send({
