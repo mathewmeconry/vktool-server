@@ -4,28 +4,35 @@ import BillingReport from "./BillingReport";
 import Payout from "./Payout";
 import User from "./User";
 import Contact from "./Contact";
+import { IsNumber, IsDate, IsBoolean } from "class-validator";
 
 @ChildEntity()
-export default class OrderCompensation extends Compensation {
+export default class OrderCompensation extends Compensation<OrderCompensation> {
     @ManyToOne(type => BillingReport, billingreport => billingreport.compensations)
     public billingReport: BillingReport
 
     @Column('int')
+    @IsNumber()
     public billingReportId: number
 
     @Column('int', { default: 0 })
+    @IsNumber()
     public dayHours: number = 0
 
     @Column('int', { default: 0 })
+    @IsNumber()
     public nightHours: number = 0
 
     @Column('datetime', { precision: 6 })
+    @IsDate()
     public from: Date
 
     @Column('datetime', { precision: 6 })
+    @IsDate()
     public until: Date
 
     @Column('boolean')
+    @IsBoolean()
     public charge: boolean
 
     constructor(member: Contact, creator: User, date: Date, billingReport: BillingReport, from: Date, until: Date, dayHours: number = 0, nightHours: number = 0, charge: boolean = true, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {

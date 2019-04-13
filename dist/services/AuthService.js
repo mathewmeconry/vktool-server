@@ -91,8 +91,7 @@ class AuthService {
                     user.accessToken = accessToken,
                         user.refreshToken = refreshToken;
                     user.displayName = profile.displayName;
-                    yield typeorm_1.getManager().getRepository(User_1.default).save(user);
-                    return done(null, user);
+                    return done(null, yield user.save());
                 }
                 else {
                     let userInfo = {};
@@ -123,7 +122,7 @@ class AuthService {
                         if (!user)
                             user = new User_1.default();
                         user = Object.assign(user, userInfo);
-                        typeorm_1.getManager().getRepository(User_1.default).save(user).then(user => {
+                        user.save().then(user => {
                             return done(null, user);
                         }).catch(err => {
                             return done(err);

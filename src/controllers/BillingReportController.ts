@@ -47,7 +47,6 @@ export default class BillingReportController {
 
     public static async put(req: Express.Request, res: Express.Response): Promise<void> {
         let contactRepo = getManager().getRepository(Contact)
-        let billingReportRepo = getManager().getRepository(BillingReport)
 
         let creator = await getManager().getRepository(User).findOneOrFail({ id: req.body.creatorId })
         let order = await getManager().getRepository(Order).findOneOrFail({ id: req.body.orderId })
@@ -66,7 +65,7 @@ export default class BillingReportController {
             'pending'
         )
         billingReport.updatedBy = req.user
-        billingReport = await billingReportRepo.save(billingReport)
+        billingReport = await billingReport.save()
 
 
         let compensationEntries = []
@@ -87,7 +86,7 @@ export default class BillingReportController {
             )
             compensationEntry.updatedBy = req.user
 
-            await getManager().getRepository(OrderCompensation).save(compensationEntry)
+            await compensationEntry.save()
             // reset the billing report to convert it to json (circular reference)
             //@ts-ignore
             compensationEntry.billingReport = {}
@@ -95,7 +94,7 @@ export default class BillingReportController {
         }
 
         billingReport.compensations = compensationEntries
-        await billingReportRepo.save(billingReport)
+        await billingReport.save()
         res.send(billingReport)
     }
 
@@ -155,7 +154,7 @@ export default class BillingReportController {
 
                 billingReport.date = new Date(billingReport.date)
                 billingReport.updatedBy = req.user
-                await billingReportRepo.save(billingReport)
+                await billingReport.save()
                 res.send(billingReport)
             } else {
                 res.status(403)

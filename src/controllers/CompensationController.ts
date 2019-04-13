@@ -75,6 +75,7 @@ export default class CompensationController {
                 .leftJoinAndSelect('billingReport.order', 'order')
                 .where('deletedAt IS NULL')
                 .andWhere('memberId = :id', { id: parseInt(req.params.member) })
+                .andWhere('compensation.approved = true')
                 .getMany(),
             getManager()
                 .getRepository(CustomCompensation)
@@ -93,6 +94,7 @@ export default class CompensationController {
                 .leftJoinAndSelect('compensation.creator', 'creator')
                 .where('deletedAt IS NULL')
                 .andWhere('memberId = :id', { id: parseInt(req.params.member) })
+                .andWhere('compensation.approved = true')
                 .getMany()
         ]).then(data => {
             res.send((data[0] as any).concat(data[1]))
@@ -112,7 +114,7 @@ export default class CompensationController {
             )
             entry.updatedBy = req.user
 
-            getManager().getRepository(Compensation).save(entry).then(() => {
+            entry.save().then((entry) => {
                 res.send(entry)
             }).catch((err) => {
                 res.status(500)
@@ -135,7 +137,7 @@ export default class CompensationController {
         } else {
             let billingReport = undefined;
             let contactRepo = getManager().getRepository(Contact)
-            let promises = []
+            let promises: Array<Promise<OrderCompensation | CustomCompensation>> = []
 
             if (req.body.hasOwnProperty('billingReportId')) {
                 billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne()
@@ -158,10 +160,10 @@ export default class CompensationController {
                         (billingReport.state === 'approved') ? true : false
                     )
 
-                    promises.push(getManager().getRepository(OrderCompensation).save(compensationEntry))
+                    promises.push(compensationEntry.save())
                 }
                 billingReport.updatedBy = req.user
-                await getManager().getRepository(BillingReport).save(billingReport)
+                await billingReport.save()
             } else {
                 for (let entry of req.body.entries) {
                     let member = await contactRepo.findOneOrFail({ id: parseInt(entry.id) })
@@ -174,7 +176,7 @@ export default class CompensationController {
                         entry.description
                     )
 
-                    promises.push(getManager().getRepository(CustomCompensation).save(compensationEntry))
+                    promises.push(compensationEntry.save())
                 }
             }
 
@@ -194,7 +196,7 @@ export default class CompensationController {
             compensation.approved = true
             compensation.approvedBy = req.user
             compensation.updatedBy = req.user
-            await compensationRepo.save(compensation)
+            await compensation.save()
             res.send({ success: true })
         } else {
             res.status(500)
@@ -211,14 +213,14 @@ export default class CompensationController {
         if (compensation) {
             compensation.deletedAt = new Date()
             compensation.deletedBy = req.user
-            await compensationRepo.save(compensation)
-
+            await compensation.save()
+            
             if (compensation instanceof OrderCompensation) {
                 let billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: compensation.billingReportId }).getOne()
 
                 if (billingReport) {
                     billingReport.updatedBy = req.user
-                    await getManager().getRepository(BillingReport).save(billingReport)
+                    await billingReport.save()
                 } else {
                     res.status(500)
                     res.send({

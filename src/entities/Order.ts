@@ -4,22 +4,29 @@ import BexioBase from "./BexioBase";
 import Contact from "./Contact";
 import Position from "./Position";
 import BillingReport from "./BillingReport";
+import { IsString, IsNumber, IsOptional, IsDate } from "class-validator";
 
 @Entity()
-export default class Order extends BexioBase {
+export default class Order extends BexioBase<Order> {
     @Column('text')
+    @IsString()
     public documentNr: string
 
     @Column('text')
+    @IsString()
     public title: string
 
     @Column('decimal', { precision: 10, scale: 2 })
+    @IsNumber()
     public total: number
 
     @Column('date', { nullable: true })
+    @IsOptional()
+    @IsDate()
     public validFrom?: Date
 
     @Column('text')
+    @IsString()
     public deliveryAddress: string
 
     @ManyToOne(type => Contact, { eager: true })

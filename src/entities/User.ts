@@ -2,22 +2,31 @@ import { Entity, Column, OneToOne, JoinColumn, AfterLoad } from "typeorm";
 import Base from "./Base";
 import Contact from "./Contact";
 import { AuthRolesByRank } from "../interfaces/AuthRoles";
+import { IsString, IsOptional } from "class-validator";
 
 @Entity()
-export default class User extends Base {
+export default class User extends Base<User> {
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsString()
     public outlookId?: string
 
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsString()
     public accessToken?: string
 
     @Column('text', { nullable: true })
+    @IsOptional()
+    @IsString()
     public refreshToken?: string
 
     @Column('text')
+    @IsString()
     public displayName: string
 
     @Column('simple-array')
+    @IsString({ each: true })
     public roles: Array<string>
 
     @OneToOne(type => Contact, contact => contact.user, { nullable: true, eager: true })
