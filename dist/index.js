@@ -16,7 +16,7 @@ require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const yargs_1 = __importDefault(require("yargs"));
 const CliController_1 = __importDefault(require("./controllers/CliController"));
-function conntectDB() {
+function init() {
     return __awaiter(this, void 0, void 0, function* () {
         let connectionOptions = yield typeorm_1.getConnectionOptions();
         // @ts-ignore
@@ -33,5 +33,5 @@ function conntectDB() {
         yargs_1.default.argv;
     });
 }
-conntectDB();
+init();
 //# sourceMappingURL=index.js.map

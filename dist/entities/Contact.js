@@ -34,6 +34,7 @@ const User_1 = __importDefault(require("./User"));
 const ContactType_1 = __importDefault(require("./ContactType"));
 const ContactGroup_1 = __importDefault(require("./ContactGroup"));
 const ContactExtension_1 = __importStar(require("./ContactExtension"));
+const class_validator_1 = require("class-validator");
 let Contact = class Contact extends BexioBase_1.default {
     isMember() {
         return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false;
@@ -51,6 +52,16 @@ let Contact = class Contact extends BexioBase_1.default {
             return this.contactGroups.filter(group => functionGroups.indexOf(group.bexioId) > -1);
         }
         return [];
+    }
+    save() {
+        const _super = Object.create(null, {
+            save: { get: () => super.save }
+        });
+        return __awaiter(this, void 0, void 0, function* () {
+            yield _super.save.call(this);
+            yield this.storeOverride();
+            return this;
+        });
     }
     loadOverride() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -80,13 +91,14 @@ let Contact = class Contact extends BexioBase_1.default {
                     override[i] = this[i];
                 }
             }
-            typeorm_1.getManager().getRepository(ContactExtension_1.default).save(override);
+            override.save();
             return true;
         });
     }
 };
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "nr", void 0);
 __decorate([
@@ -96,50 +108,67 @@ __decorate([
 ], Contact.prototype, "contactType", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "firstname", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "lastname", void 0);
 __decorate([
     typeorm_1.Column('date'),
+    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], Contact.prototype, "birthday", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "address", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "postcode", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "city", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "mail", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsEmail(),
     __metadata("design:type", String)
 ], Contact.prototype, "mailSecond", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsPhoneNumber('CH'),
     __metadata("design:type", String)
 ], Contact.prototype, "phoneFixed", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsPhoneNumber('CH'),
     __metadata("design:type", String)
 ], Contact.prototype, "phoneFixedSecond", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsPhoneNumber('CH'),
     __metadata("design:type", String)
 ], Contact.prototype, "phoneMobile", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "remarks", void 0);
 __decorate([

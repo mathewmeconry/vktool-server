@@ -55,28 +55,27 @@ class BillingReportController {
     static put(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let contactRepo = typeorm_1.getManager().getRepository(Contact_1.default);
-            let billingReportRepo = typeorm_1.getManager().getRepository(BillingReport_1.default);
             let creator = yield typeorm_1.getManager().getRepository(User_1.default).findOneOrFail({ id: req.body.creatorId });
             let order = yield typeorm_1.getManager().getRepository(Order_1.default).findOneOrFail({ id: req.body.orderId });
             let els = yield contactRepo.findByIds(req.body.els.map(el => el.id));
             let drivers = yield contactRepo.findByIds(req.body.drivers.map(driver => driver.id));
             let billingReport = new BillingReport_1.default(creator, order, new Date(req.body.date), [], els, drivers, req.body.food, req.body.remarks, 'pending');
             billingReport.updatedBy = req.user;
-            billingReport = yield billingReportRepo.save(billingReport);
+            billingReport = yield billingReport.save();
             let compensationEntries = [];
             for (let i in req.body.compensationEntries) {
                 let entry = req.body.compensationEntries[i];
                 let member = yield contactRepo.findOneOrFail({ id: parseInt(i) });
                 let compensationEntry = new OrderCompensation_1.default(member, creator, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge);
                 compensationEntry.updatedBy = req.user;
-                yield typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry);
+                yield compensationEntry.save();
                 // reset the billing report to convert it to json (circular reference)
                 //@ts-ignore
                 compensationEntry.billingReport = {};
                 compensationEntries.push(compensationEntry);
             }
             billingReport.compensations = compensationEntries;
-            yield billingReportRepo.save(billingReport);
+            yield billingReport.save();
             res.send(billingReport);
         });
     }
@@ -135,7 +134,7 @@ class BillingReportController {
                     }
                     billingReport.date = new Date(billingReport.date);
                     billingReport.updatedBy = req.user;
-                    yield billingReportRepo.save(billingReport);
+                    yield billingReport.save();
                     res.send(billingReport);
                 }
                 else {

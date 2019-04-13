@@ -18,6 +18,7 @@ const BexioBase_1 = __importDefault(require("./BexioBase"));
 const Contact_1 = __importDefault(require("./Contact"));
 const Position_1 = __importDefault(require("./Position"));
 const BillingReport_1 = __importDefault(require("./BillingReport"));
+const class_validator_1 = require("class-validator");
 let Order = class Order extends BexioBase_1.default {
     findExecDates() {
         let dateRegex = /((\d{2})\.(\d{2})\.(\d{4}))/mg;
@@ -50,22 +51,28 @@ let Order = class Order extends BexioBase_1.default {
 };
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Order.prototype, "documentNr", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Order.prototype, "title", void 0);
 __decorate([
     typeorm_1.Column('decimal', { precision: 10, scale: 2 }),
+    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Order.prototype, "total", void 0);
 __decorate([
     typeorm_1.Column('date', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], Order.prototype, "validFrom", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Order.prototype, "deliveryAddress", void 0);
 __decorate([

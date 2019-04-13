@@ -118,7 +118,7 @@ class CompensationController {
             if (member) {
                 let entry = new CustomCompensation_1.default(member, req.user, req.body.amount, new Date(req.body.date), req.body.description, AuthService_1.default.isAuthorized(req, AuthRoles_1.AuthRoles.COMPENSATIONS_APPROVE));
                 entry.updatedBy = req.user;
-                typeorm_1.getManager().getRepository(Compensation_1.default).save(entry).then(() => {
+                entry.save().then((entry) => {
                     res.send(entry);
                 }).catch((err) => {
                     res.status(500);
@@ -152,16 +152,16 @@ class CompensationController {
                     for (let entry of req.body.entries) {
                         let member = yield contactRepo.findOneOrFail({ id: entry.id });
                         let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge, (billingReport.state === 'approved') ? true : false);
-                        promises.push(typeorm_1.getManager().getRepository(OrderCompensation_1.default).save(compensationEntry));
+                        promises.push(compensationEntry.save());
                     }
                     billingReport.updatedBy = req.user;
-                    yield typeorm_1.getManager().getRepository(BillingReport_1.default).save(billingReport);
+                    yield billingReport.save();
                 }
                 else {
                     for (let entry of req.body.entries) {
                         let member = yield contactRepo.findOneOrFail({ id: parseInt(entry.id) });
                         let compensationEntry = new CustomCompensation_1.default(member, req.user, entry.amount, entry.date, entry.description);
-                        promises.push(typeorm_1.getManager().getRepository(CustomCompensation_1.default).save(compensationEntry));
+                        promises.push(compensationEntry.save());
                     }
                 }
                 yield Promise.all(promises);
@@ -180,7 +180,7 @@ class CompensationController {
                 compensation.approved = true;
                 compensation.approvedBy = req.user;
                 compensation.updatedBy = req.user;
-                yield compensationRepo.save(compensation);
+                yield compensation.save();
                 res.send({ success: true });
             }
             else {
@@ -198,12 +198,12 @@ class CompensationController {
             if (compensation) {
                 compensation.deletedAt = new Date();
                 compensation.deletedBy = req.user;
-                yield compensationRepo.save(compensation);
+                yield compensation.save();
                 if (compensation instanceof OrderCompensation_1.default) {
                     let billingReport = yield typeorm_1.getManager().getRepository(BillingReport_1.default).createQueryBuilder('billingReport').where('id = :id', { id: compensation.billingReportId }).getOne();
                     if (billingReport) {
                         billingReport.updatedBy = req.user;
-                        yield typeorm_1.getManager().getRepository(BillingReport_1.default).save(billingReport);
+                        yield billingReport.save();
                     }
                     else {
                         res.status(500);

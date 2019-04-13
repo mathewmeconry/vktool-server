@@ -13,10 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
+const class_validator_1 = require("class-validator");
 const CollectionPoint_1 = __importDefault(require("./CollectionPoint"));
 const Contact_1 = __importDefault(require("./Contact"));
 const Base_1 = __importDefault(require("./Base"));
 const User_1 = __importDefault(require("./User"));
+const IsIBAN_1 = __importDefault(require("../validators/IsIBAN"));
 // needs to be kept in sync with class...
 var ContactExtensionInterface;
 (function (ContactExtensionInterface) {
@@ -42,12 +44,34 @@ __decorate([
 ], ContactExtension.prototype, "collectionPoint", void 0);
 __decorate([
     typeorm_1.Column('date', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], ContactExtension.prototype, "entryDate", void 0);
 __decorate([
     typeorm_1.Column('date', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], ContactExtension.prototype, "exitDate", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
+], ContactExtension.prototype, "bankName", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.Validate(IsIBAN_1.default),
+    __metadata("design:type", String)
+], ContactExtension.prototype, "iban", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
+], ContactExtension.prototype, "accountHolder", void 0);
 __decorate([
     typeorm_1.ManyToOne(type => User_1.default),
     typeorm_1.JoinColumn(),

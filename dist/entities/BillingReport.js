@@ -18,6 +18,7 @@ const Order_1 = __importDefault(require("./Order"));
 const Base_1 = __importDefault(require("./Base"));
 const OrderCompensation_1 = __importDefault(require("./OrderCompensation"));
 const Contact_1 = __importDefault(require("./Contact"));
+const class_validator_1 = require("class-validator");
 let BillingReport = class BillingReport extends Base_1.default {
     constructor(creator, order, orderDate, compensations, els, drivers, food, remarks, state, approvedBy) {
         super();
@@ -45,10 +46,13 @@ __decorate([
 ], BillingReport.prototype, "order", void 0);
 __decorate([
     typeorm_1.Column({ nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], BillingReport.prototype, "orderId", void 0);
 __decorate([
     typeorm_1.Column("date"),
+    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], BillingReport.prototype, "date", void 0);
 __decorate([
@@ -64,6 +68,7 @@ __decorate([
 __decorate([
     typeorm_1.ManyToMany(type => Contact_1.default, { eager: true }),
     typeorm_1.JoinTable(),
+    class_validator_1.IsArray(),
     __metadata("design:type", Array)
 ], BillingReport.prototype, "drivers", void 0);
 __decorate([
@@ -73,14 +78,17 @@ __decorate([
 ], BillingReport.prototype, "approvedBy", void 0);
 __decorate([
     typeorm_1.Column("boolean"),
+    class_validator_1.IsBoolean(),
     __metadata("design:type", Boolean)
 ], BillingReport.prototype, "food", void 0);
 __decorate([
     typeorm_1.Column("text"),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], BillingReport.prototype, "remarks", void 0);
 __decorate([
     typeorm_1.Column("text"),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], BillingReport.prototype, "state", void 0);
 __decorate([

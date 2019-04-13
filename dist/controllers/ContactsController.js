@@ -46,8 +46,7 @@ class ContactsController {
                     return;
                 }
                 contact.collectionPoint = yield typeorm_1.getManager().getRepository(CollectionPoint_1.default).findOne({ id: req.body.collectionPointId });
-                yield typeorm_1.getManager().getRepository(Contact_1.default).save(contact);
-                yield contact.storeOverride();
+                yield contact.save();
                 res.send(contact);
             }
             else {

@@ -14,10 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
 const BexioBase_1 = __importDefault(require("./BexioBase"));
+const class_validator_1 = require("class-validator");
 let ContactGroup = class ContactGroup extends BexioBase_1.default {
 };
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], ContactGroup.prototype, "name", void 0);
 ContactGroup = __decorate([

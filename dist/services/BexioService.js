@@ -242,7 +242,7 @@ var BexioService;
                         contactGroups: contactGroups,
                         ownerId: contact.owner_id
                     });
-                    savePromises.push(contactRepo.save(contactDB));
+                    savePromises.push(contactDB.save());
                     console.log('synced ' + savePromises.length);
                 }
                 Promise.all(savePromises).then(() => {
@@ -273,7 +273,7 @@ var BexioService;
                         groupDB = new ContactGroup_1.default();
                     groupDB.bexioId = group.id;
                     groupDB.name = group.name;
-                    savePromises.push(contactGroupRepo.save(groupDB));
+                    savePromises.push(groupDB.save());
                 }
                 Promise.all(savePromises).then(() => {
                     resolve();
@@ -303,7 +303,7 @@ var BexioService;
                         typeDB = new ContactType_1.default();
                     typeDB.bexioId = type.id;
                     typeDB.name = type.name;
-                    savePromises.push(contactTypeRepo.save(typeDB));
+                    savePromises.push(typeDB.save());
                 }
                 Promise.all(savePromises).then(() => {
                     resolve();
@@ -348,7 +348,7 @@ var BexioService;
                                     deliveryAddress: bexioOrder.delivery_address,
                                     positions: [],
                                 });
-                                yield orderRepo.save(orderDB);
+                                orderDB = yield orderDB.save();
                                 //first sync all positions 
                                 let positionPromises = [];
                                 if (bexioOrder.positions) {
@@ -368,13 +368,13 @@ var BexioService;
                                             positionTotal: (parseFloat(position.position_total)) ? parseFloat(position.position_total) : null,
                                             order: orderDB
                                         });
-                                        positionPromises.push(positionRepo.save(positionDB));
+                                        positionPromises.push(positionDB.save());
                                     }
                                 }
                                 Promise.all(positionPromises).then((positions) => __awaiter(this, void 0, void 0, function* () {
                                     if (orderDB) {
                                         orderDB.positions = positions;
-                                        yield orderRepo.save(orderDB);
+                                        yield orderDB.save();
                                         console.log('Synced ' + savePromises.length);
                                         resolve();
                                     }

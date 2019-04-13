@@ -16,10 +16,12 @@ const Base_1 = __importDefault(require("./Base"));
 const typeorm_1 = require("typeorm");
 const Compensation_1 = __importDefault(require("./Compensation"));
 const User_1 = __importDefault(require("./User"));
+const class_validator_1 = require("class-validator");
 let Payout = class Payout extends Base_1.default {
 };
 __decorate([
     typeorm_1.Column('date'),
+    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], Payout.prototype, "date", void 0);
 __decorate([

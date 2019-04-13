@@ -16,6 +16,7 @@ const typeorm_1 = require("typeorm");
 const Base_1 = __importDefault(require("./Base"));
 const Contact_1 = __importDefault(require("./Contact"));
 const AuthRoles_1 = require("../interfaces/AuthRoles");
+const class_validator_1 = require("class-validator");
 let User = class User extends Base_1.default {
     enrichPermissions() {
         if (this.bexioContact && typeof this.bexioContact.getRank === 'function') {
@@ -27,22 +28,30 @@ let User = class User extends Base_1.default {
 };
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], User.prototype, "outlookId", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], User.prototype, "accessToken", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], User.prototype, "refreshToken", void 0);
 __decorate([
     typeorm_1.Column('text'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], User.prototype, "displayName", void 0);
 __decorate([
     typeorm_1.Column('simple-array'),
+    class_validator_1.IsString({ each: true }),
     __metadata("design:type", Array)
 ], User.prototype, "roles", void 0);
 __decorate([

@@ -22,8 +22,7 @@ class CollectionPointsController {
     static addCollectionPoint(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let collectionPoint = new CollectionPoint_1.default(req.body.name, req.body.address, req.body.postcode, req.body.city);
-            yield typeorm_1.getManager().getRepository(CollectionPoint_1.default).save(collectionPoint);
-            res.send(collectionPoint);
+            res.send(yield collectionPoint.save());
         });
     }
 }
