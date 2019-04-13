@@ -88,6 +88,7 @@ class CompensationController {
                     .leftJoinAndSelect('billingReport.order', 'order')
                     .where('deletedAt IS NULL')
                     .andWhere('memberId = :id', { id: parseInt(req.params.member) })
+                    .andWhere('compensation.approved = true')
                     .getMany(),
                 typeorm_1.getManager()
                     .getRepository(CustomCompensation_1.default)
@@ -106,6 +107,7 @@ class CompensationController {
                     .leftJoinAndSelect('compensation.creator', 'creator')
                     .where('deletedAt IS NULL')
                     .andWhere('memberId = :id', { id: parseInt(req.params.member) })
+                    .andWhere('compensation.approved = true')
                     .getMany()
             ]).then(data => {
                 res.send(data[0].concat(data[1]));
