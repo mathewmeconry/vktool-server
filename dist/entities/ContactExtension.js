@@ -25,6 +25,9 @@ var ContactExtensionInterface;
     ContactExtensionInterface[ContactExtensionInterface["collectionPoint"] = 0] = "collectionPoint";
     ContactExtensionInterface[ContactExtensionInterface["entryDate"] = 1] = "entryDate";
     ContactExtensionInterface[ContactExtensionInterface["exitDate"] = 2] = "exitDate";
+    ContactExtensionInterface[ContactExtensionInterface["bankName"] = 3] = "bankName";
+    ContactExtensionInterface[ContactExtensionInterface["iban"] = 4] = "iban";
+    ContactExtensionInterface[ContactExtensionInterface["accountHolder"] = 5] = "accountHolder";
 })(ContactExtensionInterface = exports.ContactExtensionInterface || (exports.ContactExtensionInterface = {}));
 let ContactExtension = class ContactExtension extends Base_1.default {
 };

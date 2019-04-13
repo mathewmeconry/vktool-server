@@ -7,9 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const class_validator_1 = require("class-validator");
+const iban_1 = require("iban");
 let IsIBAN = class IsIBAN {
     validate(text, args) {
-        return IBAN.isValid(text);
+        return iban_1.isValid(text);
     }
     defaultMessage(args) {
         return 'IBAN ($value) is not valid';

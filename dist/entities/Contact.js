@@ -79,6 +79,9 @@ let Contact = class Contact extends BexioBase_1.default {
             return true;
         });
     }
+    ajustDates() {
+        this.birthday = new Date(this.birthday);
+    }
     storeOverride() {
         return __awaiter(this, void 0, void 0, function* () {
             let override = yield typeorm_1.getManager().getRepository(ContactExtension_1.default).findOne({ contactId: this.id });
@@ -150,19 +153,19 @@ __decorate([
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
     class_validator_1.IsOptional(),
-    class_validator_1.IsPhoneNumber('CH'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "phoneFixed", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
     class_validator_1.IsOptional(),
-    class_validator_1.IsPhoneNumber('CH'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "phoneFixedSecond", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
     class_validator_1.IsOptional(),
-    class_validator_1.IsPhoneNumber('CH'),
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Contact.prototype, "phoneMobile", void 0);
 __decorate([
@@ -196,6 +199,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], Contact.prototype, "loadOverride", null);
+__decorate([
+    typeorm_1.AfterLoad(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Contact.prototype, "ajustDates", null);
 __decorate([
     typeorm_1.AfterInsert(),
     typeorm_1.AfterUpdate(),

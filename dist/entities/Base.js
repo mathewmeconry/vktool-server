@@ -32,7 +32,6 @@ class Base {
 }
 __decorate([
     typeorm_1.PrimaryGeneratedColumn(),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Base.prototype, "id", void 0);
 __decorate([
