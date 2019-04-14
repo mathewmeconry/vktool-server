@@ -47,8 +47,8 @@ __decorate([
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
     class_validator_1.IsOptional(),
-    class_validator_1.IsString(),
-    __metadata("design:type", String)
+    class_validator_1.IsNumber(),
+    __metadata("design:type", Number)
 ], Position.prototype, "internalPos", void 0);
 __decorate([
     typeorm_1.Column('int', { nullable: true }),

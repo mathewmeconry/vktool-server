@@ -28,8 +28,8 @@ export default class Position extends BexioBase<Position> {
 
     @Column('text', { nullable: true })
     @IsOptional()
-    @IsString()
-    public internalPos?: string
+    @IsNumber()
+    public internalPos?: number
 
     @Column('int', { nullable: true })
     @IsOptional()
