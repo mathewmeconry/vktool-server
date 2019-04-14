@@ -1,4 +1,4 @@
-import { ManyToOne, Entity, JoinColumn, Column, OneToOne } from "typeorm";
+import { ManyToOne, Entity, JoinColumn, Column, OneToOne, AfterLoad } from "typeorm";
 import { IsOptional, IsDate, IsString, Validate } from 'class-validator'
 import CollectionPoint from "./CollectionPoint";
 import Contact from "./Contact";
@@ -57,4 +57,12 @@ export default class ContactExtension extends Base<ContactExtension> {
     @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
+
+    @AfterLoad()
+    public parseDates() {
+        for (let i in this) {
+            //@ts-ignore
+            if (i.toLocaleLowerCase().indexOf('date') > -1) this[i] = new Date(this[i])
+        }
+    }
 }

@@ -30,6 +30,13 @@ var ContactExtensionInterface;
     ContactExtensionInterface[ContactExtensionInterface["accountHolder"] = 5] = "accountHolder";
 })(ContactExtensionInterface = exports.ContactExtensionInterface || (exports.ContactExtensionInterface = {}));
 let ContactExtension = class ContactExtension extends Base_1.default {
+    parseDates() {
+        for (let i in this) {
+            //@ts-ignore
+            if (i.toLocaleLowerCase().indexOf('date') > -1)
+                this[i] = new Date(this[i]);
+        }
+    }
 };
 __decorate([
     typeorm_1.OneToOne(type => Contact_1.default),
@@ -80,6 +87,12 @@ __decorate([
     typeorm_1.JoinColumn(),
     __metadata("design:type", User_1.default)
 ], ContactExtension.prototype, "updatedBy", void 0);
+__decorate([
+    typeorm_1.AfterLoad(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ContactExtension.prototype, "parseDates", null);
 ContactExtension = __decorate([
     typeorm_1.Entity()
 ], ContactExtension);
