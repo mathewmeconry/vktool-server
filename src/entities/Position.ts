@@ -22,13 +22,9 @@ export default class Position extends BexioBase<Position> {
     public text?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsString()
     public pos?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsNumber()
     public internalPos?: number
 
     @Column('int', { nullable: true })
@@ -37,7 +33,5 @@ export default class Position extends BexioBase<Position> {
     public articleId?: number
 
     @Column('decimal', { nullable: true, precision: 10, scale: 2 })
-    @IsOptional()
-    @IsNumber()
     public positionTotal?: number
 }

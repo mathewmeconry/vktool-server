@@ -40,14 +40,10 @@ __decorate([
 ], Position.prototype, "text", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Position.prototype, "pos", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Position.prototype, "internalPos", void 0);
 __decorate([
@@ -58,8 +54,6 @@ __decorate([
 ], Position.prototype, "articleId", void 0);
 __decorate([
     typeorm_1.Column('decimal', { nullable: true, precision: 10, scale: 2 }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Position.prototype, "positionTotal", void 0);
 Position = __decorate([
