@@ -18,7 +18,6 @@ const BillingReport_1 = __importDefault(require("./BillingReport"));
 const Payout_1 = __importDefault(require("./Payout"));
 const User_1 = __importDefault(require("./User"));
 const Contact_1 = __importDefault(require("./Contact"));
-const class_validator_1 = require("class-validator");
 let OrderCompensation = class OrderCompensation extends Compensation_1.default {
     constructor(member, creator, date, billingReport, from, until, dayHours = 0, nightHours = 0, charge = true, approved = false, paied = false, valutaDate, payout) {
         super(member, creator, 0, date, approved, paied, valutaDate, payout);
@@ -80,32 +79,26 @@ __decorate([
 ], OrderCompensation.prototype, "billingReport", void 0);
 __decorate([
     typeorm_1.Column('int'),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "billingReportId", void 0);
 __decorate([
     typeorm_1.Column('int', { default: 0 }),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "dayHours", void 0);
 __decorate([
     typeorm_1.Column('int', { default: 0 }),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "nightHours", void 0);
 __decorate([
     typeorm_1.Column('datetime', { precision: 6 }),
-    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], OrderCompensation.prototype, "from", void 0);
 __decorate([
     typeorm_1.Column('datetime', { precision: 6 }),
-    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], OrderCompensation.prototype, "until", void 0);
 __decorate([
     typeorm_1.Column('boolean'),
-    class_validator_1.IsBoolean(),
     __metadata("design:type", Boolean)
 ], OrderCompensation.prototype, "charge", void 0);
 __decorate([

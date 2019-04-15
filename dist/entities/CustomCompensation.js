@@ -17,7 +17,6 @@ const Contact_1 = __importDefault(require("./Contact"));
 const User_1 = __importDefault(require("./User"));
 const Payout_1 = __importDefault(require("./Payout"));
 const typeorm_1 = require("typeorm");
-const class_validator_1 = require("class-validator");
 let CustomCompensation = class CustomCompensation extends Compensation_1.default {
     constructor(member, creator, amount, date, description, approved = false, paied = false, valutaDate, payout) {
         super(member, creator, amount, date, approved, paied, valutaDate, payout);
@@ -27,7 +26,6 @@ let CustomCompensation = class CustomCompensation extends Compensation_1.default
 };
 __decorate([
     typeorm_1.Column('text'),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], CustomCompensation.prototype, "description", void 0);
 CustomCompensation = __decorate([

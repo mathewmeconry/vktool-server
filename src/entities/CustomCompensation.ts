@@ -8,7 +8,6 @@ import { IsString } from "class-validator";
 @ChildEntity()
 export default class CustomCompensation extends Compensation<CustomCompensation> {
     @Column('text')
-    @IsString()
     public description: string
 
     constructor(member: Contact, creator: User, amount: number, date: Date, description: string, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {

@@ -15,12 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
 const BexioBase_1 = __importDefault(require("./BexioBase"));
 const Order_1 = __importDefault(require("./Order"));
-const class_validator_1 = require("class-validator");
 let Position = class Position extends BexioBase_1.default {
 };
 __decorate([
     typeorm_1.Column('int'),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Position.prototype, "orderBexioId", void 0);
 __decorate([
@@ -29,13 +27,10 @@ __decorate([
 ], Position.prototype, "order", void 0);
 __decorate([
     typeorm_1.Column('text'),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Position.prototype, "positionType", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], Position.prototype, "text", void 0);
 __decorate([
@@ -48,8 +43,6 @@ __decorate([
 ], Position.prototype, "internalPos", void 0);
 __decorate([
     typeorm_1.Column('int', { nullable: true }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Position.prototype, "articleId", void 0);
 __decorate([

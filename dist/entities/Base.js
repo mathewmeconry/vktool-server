@@ -18,24 +18,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
-const class_validator_1 = require("class-validator");
 class Base {
     save() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.nullAll();
-            const errors = yield class_validator_1.validate(this);
-            if (errors.length > 0)
-                throw new Error(JSON.stringify(errors));
             //@ts-ignore
             return typeorm_1.getManager().save(this);
         });
-    }
-    nullAll() {
-        for (let i in this) {
-            //@ts-ignore
-            if (!this[i])
-                this[i] = undefined;
-        }
     }
 }
 __decorate([

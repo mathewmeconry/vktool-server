@@ -5,6 +5,5 @@ import { IsString } from "class-validator";
 @Entity()
 export default class ContactType extends BexioBase<ContactType> {
     @Column('text')
-    @IsString()
     public name: string
 }

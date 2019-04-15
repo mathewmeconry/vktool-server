@@ -4,6 +4,5 @@ import { IsNumber } from "class-validator";
 
 export default abstract class BexioBase<T> extends Base<T> {
     @Column('int')
-    @IsNumber()
     public bexioId: number
 }

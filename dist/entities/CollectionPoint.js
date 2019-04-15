@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Base_1 = __importDefault(require("./Base"));
 const typeorm_1 = require("typeorm");
-const class_validator_1 = require("class-validator");
 let CollectionPoint = class CollectionPoint extends Base_1.default {
     constructor(name, address, postcode, city) {
         super();
@@ -26,22 +25,18 @@ let CollectionPoint = class CollectionPoint extends Base_1.default {
 };
 __decorate([
     typeorm_1.Column('text'),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], CollectionPoint.prototype, "name", void 0);
 __decorate([
     typeorm_1.Column('text'),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], CollectionPoint.prototype, "address", void 0);
 __decorate([
     typeorm_1.Column('text'),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], CollectionPoint.prototype, "postcode", void 0);
 __decorate([
     typeorm_1.Column('text'),
-    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], CollectionPoint.prototype, "city", void 0);
 CollectionPoint = __decorate([

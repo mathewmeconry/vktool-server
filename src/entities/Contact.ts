@@ -11,7 +11,6 @@ import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from "class-vali
 @Entity()
 export default class Contact extends BexioBase<Contact> {
     @Column('text')
-    @IsString()
     public nr: string
 
     @ManyToOne(type => ContactType, { eager: true })
@@ -19,63 +18,39 @@ export default class Contact extends BexioBase<Contact> {
     public contactType: ContactType
 
     @Column('text')
-    @IsOptional()
-    @IsString()
     public firstname: string
 
     @Column('text')
-    @IsOptional()
-    @IsString()
     public lastname: string
 
     @Column('date')
-    @IsOptional()
-    @IsDate()
     public birthday: Date
 
     @Column('text')
-    @IsOptional()
-    @IsString()
     public address: string
 
     @Column('text')
-    @IsOptional()
-    @IsString()
     public postcode: string
 
     @Column('text')
-    @IsOptional()
-    @IsString()
     public city: string
 
     @Column('text')
-    @IsOptional()
-    @IsString()
     public mail: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsEmail()
     public mailSecond?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsString()
     public phoneFixed?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsString()
     public phoneFixedSecond?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsString()
     public phoneMobile?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsString()
     public remarks?: string
 
     @ManyToMany(type => ContactGroup, { eager: true })

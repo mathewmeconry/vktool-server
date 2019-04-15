@@ -14,36 +14,29 @@ export default class Compensation<T> extends Base<T> {
     public member: Contact
 
     @Column({ nullable: true })
-    @IsOptional()
-    @IsNumber()
     public memberId?: number;
 
     @ManyToOne(type => User, { eager: true })
     public creator: User
 
     @Column('decimal', { precision: 10, scale: 2 })
-    @IsNumber()
     public amount: number
 
     @Column('date')
-    @IsDate()
     public date: Date
 
     @Column('boolean')
-    @IsBoolean()
     public approved: boolean
 
     @ManyToOne(type => User, { eager: true, nullable: true })
     @JoinColumn()
     public approvedBy?: User
 
-    @Column('boolean')
-    @IsBoolean()
+    @Column('boolean', { default: false })
+    
     public paied: boolean
 
     @Column('date', { nullable: true })
-    @IsOptional()
-    @IsDate()
     public valutaDate?: Date
 
     @ManyToOne(type => Payout, payout => payout.compensations, { nullable: true, eager: true })
@@ -54,8 +47,6 @@ export default class Compensation<T> extends Base<T> {
     public updatedBy: User
 
     @Column('date', { nullable: true })
-    @IsOptional()
-    @IsDate()
     public deletedAt?: Date
 
     @ManyToOne(type => User, { eager: true })

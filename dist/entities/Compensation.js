@@ -25,7 +25,6 @@ const Contact_1 = __importDefault(require("./Contact"));
 const Payout_1 = __importDefault(require("./Payout"));
 const User_1 = __importDefault(require("./User"));
 const Base_1 = __importDefault(require("./Base"));
-const class_validator_1 = require("class-validator");
 let Compensation = class Compensation extends Base_1.default {
     constructor(member, creator, amount, date, approved = false, paied = false, valutaDate, payout) {
         super();
@@ -58,8 +57,6 @@ __decorate([
 ], Compensation.prototype, "member", void 0);
 __decorate([
     typeorm_1.Column({ nullable: true }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Compensation.prototype, "memberId", void 0);
 __decorate([
@@ -68,17 +65,14 @@ __decorate([
 ], Compensation.prototype, "creator", void 0);
 __decorate([
     typeorm_1.Column('decimal', { precision: 10, scale: 2 }),
-    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], Compensation.prototype, "amount", void 0);
 __decorate([
     typeorm_1.Column('date'),
-    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], Compensation.prototype, "date", void 0);
 __decorate([
     typeorm_1.Column('boolean'),
-    class_validator_1.IsBoolean(),
     __metadata("design:type", Boolean)
 ], Compensation.prototype, "approved", void 0);
 __decorate([
@@ -87,14 +81,11 @@ __decorate([
     __metadata("design:type", User_1.default)
 ], Compensation.prototype, "approvedBy", void 0);
 __decorate([
-    typeorm_1.Column('boolean'),
-    class_validator_1.IsBoolean(),
+    typeorm_1.Column('boolean', { default: false }),
     __metadata("design:type", Boolean)
 ], Compensation.prototype, "paied", void 0);
 __decorate([
     typeorm_1.Column('date', { nullable: true }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], Compensation.prototype, "valutaDate", void 0);
 __decorate([
@@ -108,8 +99,6 @@ __decorate([
 ], Compensation.prototype, "updatedBy", void 0);
 __decorate([
     typeorm_1.Column('date', { nullable: true }),
-    class_validator_1.IsOptional(),
-    class_validator_1.IsDate(),
     __metadata("design:type", Date)
 ], Compensation.prototype, "deletedAt", void 0);
 __decorate([

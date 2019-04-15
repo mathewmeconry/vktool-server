@@ -12,27 +12,21 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
     public billingReport: BillingReport
 
     @Column('int')
-    @IsNumber()
     public billingReportId: number
 
     @Column('int', { default: 0 })
-    @IsNumber()
     public dayHours: number = 0
 
     @Column('int', { default: 0 })
-    @IsNumber()
     public nightHours: number = 0
 
     @Column('datetime', { precision: 6 })
-    @IsDate()
     public from: Date
 
     @Column('datetime', { precision: 6 })
-    @IsDate()
     public until: Date
 
     @Column('boolean')
-    @IsBoolean()
     public charge: boolean
 
     constructor(member: Contact, creator: User, date: Date, billingReport: BillingReport, from: Date, until: Date, dayHours: number = 0, nightHours: number = 0, charge: boolean = true, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {

@@ -16,13 +16,10 @@ export default class BillingReport extends Base<BillingReport> {
     @JoinColumn()
     public order: Order
 
-    @Column({ nullable: true })
-    @IsOptional()
-    @IsNumber()
+    @Column({ nullable: true })   
     public orderId?: number;
 
     @Column("date")
-    @IsDate()
     public date: Date
 
     @OneToMany(type => OrderCompensation, compensation => compensation.billingReport, { eager: true })
@@ -35,7 +32,6 @@ export default class BillingReport extends Base<BillingReport> {
 
     @ManyToMany(type => Contact, { eager: true })
     @JoinTable()
-    @IsArray()
     public drivers: Array<Contact>
 
     @ManyToOne(type => User, { nullable: true, eager: true })
@@ -43,16 +39,12 @@ export default class BillingReport extends Base<BillingReport> {
     public approvedBy?: User
 
     @Column("boolean")
-    @IsBoolean()
     public food: boolean
 
     @Column("text", { nullable: true })
-    @IsOptional()
-    @IsString()
     public remarks?: string
 
     @Column("text")
-    @IsString()
     public state: 'pending' | 'approved' | 'declined'
 
     @ManyToOne(type => User)

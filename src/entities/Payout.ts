@@ -7,7 +7,6 @@ import { IsDate } from "class-validator";
 @Entity()
 export default class Payout extends Base<Payout> {
     @Column('date')
-    @IsDate()
     public date: Date
 
     @OneToMany(type => Compensation, compensation => compensation.payout)

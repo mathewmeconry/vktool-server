@@ -30,28 +30,18 @@ export default class ContactExtension extends Base<ContactExtension> {
     public collectionPoint?: CollectionPoint
 
     @Column('date', { nullable: true })
-    @IsOptional()
-    @IsDate()
     public entryDate?: Date
 
     @Column('date', { nullable: true })
-    @IsOptional()
-    @IsDate()
     public exitDate?: Date
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsString()
     public bankName?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @Validate(IsIBAN)
     public iban?: string
 
     @Column('text', { nullable: true })
-    @IsOptional()
-    @IsString()
     public accountHolder?: string
 
     @ManyToOne(type => User)
