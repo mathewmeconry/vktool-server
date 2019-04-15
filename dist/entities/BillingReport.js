@@ -82,7 +82,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], BillingReport.prototype, "food", void 0);
 __decorate([
-    typeorm_1.Column("text"),
+    typeorm_1.Column("text", { nullable: true }),
     class_validator_1.IsOptional(),
     class_validator_1.IsString(),
     __metadata("design:type", String)
