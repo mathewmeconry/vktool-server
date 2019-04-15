@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class init2674800000000 {
+class init1555000000000 {
     up(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
             yield queryRunner.query("CREATE TABLE `payout` (`id` int NOT NULL AUTO_INCREMENT, `updatedAt` timestamp(6) NULL DEFAULT CURRENT_TIMESTAMP(6), `date` date NOT NULL, `updatedById` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
@@ -99,5 +99,5 @@ class init2674800000000 {
         });
     }
 }
-exports.init2674800000000 = init2674800000000;
-//# sourceMappingURL=2674800000000-init.js.map
+exports.init1555000000000 = init1555000000000;
+//# sourceMappingURL=1555000000000-init.js.map
