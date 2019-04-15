@@ -47,6 +47,7 @@ export default class BillingReport extends Base<BillingReport> {
     public food: boolean
 
     @Column("text")
+    @IsOptional()
     @IsString()
     public remarks: string
 
