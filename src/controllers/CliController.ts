@@ -1,7 +1,7 @@
 const express = require('express')
 import path from 'path'
 import * as Express from 'express'
-import { createServer } from 'http'
+import { createServer, Server } from 'http'
 import { BexioService } from '../services/BexioService'
 import * as bodyParser from 'body-parser'
 import AuthRoutes from '../routes/AuthRoutes';
