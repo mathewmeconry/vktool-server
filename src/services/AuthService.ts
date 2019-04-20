@@ -7,6 +7,7 @@ import User from '../entities/User';
 import Contact from '../entities/Contact';
 import config from 'config'
 import { getManager } from "typeorm";
+import { MockStrategy } from "passport-mock-strategy";
 
 export default class AuthService {
     public static init(app: Express.Application) {
@@ -14,6 +15,8 @@ export default class AuthService {
         passport.deserializeUser(AuthService.deserializeUser);
 
         AuthService.addOutlookStrategy()
+
+        if (process.env.TESTING) passport.use(new MockStrategy());
 
         app.use(passport.initialize())
         app.use(passport.session())
@@ -48,11 +51,19 @@ export default class AuthService {
     }
 
     public static serializeUser(user: User, done: (err: any, userId?: string) => void): void {
-        done(null, user.id.toString());
+        done(null, `${user.provider}-${user.id.toString()}`);
     }
 
     public static deserializeUser(id: string, done: (err: any, user?: User) => void): void {
-        getManager().getRepository(User).find({ id: parseInt(id) })
+        if (id.split('-')[0] === 'mock') {
+            let user = new User()
+            user.displayName = 'Mock User'
+            user.roles = [AuthRoles.ADMIN]
+            done(null, user)
+            return
+        }
+
+        getManager().getRepository(User).find({ id: parseInt(id.split('-')[1]) })
             .then(user => {
                 if (user && user.length === 1) {
                     done(null, user[0])

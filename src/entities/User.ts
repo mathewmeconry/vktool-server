@@ -25,6 +25,8 @@ export default class User extends Base<User> {
     @JoinColumn()
     public bexioContact?: Contact
 
+    public provider: string
+
     @AfterLoad()
     public enrichPermissions(): void {
         if (this.bexioContact && typeof this.bexioContact.getRank === 'function') {
