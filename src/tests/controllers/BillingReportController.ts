@@ -1,0 +1,116 @@
+import * as Express from 'express'
+import TestHelper from '../helpers/TestHelper';
+import supertest = require('supertest');
+import { expect } from 'chai';
+import Order from '../../entities/Order';
+import BillingReport from '../../entities/BillingReport';
+
+
+describe('BillingReportController', function () {
+    this.timeout(5000)
+    let app: Express.Application;
+
+    before(() => {
+        app = TestHelper.app
+    })
+
+    it('get open orders', function () {
+        let now = new Date()
+        let before14Days = new Date()
+        before14Days.setDate(before14Days.getDate() - 14)
+
+        return supertest(app)
+            .get('/api/billing-reports/open')
+            .set('Cookie', TestHelper.authenticatedCookies)
+            .expect(200)
+            .then(res => {
+                expect(res.body).to.be.string
+                let data: Array<Order> = res.body
+                expect(data).to.has.ownProperty('length')
+                expect(data.length).to.be.greaterThan(0)
+
+                for (let order of data) {
+                    expect(order).to.has.ownProperty('documentNr')
+                    expect(order).to.has.ownProperty('id')
+                    expect(order).to.has.ownProperty('title')
+                    expect(order).to.has.ownProperty('contact')
+                    expect(order.contact).to.has.ownProperty('lastname')
+
+                    expect(order.execDates).to.has.ownProperty('length')
+                    expect(order.execDates.map(date => {
+                        if (new Date(date) >= before14Days) return true
+                        return false
+                    })).includes(true)
+                }
+            })
+    })
+
+    it('create report', async () => {
+        let report = {
+            creatorId: 1,
+            orderId: 1,
+            els: [{ id: 1 }],
+            drivers: [{ id: 1 }],
+            date: '2019-04-19T00:00:00.000Z',
+            compensationEntries: {
+                '2': {
+                    from: '2019-04-19T07:00:00.000Z',
+                    until: '2019-04-19T22:00:00.000Z',
+                    charge: true
+                }
+            },
+            food: true,
+            remarks: ''
+        }
+
+        return supertest(app)
+            .put('/api/billing-reports')
+            .set('Cookie', TestHelper.authenticatedCookies)
+            .expect(200)
+            .send(report)
+            .then(res => {
+                console.log(res.body)
+                let reportres: BillingReport = res.body
+                expect(reportres.creator.id).to.be.equal(report.creatorId)
+                expect(reportres.order.id).to.be.equal(report.orderId)
+                expect(reportres.els).to.have.length(1)
+                expect(reportres.els[0].id).to.be.equal(report.els[0].id)
+                expect(reportres.drivers).to.have.length(1)
+                expect(reportres.drivers[0].id).to.be.equal(report.drivers[0].id)
+                expect(reportres.date).to.be.equal(report.date)
+                expect(reportres.food).to.be.equal(report.food)
+                expect(reportres.remarks).to.be.equal(report.remarks)
+
+                expect(reportres.compensations).to.have.length(1)
+                expect(reportres.compensations[0].member.id).to.be.equal(2)
+                expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from)
+                expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until)
+                expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge)
+                expect(reportres.compensations[0].paied).to.be.equal(false)
+                expect(reportres.compensations[0].payout).to.be.equal(undefined)
+                expect(reportres.compensations[0].amount).to.be.equal(155)
+                expect(reportres.compensations[0].approved).to.be.equal(false)
+                expect(reportres.compensations[0].creator).to.be.equal(report.creatorId)
+                expect(reportres.compensations[0].date).to.be.equal(report.date)
+                expect(reportres.compensations[0].dayHours).to.be.equal(14)
+                expect(reportres.compensations[0].nightHours).to.be.equal(1)
+                expect(reportres.compensations[0].valutaDate).to.be.equal(undefined)
+            })
+    })
+
+    it('get reports', async () => {
+        throw new Error('Not defined')
+    })
+
+    it('approve report', async () => {
+        throw new Error('Not defined')
+    })
+
+    it('decline report', async () => {
+        throw new Error('Not defined')
+    })
+
+    it('edit report', async () => {
+        throw new Error('Not defined')
+    })
+})
