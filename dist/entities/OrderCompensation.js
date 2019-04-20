@@ -35,8 +35,8 @@ let OrderCompensation = class OrderCompensation extends Compensation_1.default {
         this.amount = (this.dayHours * 10) + (this.nightHours * 15);
     }
     calculateHours() {
-        let _0700 = new Date("1970-01-01 07:00");
-        let _2100 = new Date("1970-01-01 21:00");
+        let _0700 = new Date("1970-01-01T07:00:00.000+01:00");
+        let _2100 = new Date("1970-01-01T21:00:00.000+01:00");
         let from = new Date(this.from.getTime());
         let until = new Date(this.until.getTime());
         let dayHours = 0;
@@ -82,11 +82,11 @@ __decorate([
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "billingReportId", void 0);
 __decorate([
-    typeorm_1.Column('int', { default: 0 }),
+    typeorm_1.Column('float'),
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "dayHours", void 0);
 __decorate([
-    typeorm_1.Column('int', { default: 0 }),
+    typeorm_1.Column('float'),
     __metadata("design:type", Number)
 ], OrderCompensation.prototype, "nightHours", void 0);
 __decorate([

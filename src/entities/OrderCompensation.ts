@@ -14,10 +14,10 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
     @Column('int')
     public billingReportId: number
 
-    @Column('int', { default: 0 })
+    @Column('float')
     public dayHours: number = 0
 
-    @Column('int', { default: 0 })
+    @Column('float')
     public nightHours: number = 0
 
     @Column('datetime', { precision: 6 })
@@ -45,9 +45,9 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         this.amount = (this.dayHours * 10) + (this.nightHours * 15)
     }
 
-    private calculateHours() {
-        let _0700 = new Date("1970-01-01 07:00")
-        let _2100 = new Date("1970-01-01 21:00")
+    public calculateHours() {
+        let _0700 = new Date("1970-01-01T07:00:00.000+01:00")
+        let _2100 = new Date("1970-01-01T21:00:00.000+01:00")
         let from = new Date(this.from.getTime())
         let until = new Date(this.until.getTime())
         let dayHours = 0
