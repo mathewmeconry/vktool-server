@@ -48,13 +48,12 @@ export default class BillingReportController {
     public static async put(req: Express.Request, res: Express.Response): Promise<void> {
         let contactRepo = getManager().getRepository(Contact)
 
-        let creator = await getManager().getRepository(User).findOneOrFail({ id: req.body.creatorId })
         let order = await getManager().getRepository(Order).findOneOrFail({ id: req.body.orderId })
         let els = await contactRepo.findByIds((req.body.els as Array<Contact>).map(el => el.id))
         let drivers = await contactRepo.findByIds((req.body.drivers as Array<Contact>).map(driver => driver.id))
 
         let billingReport = new BillingReport(
-            creator,
+            req.user,
             order,
             new Date(req.body.date),
             [],
@@ -75,7 +74,7 @@ export default class BillingReportController {
 
             let compensationEntry = new OrderCompensation(
                 member,
-                creator,
+                req.user,
                 billingReport.date,
                 billingReport,
                 new Date(entry.from),
