@@ -57,6 +57,7 @@ export default class AuthService {
     public static deserializeUser(id: string, done: (err: any, user?: User) => void): void {
         if (id.split('-')[0] === 'mock') {
             let user = new User()
+            user.id = 1
             user.displayName = 'Mock User'
             user.roles = [AuthRoles.ADMIN]
             done(null, user)
