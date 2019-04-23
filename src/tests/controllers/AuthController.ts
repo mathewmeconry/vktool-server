@@ -4,7 +4,7 @@ import * as Express from 'express'
 import supertest = require("supertest");
 import TestHelper from "../helpers/TestHelper";
 
-describe('AuthRoutes', () => {
+describe('AuthController', () => {
     let app: Express.Application;
 
     before(() => {
