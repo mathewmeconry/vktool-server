@@ -1,7 +1,7 @@
 const express = require('express')
 import path from 'path'
 import * as Express from 'express'
-import { createServer } from 'http'
+import { createServer, Server } from 'http'
 import { BexioService } from '../services/BexioService'
 import * as bodyParser from 'body-parser'
 import AuthRoutes from '../routes/AuthRoutes';
@@ -19,7 +19,7 @@ import FileStore from 'session-file-store'
 import CollectionPointsRoutes from '../routes/CollectionPointsRoutes';
 
 export default class CliController {
-    public static async startServer() {
+    public static async startServer(): Promise<{ app: Express.Application, server: Server }> {
         let app: Express.Application = express()
         const server = createServer(app)
 
@@ -41,7 +41,7 @@ export default class CliController {
             genid: (req) => {
                 return uuid() // use UUIDs for session IDs
             },
-            store: new (FileStore(session)),
+            store: new (FileStore(session))(),
             secret: 'My super mega secret secret',
             resave: false,
             saveUninitialized: true
@@ -67,5 +67,7 @@ export default class CliController {
         server.listen(process.env.PORT || config.get('port'), () => {
             console.log('Listening on port: ' + (process.env.PORT || config.get('port')))
         })
+
+        return { app, server }
     }
 }

@@ -134,56 +134,46 @@ export default class CompensationController {
             res.send({
                 error: 'Not authorized'
             })
-        } else {
-            let billingReport = undefined;
-            let contactRepo = getManager().getRepository(Contact)
-            let promises: Array<Promise<OrderCompensation | CustomCompensation>> = []
+            return
+        }
 
-            if (req.body.hasOwnProperty('billingReportId')) {
-                billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne()
+        let billingReport = undefined;
+        let contactRepo = getManager().getRepository(Contact)
+        let promises: Array<Promise<OrderCompensation | CustomCompensation>> = []
+
+        if (req.body.hasOwnProperty('billingReportId')) {
+            billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne()
+        }
+
+        if (billingReport) {
+            for (let entry of req.body.entries) {
+                let member = await contactRepo.findOneOrFail({ id: entry.id })
+
+                let compensationEntry = new OrderCompensation(
+                    member,
+                    req.user,
+                    billingReport.date,
+                    billingReport,
+                    new Date(entry.from),
+                    new Date(entry.until),
+                    0,
+                    0,
+                    entry.charge,
+                    (billingReport.state === 'approved') ? true : false
+                )
+
+                promises.push(compensationEntry.save())
             }
+            billingReport.updatedBy = req.user
+            await billingReport.save()
 
-            if (billingReport) {
-                for (let entry of req.body.entries) {
-                    let member = await contactRepo.findOneOrFail({ id: entry.id })
-
-                    let compensationEntry = new OrderCompensation(
-                        member,
-                        req.user,
-                        billingReport.date,
-                        billingReport,
-                        new Date(entry.from),
-                        new Date(entry.until),
-                        0,
-                        0,
-                        entry.charge,
-                        (billingReport.state === 'approved') ? true : false
-                    )
-
-                    promises.push(compensationEntry.save())
-                }
-                billingReport.updatedBy = req.user
-                await billingReport.save()
-            } else {
-                for (let entry of req.body.entries) {
-                    let member = await contactRepo.findOneOrFail({ id: parseInt(entry.id) })
-
-                    let compensationEntry = new CustomCompensation(
-                        member,
-                        req.user,
-                        entry.amount,
-                        entry.date,
-                        entry.description
-                    )
-
-                    promises.push(compensationEntry.save())
-                }
-            }
-
-            await Promise.all<OrderCompensation | CustomCompensation>(promises)
+            let dbCompensations = await Promise.all<OrderCompensation | CustomCompensation>(promises)
             res.status(200)
+            res.send(dbCompensations)
+        } else {
+            res.status(500)
             res.send({
-                success: true
+                message: 'sorry man...'
             })
         }
     }
@@ -214,7 +204,7 @@ export default class CompensationController {
             compensation.deletedAt = new Date()
             compensation.deletedBy = req.user
             await compensation.save()
-            
+
             if (compensation instanceof OrderCompensation) {
                 let billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: compensation.billingReportId }).getOne()
 
