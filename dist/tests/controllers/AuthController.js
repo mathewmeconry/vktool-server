@@ -7,7 +7,7 @@ const chai_1 = require("chai");
 const config = require("config");
 const supertest = require("supertest");
 const TestHelper_1 = __importDefault(require("../helpers/TestHelper"));
-describe('AuthRoutes', () => {
+describe('AuthController', () => {
     let app;
     before(() => {
         app = TestHelper_1.default.app;

@@ -14,7 +14,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const BillingReport_1 = __importDefault(require("../entities/BillingReport"));
 const Contact_1 = __importDefault(require("../entities/Contact"));
 const Order_1 = __importDefault(require("../entities/Order"));
-const User_1 = __importDefault(require("../entities/User"));
 const typeorm_1 = require("typeorm");
 const OrderCompensation_1 = __importDefault(require("../entities/OrderCompensation"));
 const AuthService_1 = __importDefault(require("../services/AuthService"));
@@ -55,18 +54,17 @@ class BillingReportController {
     static put(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let contactRepo = typeorm_1.getManager().getRepository(Contact_1.default);
-            let creator = yield typeorm_1.getManager().getRepository(User_1.default).findOneOrFail({ id: req.body.creatorId });
             let order = yield typeorm_1.getManager().getRepository(Order_1.default).findOneOrFail({ id: req.body.orderId });
             let els = yield contactRepo.findByIds(req.body.els.map(el => el.id));
             let drivers = yield contactRepo.findByIds(req.body.drivers.map(driver => driver.id));
-            let billingReport = new BillingReport_1.default(creator, order, new Date(req.body.date), [], els, drivers, req.body.food, req.body.remarks, 'pending');
+            let billingReport = new BillingReport_1.default(req.user, order, new Date(req.body.date), [], els, drivers, req.body.food, req.body.remarks, 'pending');
             billingReport.updatedBy = req.user;
             billingReport = yield billingReport.save();
             let compensationEntries = [];
             for (let i in req.body.compensationEntries) {
                 let entry = req.body.compensationEntries[i];
                 let member = yield contactRepo.findOneOrFail({ id: parseInt(i) });
-                let compensationEntry = new OrderCompensation_1.default(member, creator, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge);
+                let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge);
                 compensationEntry.updatedBy = req.user;
                 yield compensationEntry.save();
                 // reset the billing report to convert it to json (circular reference)

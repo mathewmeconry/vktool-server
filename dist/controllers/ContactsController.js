@@ -29,7 +29,7 @@ class ContactsController {
     }
     static getRanks(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let filter = { 'bexioId': typeorm_1.In([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14]) };
+            let filter = { 'bexioId': typeorm_1.In([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33]) };
             let contactGroups = yield typeorm_1.getManager().getRepository(ContactGroup_1.default).find(filter);
             res.send(contactGroups);
         });
