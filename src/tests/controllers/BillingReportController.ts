@@ -11,7 +11,6 @@ describe('BillingReportController', function () {
     let app: Express.Application;
     let dbReport: BillingReport
     let report = {
-        creatorId: 1,
         orderId: 2,
         els: [{ id: 3 }],
         drivers: [{ id: 4 }],
@@ -70,7 +69,7 @@ describe('BillingReportController', function () {
             .send(report)
             .then(res => {
                 let reportres: BillingReport = res.body
-                expect(reportres.creator.id).to.be.equal(report.creatorId)
+                expect(reportres.creator.id).to.be.equal(1)
                 expect(reportres.order.id).to.be.equal(report.orderId)
                 expect(reportres.els.length).to.be.equal(1)
                 expect(reportres.els[0].id).to.be.equal(report.els[0].id)
@@ -90,7 +89,7 @@ describe('BillingReportController', function () {
                 expect(reportres.compensations[0].payout).to.be.equal(undefined)
                 expect(reportres.compensations[0].amount).to.be.equal(155)
                 expect(reportres.compensations[0].approved).to.be.equal(false)
-                expect(reportres.compensations[0].creator.id).to.be.equal(report.creatorId)
+                expect(reportres.compensations[0].creator.id).to.be.equal(1)
                 expect(reportres.compensations[0].date).to.be.equal(report.date)
                 expect(reportres.compensations[0].dayHours).to.be.equal(14)
                 expect(reportres.compensations[0].nightHours).to.be.equal(1)
@@ -107,7 +106,7 @@ describe('BillingReportController', function () {
             .expect(200)
             .then(res => {
                 let reportres: BillingReport = res.body[res.body.length - 1]
-                expect(reportres.creator.id).to.be.equal(report.creatorId)
+                expect(reportres.creator.id).to.be.equal(1)
                 expect(reportres.order.id).to.be.equal(report.orderId)
                 expect(reportres.els.length).to.be.equal(1)
                 expect(reportres.els[0].id).to.be.equal(report.els[0].id)
