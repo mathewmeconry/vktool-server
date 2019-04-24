@@ -24,8 +24,9 @@ stages:
 
 before_script:
   - yarn
-  - set
 
 test:
   stage: test
-  script: yarn run test
+  script: |
+    set
+    yarn run test
