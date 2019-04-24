@@ -15,8 +15,8 @@ variables:
   TYPEORM_CONNECTION: mariadb
   TYPEORM_PORT: 3306
   TYPEORM_SYNCHRONIZE: "FALSE"
-  TYPEORM_MIGRATIONS_RUN: 'true'
-  TYPEORM_MIGRATIONS: 'dist/migrations/*.js'
+  TYPEORM_MIGRATIONS_RUN: "true"
+  TYPEORM_MIGRATIONS: "dist/migrations/*.js"
 
 
 
@@ -30,7 +30,7 @@ stages:
   - test
 
 before_script:
-  - export TYPEORM_HOST=$(MARIADB_PORT_3306_TCP_ADDR)
+  - export TYPEORM_HOST=$(echo $MARIADB_PORT_3306_TCP_ADDR)
   - yarn
 
 test:
