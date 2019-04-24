@@ -142,34 +142,30 @@ class CompensationController {
                 res.send({
                     error: 'Not authorized'
                 });
+                return;
+            }
+            let billingReport = undefined;
+            let contactRepo = typeorm_1.getManager().getRepository(Contact_1.default);
+            let promises = [];
+            if (req.body.hasOwnProperty('billingReportId')) {
+                billingReport = yield typeorm_1.getManager().getRepository(BillingReport_1.default).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne();
+            }
+            if (billingReport) {
+                for (let entry of req.body.entries) {
+                    let member = yield contactRepo.findOneOrFail({ id: entry.id });
+                    let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge, (billingReport.state === 'approved') ? true : false);
+                    promises.push(compensationEntry.save());
+                }
+                billingReport.updatedBy = req.user;
+                yield billingReport.save();
+                let dbCompensations = yield Promise.all(promises);
+                res.status(200);
+                res.send(dbCompensations);
             }
             else {
-                let billingReport = undefined;
-                let contactRepo = typeorm_1.getManager().getRepository(Contact_1.default);
-                let promises = [];
-                if (req.body.hasOwnProperty('billingReportId')) {
-                    billingReport = yield typeorm_1.getManager().getRepository(BillingReport_1.default).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne();
-                }
-                if (billingReport) {
-                    for (let entry of req.body.entries) {
-                        let member = yield contactRepo.findOneOrFail({ id: entry.id });
-                        let compensationEntry = new OrderCompensation_1.default(member, req.user, billingReport.date, billingReport, new Date(entry.from), new Date(entry.until), 0, 0, entry.charge, (billingReport.state === 'approved') ? true : false);
-                        promises.push(compensationEntry.save());
-                    }
-                    billingReport.updatedBy = req.user;
-                    yield billingReport.save();
-                }
-                else {
-                    for (let entry of req.body.entries) {
-                        let member = yield contactRepo.findOneOrFail({ id: parseInt(entry.id) });
-                        let compensationEntry = new CustomCompensation_1.default(member, req.user, entry.amount, entry.date, entry.description);
-                        promises.push(compensationEntry.save());
-                    }
-                }
-                yield Promise.all(promises);
-                res.status(200);
+                res.status(500);
                 res.send({
-                    success: true
+                    message: 'sorry man...'
                 });
             }
         });

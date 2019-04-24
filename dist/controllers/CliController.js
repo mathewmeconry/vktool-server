@@ -57,7 +57,7 @@ class CliController {
                 genid: (req) => {
                     return uuid_1.default(); // use UUIDs for session IDs
                 },
-                store: new (session_file_store_1.default(express_session_1.default)),
+                store: new (session_file_store_1.default(express_session_1.default))(),
                 secret: 'My super mega secret secret',
                 resave: false,
                 saveUninitialized: true
@@ -79,6 +79,7 @@ class CliController {
             server.listen(process.env.PORT || config_1.default.get('port'), () => {
                 console.log('Listening on port: ' + (process.env.PORT || config_1.default.get('port')));
             });
+            return { app, server };
         });
     }
 }

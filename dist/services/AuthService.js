@@ -19,11 +19,14 @@ const User_1 = __importDefault(require("../entities/User"));
 const Contact_1 = __importDefault(require("../entities/Contact"));
 const config_1 = __importDefault(require("config"));
 const typeorm_1 = require("typeorm");
+const passport_mock_strategy_1 = require("passport-mock-strategy");
 class AuthService {
     static init(app) {
         passport_1.default.serializeUser(AuthService.serializeUser);
         passport_1.default.deserializeUser(AuthService.deserializeUser);
         AuthService.addOutlookStrategy();
+        if (process.env.TESTING)
+            passport_1.default.use(new passport_mock_strategy_1.MockStrategy());
         app.use(passport_1.default.initialize());
         app.use(passport_1.default.session());
     }
@@ -51,10 +54,19 @@ class AuthService {
         return req.isAuthenticated();
     }
     static serializeUser(user, done) {
-        done(null, user.id.toString());
+        done(null, `${user.provider}-${user.id.toString()}`);
     }
     static deserializeUser(id, done) {
-        typeorm_1.getManager().getRepository(User_1.default).find({ id: parseInt(id) })
+        if (id.split('-')[0] === 'mock') {
+            let user = new User_1.default();
+            user.id = 1;
+            user.displayName = 'Mock User';
+            user.roles = [AuthRoles_1.AuthRoles.ADMIN];
+            user.provider = 'mock';
+            done(null, user);
+            return;
+        }
+        typeorm_1.getManager().getRepository(User_1.default).find({ id: parseInt(id.split('-')[1]) })
             .then(user => {
             if (user && user.length === 1) {
                 done(null, user[0]);
@@ -102,7 +114,8 @@ class AuthService {
                             refreshToken: '',
                             displayName: profile.displayName,
                             roles: [AuthRoles_1.AuthRoles.AUTHENTICATED],
-                            bexioContact: contact || undefined
+                            bexioContact: contact || undefined,
+                            provider: 'office365'
                         };
                     }).catch(() => {
                         userInfo = {
@@ -110,7 +123,8 @@ class AuthService {
                             accessToken: accessToken,
                             displayName: profile.displayName,
                             roles: [AuthRoles_1.AuthRoles.AUTHENTICATED],
-                            refreshToken: ''
+                            refreshToken: '',
+                            provider: 'office365'
                         };
                     }).then(() => __awaiter(this, void 0, void 0, function* () {
                         //@ts-ignore

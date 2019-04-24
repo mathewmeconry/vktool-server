@@ -17,6 +17,22 @@ const chai_1 = require("chai");
 describe('BillingReportController', function () {
     this.timeout(5000);
     let app;
+    let dbReport;
+    let report = {
+        orderId: 2,
+        els: [{ id: 3 }],
+        drivers: [{ id: 4 }],
+        date: '2019-04-19T00:00:00.000Z',
+        compensationEntries: {
+            '2': {
+                from: '2019-04-19T07:00:00.000Z',
+                until: '2019-04-19T22:00:00.000Z',
+                charge: true
+            }
+        },
+        food: true,
+        remarks: ''
+    };
     before(() => {
         app = TestHelper_1.default.app;
     });
@@ -49,40 +65,24 @@ describe('BillingReportController', function () {
         });
     });
     it('create report', () => __awaiter(this, void 0, void 0, function* () {
-        let report = {
-            creatorId: 1,
-            orderId: 1,
-            els: [{ id: 1 }],
-            drivers: [{ id: 1 }],
-            date: '2019-04-19T00:00:00.000Z',
-            compensationEntries: {
-                '2': {
-                    from: '2019-04-19T07:00:00.000Z',
-                    until: '2019-04-19T22:00:00.000Z',
-                    charge: true
-                }
-            },
-            food: true,
-            remarks: ''
-        };
         return supertest(app)
             .put('/api/billing-reports')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
             .expect(200)
             .send(report)
             .then(res => {
-            console.log(res.body);
             let reportres = res.body;
-            chai_1.expect(reportres.creator.id).to.be.equal(report.creatorId);
+            chai_1.expect(reportres.creator.id).to.be.equal(1);
             chai_1.expect(reportres.order.id).to.be.equal(report.orderId);
-            chai_1.expect(reportres.els).to.have.length(1);
+            chai_1.expect(reportres.els.length).to.be.equal(1);
             chai_1.expect(reportres.els[0].id).to.be.equal(report.els[0].id);
-            chai_1.expect(reportres.drivers).to.have.length(1);
+            chai_1.expect(reportres.drivers.length).to.be.equal(1);
             chai_1.expect(reportres.drivers[0].id).to.be.equal(report.drivers[0].id);
             chai_1.expect(reportres.date).to.be.equal(report.date);
             chai_1.expect(reportres.food).to.be.equal(report.food);
+            chai_1.expect(reportres.state).to.be.equal('pending');
             chai_1.expect(reportres.remarks).to.be.equal(report.remarks);
-            chai_1.expect(reportres.compensations).to.have.length(1);
+            chai_1.expect(reportres.compensations.length).to.be.equal(1);
             chai_1.expect(reportres.compensations[0].member.id).to.be.equal(2);
             chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from);
             chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until);
@@ -91,24 +91,76 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.compensations[0].payout).to.be.equal(undefined);
             chai_1.expect(reportres.compensations[0].amount).to.be.equal(155);
             chai_1.expect(reportres.compensations[0].approved).to.be.equal(false);
-            chai_1.expect(reportres.compensations[0].creator).to.be.equal(report.creatorId);
+            chai_1.expect(reportres.compensations[0].creator.id).to.be.equal(1);
             chai_1.expect(reportres.compensations[0].date).to.be.equal(report.date);
             chai_1.expect(reportres.compensations[0].dayHours).to.be.equal(14);
             chai_1.expect(reportres.compensations[0].nightHours).to.be.equal(1);
-            chai_1.expect(reportres.compensations[0].valutaDate).to.be.equal(undefined);
+            chai_1.expect(reportres.compensations[0].valutaDate).to.be.equal(null);
+            dbReport = reportres;
         });
     }));
     it('get reports', () => __awaiter(this, void 0, void 0, function* () {
-        throw new Error('Not defined');
+        return supertest(app)
+            .get('/api/billing-reports')
+            .set('Cookie', TestHelper_1.default.authenticatedCookies)
+            .expect(200)
+            .then(res => {
+            let reportres = res.body[res.body.length - 1];
+            chai_1.expect(reportres.creator.id).to.be.equal(1);
+            chai_1.expect(reportres.order.id).to.be.equal(report.orderId);
+            chai_1.expect(reportres.els.length).to.be.equal(1);
+            chai_1.expect(reportres.els[0].id).to.be.equal(report.els[0].id);
+            chai_1.expect(reportres.drivers.length).to.be.equal(1);
+            chai_1.expect(reportres.drivers[0].id).to.be.equal(report.drivers[0].id);
+            chai_1.expect(reportres.date).to.be.equal('2019-04-19');
+            chai_1.expect(reportres.food).to.be.equal(report.food);
+            chai_1.expect(reportres.state).to.be.equal('pending');
+            chai_1.expect(reportres.remarks).to.be.equal(report.remarks);
+            chai_1.expect(reportres.compensations.length).to.be.equal(1);
+            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(2);
+            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from);
+            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until);
+            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge);
+            chai_1.expect(reportres.compensations[0].paied).to.be.equal(false);
+            chai_1.expect(reportres.compensations[0].payout).to.be.equal(undefined);
+            chai_1.expect(reportres.compensations[0].amount).to.be.equal('155.00');
+            chai_1.expect(reportres.compensations[0].approved).to.be.equal(false);
+            chai_1.expect(reportres.compensations[0].date).to.be.equal('2019-04-19');
+            chai_1.expect(reportres.compensations[0].dayHours).to.be.equal(14);
+            chai_1.expect(reportres.compensations[0].nightHours).to.be.equal(1);
+            chai_1.expect(reportres.compensations[0].valutaDate).to.be.equal(null);
+        });
     }));
     it('approve report', () => __awaiter(this, void 0, void 0, function* () {
-        throw new Error('Not defined');
+        return supertest(app)
+            .post('/api/billing-reports/approve')
+            .set('Cookie', TestHelper_1.default.authenticatedCookies)
+            .expect(200)
+            .send(dbReport)
+            .then(res => {
+            chai_1.expect(res.body.state).to.be.equal('approved');
+        });
     }));
     it('decline report', () => __awaiter(this, void 0, void 0, function* () {
-        throw new Error('Not defined');
+        return supertest(app)
+            .post('/api/billing-reports/decline')
+            .set('Cookie', TestHelper_1.default.authenticatedCookies)
+            .expect(200)
+            .send(dbReport)
+            .then(res => {
+            chai_1.expect(res.body.state).to.be.equal('declined');
+        });
     }));
     it('edit report', () => __awaiter(this, void 0, void 0, function* () {
-        throw new Error('Not defined');
+        dbReport.date = new Date('2019-04-20T00:00:00.000Z');
+        return supertest(app)
+            .post('/api/billing-reports')
+            .set('Cookie', TestHelper_1.default.authenticatedCookies)
+            .expect(200)
+            .send(dbReport)
+            .then(res => {
+            chai_1.expect(res.body.date).to.be.equal('2019-04-20T00:00:00.000Z');
+        });
     }));
 });
 //# sourceMappingURL=BillingReportController.js.map
