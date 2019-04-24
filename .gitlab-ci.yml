@@ -17,6 +17,10 @@ variables:
   TYPEORM_SYNCHRONIZE: "FALSE"
   TYPEORM_MIGRATIONS_RUN: "true"
   TYPEORM_MIGRATIONS: "dist/migrations/*.js"
+  TYPEORM_USERNAME: root
+  TYPEORM_PASSWORD: password
+  TYPEORM_DATABASE: vktool
+  TYPEORM_ENTITIES: "dist/entities/*.js"
 
 
 
