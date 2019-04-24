@@ -27,5 +27,5 @@ before_script:
   - yarn run migrate
 
 test:
-  stage: build
+  stage: test
   script: yarn run test
