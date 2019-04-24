@@ -23,9 +23,9 @@ stages:
   - test
 
 before_script:
+  - export TYPEORM_PORT=3306
   - yarn
   - yarn run migrate
-  - export TYPEORM_PORT=3306
 
 test:
   stage: test
