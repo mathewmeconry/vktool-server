@@ -46,7 +46,7 @@ describe('CompensationController', function () {
     before(() => {
         app = TestHelper_1.default.app;
     });
-    it('add', () => __awaiter(this, void 0, void 0, function* () {
+    it('should add a new custom compensation', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .put('/api/compensations')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -71,7 +71,7 @@ describe('CompensationController', function () {
             chai_1.expect(dbCompensation).not.to.have.ownProperty('charge');
         });
     }));
-    it('add bulk', () => __awaiter(this, void 0, void 0, function* () {
+    it('should add a bulk of order compensations', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .put('/api/compensations/bulk')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -96,7 +96,7 @@ describe('CompensationController', function () {
             }
         });
     }));
-    it('approve', () => __awaiter(this, void 0, void 0, function* () {
+    it('should approve the compensation', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .post('/api/compensations/approve')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -106,7 +106,7 @@ describe('CompensationController', function () {
             chai_1.expect(res.body.success).to.be.true;
         });
     }));
-    it('delete', () => __awaiter(this, void 0, void 0, function* () {
+    it('should delete the compensation', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .delete('/api/compensations')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -117,7 +117,7 @@ describe('CompensationController', function () {
             chai_1.expect(res.body.deletedBy.id).to.be.equal(1);
         });
     }));
-    it('get all', () => __awaiter(this, void 0, void 0, function* () {
+    it('should get all compensations', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .get('/api/compensations')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -126,7 +126,7 @@ describe('CompensationController', function () {
             chai_1.expect(res.body.length).to.be.greaterThan(0);
         });
     }));
-    it('get for member', () => __awaiter(this, void 0, void 0, function* () {
+    it('should get all for a specific member', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .get('/api/compensations/1')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)

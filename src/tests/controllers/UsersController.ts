@@ -14,7 +14,7 @@ describe('UsersController', function () {
         app = TestHelper.app
     })
 
-    it('get me', async () => {
+    it('should return the current user', async () => {
         return supertest(app)
         .get('/api/me')
         .set('Cookie', TestHelper.authenticatedCookies)

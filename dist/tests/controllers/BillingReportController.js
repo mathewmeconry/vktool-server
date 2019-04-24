@@ -36,7 +36,7 @@ describe('BillingReportController', function () {
     before(() => {
         app = TestHelper_1.default.app;
     });
-    it('get open orders', function () {
+    it('should send me all the open orders with the necessary attributes', function () {
         let now = new Date();
         let before14Days = new Date();
         before14Days.setDate(before14Days.getDate() - 14);
@@ -64,7 +64,7 @@ describe('BillingReportController', function () {
             }
         });
     });
-    it('create report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should create a new billing report', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .put('/api/billing-reports')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -99,7 +99,7 @@ describe('BillingReportController', function () {
             dbReport = reportres;
         });
     }));
-    it('get reports', () => __awaiter(this, void 0, void 0, function* () {
+    it('should return all billing reports ', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .get('/api/billing-reports')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -131,7 +131,7 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.compensations[0].valutaDate).to.be.equal(null);
         });
     }));
-    it('approve report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should approve the report', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .post('/api/billing-reports/approve')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -141,7 +141,7 @@ describe('BillingReportController', function () {
             chai_1.expect(res.body.state).to.be.equal('approved');
         });
     }));
-    it('decline report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should decline the report', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .post('/api/billing-reports/decline')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -151,7 +151,7 @@ describe('BillingReportController', function () {
             chai_1.expect(res.body.state).to.be.equal('declined');
         });
     }));
-    it('edit report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should edit the reports date report', () => __awaiter(this, void 0, void 0, function* () {
         dbReport.date = new Date('2019-04-20T00:00:00.000Z');
         return supertest(app)
             .post('/api/billing-reports')

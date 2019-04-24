@@ -41,7 +41,7 @@ describe('CompensationController', function () {
         app = TestHelper.app
     })
 
-    it('add', async () => {
+    it('should add a new custom compensation', async () => {
         return supertest(app)
             .put('/api/compensations')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -68,7 +68,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('add bulk', async () => {
+    it('should add a bulk of order compensations', async () => {
         return supertest(app)
             .put('/api/compensations/bulk')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -97,7 +97,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('approve', async () => {
+    it('should approve the compensation', async () => {
         return supertest(app)
             .post('/api/compensations/approve')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -108,7 +108,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('delete', async () => {
+    it('should delete the compensation', async () => {
         return supertest(app)
             .delete('/api/compensations')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -120,7 +120,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('get all', async () => {
+    it('should get all compensations', async () => {
         return supertest(app)
             .get('/api/compensations')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -130,7 +130,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('get for member', async () => {
+    it('should get all for a specific member', async () => {
         return supertest(app)
             .get('/api/compensations/1')
             .set('Cookie', TestHelper.authenticatedCookies)

@@ -27,7 +27,7 @@ describe('CollectionPointsController', function () {
     before(() => {
         app = TestHelper_1.default.app;
     });
-    it('add', () => __awaiter(this, void 0, void 0, function* () {
+    it('should add a new collection point', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .put('/api/collection-points')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -41,7 +41,7 @@ describe('CollectionPointsController', function () {
             chai_1.expect(dbRecord.postcode).to.be.equal(collectionPoint.postcode);
         });
     }));
-    it('get', () => __awaiter(this, void 0, void 0, function* () {
+    it('should return all collection points', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .get('/api/collection-points')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)

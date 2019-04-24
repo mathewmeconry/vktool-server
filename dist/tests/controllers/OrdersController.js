@@ -20,7 +20,7 @@ describe('OrdersController', function () {
     before(() => {
         app = TestHelper_1.default.app;
     });
-    it('get Orders', () => __awaiter(this, void 0, void 0, function* () {
+    it('should get all orders', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .get('/api/orders')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)

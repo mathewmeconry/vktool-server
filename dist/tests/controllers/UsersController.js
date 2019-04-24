@@ -21,7 +21,7 @@ describe('UsersController', function () {
     before(() => {
         app = TestHelper_1.default.app;
     });
-    it('get me', () => __awaiter(this, void 0, void 0, function* () {
+    it('should return the current user', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .get('/api/me')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)

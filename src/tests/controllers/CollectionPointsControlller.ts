@@ -19,7 +19,7 @@ describe('CollectionPointsController', function () {
         app = TestHelper.app
     })
 
-    it('add', async () => {
+    it('should add a new collection point', async () => {
         return supertest(app)
             .put('/api/collection-points')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -34,7 +34,7 @@ describe('CollectionPointsController', function () {
             })
     })
 
-    it('get', async () => {
+    it('should return all collection points', async () => {
         return supertest(app)
             .get('/api/collection-points')
             .set('Cookie', TestHelper.authenticatedCookies)

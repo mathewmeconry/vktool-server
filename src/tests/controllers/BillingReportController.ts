@@ -30,7 +30,7 @@ describe('BillingReportController', function () {
         app = TestHelper.app
     })
 
-    it('get open orders', function () {
+    it('should send me all the open orders with the necessary attributes', function () {
         let now = new Date()
         let before14Days = new Date()
         before14Days.setDate(before14Days.getDate() - 14)
@@ -61,7 +61,7 @@ describe('BillingReportController', function () {
             })
     })
 
-    it('create report', async () => {
+    it('should create a new billing report', async () => {
         return supertest(app)
             .put('/api/billing-reports')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -99,7 +99,7 @@ describe('BillingReportController', function () {
             })
     })
 
-    it('get reports', async () => {
+    it('should return all billing reports ', async () => {
         return supertest(app)
             .get('/api/billing-reports')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -133,7 +133,7 @@ describe('BillingReportController', function () {
             })
     })
 
-    it('approve report', async () => {
+    it('should approve the report', async () => {
         return supertest(app)
             .post('/api/billing-reports/approve')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -144,7 +144,7 @@ describe('BillingReportController', function () {
             })
     })
 
-    it('decline report', async () => {
+    it('should decline the report', async () => {
         return supertest(app)
             .post('/api/billing-reports/decline')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -155,7 +155,7 @@ describe('BillingReportController', function () {
             })
     })
 
-    it('edit report', async () => {
+    it('should edit the reports date report', async () => {
         dbReport.date = new Date('2019-04-20T00:00:00.000Z')
         return supertest(app)
             .post('/api/billing-reports')

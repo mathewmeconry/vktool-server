@@ -13,7 +13,7 @@ describe('OrdersController', function () {
         app = TestHelper.app
     })
 
-    it('get Orders', async () => {
+    it('should get all orders', async () => {
         return supertest(app)
         .get('/api/orders')
         .set('Cookie', TestHelper.authenticatedCookies)

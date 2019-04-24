@@ -23,7 +23,7 @@ describe('ContactsController', function () {
         app = TestHelper.app
     })
 
-    it('get contacts', async () => {
+    it('should get all contacts', async () => {
         return supertest(app)
             .get('/api/contacts')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -33,7 +33,7 @@ describe('ContactsController', function () {
             })
     })
 
-    it('get members', async () => {
+    it('should get all members', async () => {
         return supertest(app)
             .get('/api/members')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -64,7 +64,7 @@ describe('ContactsController', function () {
             })
     })
 
-    it('get ranks', async () => {
+    it('should get all ranks', async () => {
         return supertest(app)
             .get('/api/ranks')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -77,7 +77,7 @@ describe('ContactsController', function () {
             })
     })
 
-    it('post contact', async () => {
+    it('should edit a contact', async () => {
         return supertest(app)
             .post('/api/contacts')
             .set('Cookie', TestHelper.authenticatedCookies)
