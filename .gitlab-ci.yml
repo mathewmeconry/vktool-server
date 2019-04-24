@@ -12,6 +12,7 @@ services:
 variables:
   MYSQL_ROOT_PASSWORD: password
   MYSQL_DATABASE: vktool
+  TYPEORM_PORT: 3306
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
