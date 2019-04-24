@@ -12,6 +12,13 @@ services:
 variables:
   MYSQL_ROOT_PASSWORD: password
   MYSQL_DATABASE: vktool
+  TYPEORM_CONNECTION: mariadb
+  TYPEORM_PORT: 3306
+  TYPEORM_SYNCHRONIZE: "FALSE"
+  TYPEORM_MIGRATIONS_RUN: 'true'
+  TYPEORM_MIGRATIONS: 'dist/migrations/*.js'
+
+
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
@@ -23,6 +30,7 @@ stages:
   - test
 
 before_script:
+  - export TYPEORM_HOST=$(MARIADB_PORT_3306_TCP_ADDR)
   - yarn
 
 test:
