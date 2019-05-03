@@ -15,7 +15,7 @@ export default class ContactsController {
     }
 
     public static async getRanks(req: Express.Request, res: Express.Response): Promise<void> {
-        let filter = { 'bexioId': In([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14]) }
+        let filter = { 'bexioId': In([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33]) }
         let contactGroups = await getManager().getRepository(ContactGroup).find(filter)
 
         res.send(contactGroups)

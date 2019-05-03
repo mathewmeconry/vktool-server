@@ -128,13 +128,13 @@ export namespace BexioService {
 
         app.get('/bexio/sync/all', async (req, res) => {
             if (req.header('X-Azure')) res.send('started')
-            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+            if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             await Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()])
             await Promise.all([BexioService.syncContacts(), BexioService.syncOrders()])
         })
 
         app.get('/bexio/sync/contactTypes', async (req, res) => {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+            if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncContactTypes().then(() => {
                 res.send('Synced')
             }).catch(() => {
@@ -143,7 +143,7 @@ export namespace BexioService {
         })
 
         app.get('/bexio/sync/contactGroups', async (req, res) => {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+            if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncContactGroups().then(() => {
                 res.send('Synced')
             }).catch(() => {
@@ -152,7 +152,7 @@ export namespace BexioService {
         })
 
         app.get('/bexio/sync/contacts', async (req, res) => {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+            if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncContacts().then(() => {
                 res.send('Synced')
             }).catch(() => {
@@ -161,7 +161,7 @@ export namespace BexioService {
         })
 
         app.get('/bexio/sync/orders', async (req, res) => {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+            if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncOrders().then(() => {
                 res.send('Synced')
             }).catch(() => {

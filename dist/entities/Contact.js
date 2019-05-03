@@ -39,14 +39,14 @@ let Contact = class Contact extends BexioBase_1.default {
         return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false;
     }
     getRank() {
-        const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14];
+        const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33];
         if (this.contactGroups) {
             return this.contactGroups.find(group => rankGroups.indexOf(group.bexioId) > -1) || null;
         }
         return null;
     }
     getFunctions() {
-        const functionGroups = [22, 9, 16];
+        const functionGroups = [22, 9, 16, 32];
         if (this.contactGroups) {
             return this.contactGroups.filter(group => functionGroups.indexOf(group.bexioId) > -1);
         }

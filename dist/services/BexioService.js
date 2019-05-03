@@ -144,13 +144,13 @@ var BexioService;
         app.get('/bexio/sync/all', (req, res) => __awaiter(this, void 0, void 0, function* () {
             if (req.header('X-Azure'))
                 res.send('started');
-            if (!bexioAPI.isInitialized() && req.header('X-Azure'))
+            if (req.header('X-Azure'))
                 yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             yield Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
             yield Promise.all([BexioService.syncContacts(), BexioService.syncOrders()]);
         }));
         app.get('/bexio/sync/contactTypes', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure'))
+            if (req.header('X-Azure'))
                 yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncContactTypes().then(() => {
                 res.send('Synced');
@@ -159,7 +159,7 @@ var BexioService;
             });
         }));
         app.get('/bexio/sync/contactGroups', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure'))
+            if (req.header('X-Azure'))
                 yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncContactGroups().then(() => {
                 res.send('Synced');
@@ -168,7 +168,7 @@ var BexioService;
             });
         }));
         app.get('/bexio/sync/contacts', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure'))
+            if (req.header('X-Azure'))
                 yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncContacts().then(() => {
                 res.send('Synced');
@@ -177,7 +177,7 @@ var BexioService;
             });
         }));
         app.get('/bexio/sync/orders', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            if (!bexioAPI.isInitialized() && req.header('X-Azure'))
+            if (req.header('X-Azure'))
                 yield BexioService.fakeLogin(config_1.default.get('bexio.username'), config_1.default.get('bexio.password'));
             BexioService.syncOrders().then(() => {
                 res.send('Synced');
