@@ -40,6 +40,8 @@ class BillingReportController {
             let now = new Date();
             let before14Days = new Date();
             before14Days.setDate(before14Days.getDate() - 14);
+            let in14Days = new Date();
+            in14Days.setDate(in14Days.getDate() + 14);
             let orders = yield typeorm_1.getManager()
                 .getRepository(Order_1.default)
                 .createQueryBuilder('order')
@@ -47,7 +49,7 @@ class BillingReportController {
                 .leftJoinAndSelect('order.contact', 'contact')
                 .where('order.validFrom <= :date', { date: now.toISOString() })
                 .getMany();
-            orders = orders.filter(order => order.execDates.find(execDate => execDate >= before14Days));
+            orders = orders.filter(order => order.execDates.find(execDate => execDate >= before14Days && execDate <= in14Days));
             res.send(orders.filter(order => order.execDates.length >= (order.billingReports || []).length));
         });
     }
