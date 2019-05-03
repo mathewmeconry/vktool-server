@@ -36,7 +36,7 @@ function genOrders(contact) {
         position.orderBexioId = 1;
         position.positionType = 'anyType';
         position.order = order;
-        position.text = `${today.getDate()}.${today.getMonth()}.${today.getFullYear()}`;
+        position.text = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`;
         yield position.save();
         return order;
     });

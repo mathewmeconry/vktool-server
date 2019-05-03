@@ -25,7 +25,7 @@ export async function genOrders(contact: Contact): Promise<Order> {
     position.orderBexioId = 1
     position.positionType = 'anyType'
     position.order = order
-    position.text = `${today.getDate()}.${today.getMonth()}.${today.getFullYear()}`
+    position.text = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`
     await position.save()
 
     return order
