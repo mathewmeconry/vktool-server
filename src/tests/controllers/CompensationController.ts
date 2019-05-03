@@ -3,45 +3,70 @@ import * as Express from 'express'
 import supertest = require("supertest");
 import { expect } from "chai";
 import CustomCompensation from "../../entities/CustomCompensation";
-import Compensation from "../../entities/Compensation";
 import OrderCompensation from "../../entities/OrderCompensation";
+import { getManager } from "typeorm";
+import BillingReport from "../../entities/BillingReport";
 
 describe('CompensationController', function () {
     this.timeout(5000)
     let app: Express.Application;
     let dbCompensation: CustomCompensation
-    let compensation = {
-        member: 1,
-        amount: 200,
-        date: '2019-04-20T00:00:00.000Z',
-        description: 'Custom Compensation'
+    let compensation: {
+        member: number,
+        amount: number,
+        date: string,
+        description: string
     }
 
-    let bulk = {
-        billingReportId: 1,
-        entries: [
-            {
-                id: 4,
-                date: '2019-04-19',
-                from: '2019-04-19T07:00:00.000Z',
-                until: '2019-04-19T22:00:00.000Z',
-                charge: true
-            },
-            {
-                id: 5,
-                date: '2019-04-19',
-                from: '2019-04-19T07:00:00.000Z',
-                until: '2019-04-19T22:00:00.000Z',
-                charge: false
-            }
-        ]
+    let bulk: {
+        billingReportId: number,
+        entries: Array<{
+            id: number,
+            date: string,
+            from: string,
+            until: string,
+            charge: boolean
+        }>
     }
 
-    before(() => {
+    before(async () => {
         app = TestHelper.app
+
+        compensation = {
+            member: TestHelper.mockContact.id,
+            amount: 200,
+            date: '2019-04-20T00:00:00.000Z',
+            description: 'Custom Compensation'
+        }
+
+        let billingReport =
+            (await getManager().getRepository(BillingReport).findOne()) ||
+            { id: 1, date: '2019-04-20' }
+            
+        bulk = {
+            billingReportId: billingReport.id,
+                entries: [
+                {
+                    id: TestHelper.mockContact.id,
+                    date: billingReport.date as unknown as string,
+                    from: '2019-04-19T07:00:00.000Z',
+                    until: '2019-04-19T22:00:00.000Z',
+                    charge: true
+                },
+                {
+                    id: TestHelper.mockContact2.id,
+                    date: billingReport.date as unknown as string,
+                    from: '2019-04-19T07:00:00.000Z',
+                    until: '2019-04-19T22:00:00.000Z',
+                    charge: false
+                }
+            ]
+        }
+
+        return
     })
 
-    it('add', async () => {
+    it('should add a new custom compensation', async () => {
         return supertest(app)
             .put('/api/compensations')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -68,7 +93,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('add bulk', async () => {
+    it('should add a bulk of order compensations', async () => {
         return supertest(app)
             .put('/api/compensations/bulk')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -97,7 +122,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('approve', async () => {
+    it('should approve the compensation', async () => {
         return supertest(app)
             .post('/api/compensations/approve')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -108,7 +133,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('delete', async () => {
+    it('should delete the compensation', async () => {
         return supertest(app)
             .delete('/api/compensations')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -120,7 +145,7 @@ describe('CompensationController', function () {
             })
     })
 
-    it('get all', async () => {
+    it('should get all compensations', async () => {
         return supertest(app)
             .get('/api/compensations')
             .set('Cookie', TestHelper.authenticatedCookies)
@@ -130,15 +155,15 @@ describe('CompensationController', function () {
             })
     })
 
-    it('get for member', async () => {
+    it('should get all for a specific member', async () => {
         return supertest(app)
-            .get('/api/compensations/1')
+            .get('/api/compensations/' + TestHelper.mockContact.id)
             .set('Cookie', TestHelper.authenticatedCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
-                for(let entry of (res.body as Array<OrderCompensation | CustomCompensation>)) {
-                    expect(entry.member.id).to.be.equal(1)
+                for (let entry of (res.body as Array<OrderCompensation | CustomCompensation>)) {
+                    expect(entry.member.id).to.be.equal(TestHelper.mockContact.id)
                     expect(entry.approved).to.be.true
                 }
             })

@@ -2,12 +2,13 @@
   "version": "0.0.1",
   "scripts": {
     "prepare": "./node_modules/typescript/bin/tsc",
+    "build": "yarn run prepare",
     "migrate": "node ./node_modules/typeorm/cli.js migration:run",
     "dev": "npm run prepare && npm run migrate && TZ='UTC' node --inspect dist/index.js",
     "prestart": "npm run prepare && npm run migrate",
     "start": "TZ='UTC' node dist/index.js",
     "typeorm": "node ./node_modules/typeorm/cli.js",
-    "test": "TZ='UTC' NODE_ENV=dev TESTING=true node_modules/.bin/mocha --recursive --exit dist/tests"
+    "test": "yarn prepare && TZ='UTC' NODE_ENV=dev TESTING=true node_modules/.bin/mocha --recursive --exit dist/tests"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -26,6 +27,7 @@
     "@types/yargs": "^13.0.0",
     "chai": "^4.2.0",
     "mocha": "^6.1.3",
+    "supertest": "^4.0.2",
     "typescript": "^3.2.2"
   },
   "dependencies": {
@@ -40,6 +42,7 @@
     "moment": "^2.24.0",
     "mysql": "^2.16.0",
     "passport": "^0.4.0",
+    "passport-mock-strategy": "^1.1.1",
     "passport-outlook": "^2.2.0",
     "reflect-metadata": "^0.1.12",
     "session-file-store": "^1.2.0",

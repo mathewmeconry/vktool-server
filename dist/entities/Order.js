@@ -20,8 +20,8 @@ const Position_1 = __importDefault(require("./Position"));
 const BillingReport_1 = __importDefault(require("./BillingReport"));
 let Order = class Order extends BexioBase_1.default {
     findExecDates() {
-        let dateRegex = /((\d{2})\.(\d{2})\.(\d{4}))/mg;
-        let dateTextRegex = /(\d{2}(\.|)( |)(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)( |)\d{4})/mgi;
+        let dateRegex = /((\d{2}|\d{1})\.(\d{2}|\d{1})\.(\d{4}|\d{2}))/mg;
+        let dateTextRegex = /(\d{2}|\d{1}(\.|)( |)(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)( |)\d{4}|\d{2})/mgi;
         moment_1.default.locale('de');
         this.execDates = [];
         if (this.positions) {

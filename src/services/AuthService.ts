@@ -60,6 +60,7 @@ export default class AuthService {
             user.id = 1
             user.displayName = 'Mock User'
             user.roles = [AuthRoles.ADMIN]
+            user.provider = 'mock'
             done(null, user)
             return
         }
@@ -111,7 +112,8 @@ export default class AuthService {
                             refreshToken: '',
                             displayName: profile.displayName,
                             roles: [AuthRoles.AUTHENTICATED],
-                            bexioContact: contact || undefined
+                            bexioContact: contact || undefined,
+                            provider: 'office365'
                         }
                     }).catch(() => {
                         userInfo = {
@@ -119,7 +121,8 @@ export default class AuthService {
                             accessToken: accessToken,
                             displayName: profile.displayName,
                             roles: [AuthRoles.AUTHENTICATED],
-                            refreshToken: ''
+                            refreshToken: '',
+                            provider: 'office365'
                         }
                     }).then(async () => {
                         //@ts-ignore

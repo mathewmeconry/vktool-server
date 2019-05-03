@@ -18,25 +18,27 @@ describe('BillingReportController', function () {
     this.timeout(5000);
     let app;
     let dbReport;
-    let report = {
-        orderId: 2,
-        els: [{ id: 3 }],
-        drivers: [{ id: 4 }],
-        date: '2019-04-19T00:00:00.000Z',
-        compensationEntries: {
-            '2': {
-                from: '2019-04-19T07:00:00.000Z',
-                until: '2019-04-19T22:00:00.000Z',
-                charge: true
-            }
-        },
-        food: true,
-        remarks: ''
-    };
+    let report;
     before(() => {
         app = TestHelper_1.default.app;
+        report = {
+            orderId: TestHelper_1.default.mockOrder.id,
+            els: [TestHelper_1.default.mockContact],
+            drivers: [TestHelper_1.default.mockContact],
+            date: '2019-04-19T00:00:00.000Z',
+            compensationEntries: {},
+            food: true,
+            remarks: '',
+            creatorId: TestHelper_1.default.mockUser.id
+        };
+        //@ts-ignore
+        report.compensationEntries[TestHelper_1.default.mockContact.id] = {
+            from: '2019-04-19T07:00:00.000Z',
+            until: '2019-04-19T22:00:00.000Z',
+            charge: true
+        };
     });
-    it('get open orders', function () {
+    it('should send me all the open orders with the necessary attributes', function () {
         let now = new Date();
         let before14Days = new Date();
         before14Days.setDate(before14Days.getDate() - 14);
@@ -64,7 +66,7 @@ describe('BillingReportController', function () {
             }
         });
     });
-    it('create report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should create a new billing report', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .put('/api/billing-reports')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -83,10 +85,13 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.state).to.be.equal('pending');
             chai_1.expect(reportres.remarks).to.be.equal(report.remarks);
             chai_1.expect(reportres.compensations.length).to.be.equal(1);
-            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(2);
-            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from);
-            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until);
-            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge);
+            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(TestHelper_1.default.mockContact.id);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].from);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].until);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].charge);
             chai_1.expect(reportres.compensations[0].paied).to.be.equal(false);
             chai_1.expect(reportres.compensations[0].payout).to.be.equal(undefined);
             chai_1.expect(reportres.compensations[0].amount).to.be.equal(155);
@@ -99,7 +104,7 @@ describe('BillingReportController', function () {
             dbReport = reportres;
         });
     }));
-    it('get reports', () => __awaiter(this, void 0, void 0, function* () {
+    it('should return all billing reports ', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .get('/api/billing-reports')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -117,10 +122,13 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.state).to.be.equal('pending');
             chai_1.expect(reportres.remarks).to.be.equal(report.remarks);
             chai_1.expect(reportres.compensations.length).to.be.equal(1);
-            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(2);
-            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from);
-            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until);
-            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge);
+            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(TestHelper_1.default.mockContact.id);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].from);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].until);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].charge);
             chai_1.expect(reportres.compensations[0].paied).to.be.equal(false);
             chai_1.expect(reportres.compensations[0].payout).to.be.equal(undefined);
             chai_1.expect(reportres.compensations[0].amount).to.be.equal('155.00');
@@ -131,7 +139,7 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.compensations[0].valutaDate).to.be.equal(null);
         });
     }));
-    it('approve report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should approve the report', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .post('/api/billing-reports/approve')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -141,7 +149,7 @@ describe('BillingReportController', function () {
             chai_1.expect(res.body.state).to.be.equal('approved');
         });
     }));
-    it('decline report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should decline the report', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .post('/api/billing-reports/decline')
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
@@ -151,7 +159,7 @@ describe('BillingReportController', function () {
             chai_1.expect(res.body.state).to.be.equal('declined');
         });
     }));
-    it('edit report', () => __awaiter(this, void 0, void 0, function* () {
+    it('should edit the reports date report', () => __awaiter(this, void 0, void 0, function* () {
         dbReport.date = new Date('2019-04-20T00:00:00.000Z');
         return supertest(app)
             .post('/api/billing-reports')

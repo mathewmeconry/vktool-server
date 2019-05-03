@@ -62,6 +62,7 @@ class AuthService {
             user.id = 1;
             user.displayName = 'Mock User';
             user.roles = [AuthRoles_1.AuthRoles.ADMIN];
+            user.provider = 'mock';
             done(null, user);
             return;
         }
@@ -113,7 +114,8 @@ class AuthService {
                             refreshToken: '',
                             displayName: profile.displayName,
                             roles: [AuthRoles_1.AuthRoles.AUTHENTICATED],
-                            bexioContact: contact || undefined
+                            bexioContact: contact || undefined,
+                            provider: 'office365'
                         };
                     }).catch(() => {
                         userInfo = {
@@ -121,7 +123,8 @@ class AuthService {
                             accessToken: accessToken,
                             displayName: profile.displayName,
                             roles: [AuthRoles_1.AuthRoles.AUTHENTICATED],
-                            refreshToken: ''
+                            refreshToken: '',
+                            provider: 'office365'
                         };
                     }).then(() => __awaiter(this, void 0, void 0, function* () {
                         //@ts-ignore

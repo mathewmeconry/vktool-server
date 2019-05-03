@@ -1,0 +1,43 @@
+# This file is a template, and might need editing before it works on your project.
+# Official framework image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/node/tags/
+image: node:latest
+
+# Pick zero or more services to be used on all builds.
+# Only needed when using a docker container to run your tests in.
+# Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
+services:
+  - mariadb:latest
+
+variables:
+  MYSQL_ROOT_PASSWORD: password
+  MYSQL_DATABASE: vktool
+  TYPEORM_CONNECTION: mariadb
+  TYPEORM_PORT: 3306
+  TYPEORM_SYNCHRONIZE: "FALSE"
+  TYPEORM_MIGRATIONS_RUN: "true"
+  TYPEORM_MIGRATIONS: "dist/migrations/*.js"
+  TYPEORM_USERNAME: root
+  TYPEORM_PASSWORD: password
+  TYPEORM_DATABASE: vktool
+  TYPEORM_ENTITIES: "dist/entities/*.js"
+
+
+
+# This folder is cached between builds
+# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
+cache:
+  paths:
+  - node_modules/
+  
+stages:
+  - test
+
+before_script:
+  - export TYPEORM_HOST=$(echo $MARIADB_PORT_3306_TCP_ADDR)
+  - yarn
+  - node_modules/.bin/typeorm migration:run
+
+test:
+  stage: test
+  script: yarn run test
