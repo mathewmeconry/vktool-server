@@ -28,10 +28,10 @@ export default class BillingReportController {
 
     public static async getOpenOrders(req: Express.Request, res: Express.Response): Promise<void> {
         let now = new Date()
-        let before14Days = new Date()
-        before14Days.setDate(before14Days.getDate() - 14)
-        let in14Days = new Date()
-        in14Days.setDate(in14Days.getDate() + 14)
+        let before15Days = new Date()
+        before15Days.setDate(before15Days.getDate() - 15)
+        let in15Days = new Date()
+        in15Days.setDate(in15Days.getDate() + 15)
 
         let orders = await getManager()
             .getRepository(Order)
@@ -41,7 +41,7 @@ export default class BillingReportController {
             .where('order.validFrom <= :date', { date: now.toISOString() })
             .getMany()
 
-        orders = orders.filter(order => order.execDates.find(execDate => { return execDate >= before14Days && execDate <= in14Days }))
+        orders = orders.filter(order => order.execDates.find(execDate => { return execDate > before15Days && execDate < in15Days }))
 
         res.send(orders.filter(order => order.execDates.length >= (order.billingReports || []).length))
     }
