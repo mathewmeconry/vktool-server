@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const CliController_1 = __importDefault(require("../../controllers/CliController"));
 const supertest = require("supertest");
 const typeorm_1 = require("typeorm");
+const GenMockData_1 = require("./GenMockData");
 before(() => __awaiter(this, void 0, void 0, function* () {
     return TestHelper.init();
 }));
@@ -24,6 +25,13 @@ class TestHelper {
             TestHelper.app = app;
             // @ts-ignore
             yield typeorm_1.createConnection();
+            TestHelper.mockUser = yield GenMockData_1.genMockUser();
+            TestHelper.mockGroup = yield GenMockData_1.genMockContactGroup();
+            TestHelper.mockMemberGroup = yield GenMockData_1.genMockContactGroup(7);
+            TestHelper.mockType = yield GenMockData_1.genMockContactType();
+            TestHelper.mockContact = yield GenMockData_1.genMockContact(TestHelper.mockType, [TestHelper.mockGroup, TestHelper.mockMemberGroup]);
+            TestHelper.mockContact2 = yield GenMockData_1.genMockContact(TestHelper.mockType, [TestHelper.mockGroup, TestHelper.mockMemberGroup]);
+            TestHelper.mockOrder = yield GenMockData_1.genOrders(TestHelper.mockContact);
             return supertest(TestHelper.app)
                 .get('/api/auth/mock')
                 .expect(200)

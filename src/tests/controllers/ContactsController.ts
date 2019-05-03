@@ -64,19 +64,6 @@ describe('ContactsController', function () {
             })
     })
 
-    it('should get all ranks', async () => {
-        return supertest(app)
-            .get('/api/ranks')
-            .set('Cookie', TestHelper.authenticatedCookies)
-            .expect(200)
-            .then(res => {
-                expect(res.body.length).to.be.greaterThan(0)
-
-                let ids = (res.body as Array<ContactGroup>).map(el => el.bexioId)
-                expect(ids).to.be.members([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14])
-            })
-    })
-
     it('should edit a contact', async () => {
         return supertest(app)
             .post('/api/contacts')

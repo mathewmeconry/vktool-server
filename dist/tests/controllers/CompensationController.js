@@ -14,38 +14,45 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const TestHelper_1 = __importDefault(require("../helpers/TestHelper"));
 const supertest = require("supertest");
 const chai_1 = require("chai");
+const typeorm_1 = require("typeorm");
+const BillingReport_1 = __importDefault(require("../../entities/BillingReport"));
 describe('CompensationController', function () {
     this.timeout(5000);
     let app;
     let dbCompensation;
-    let compensation = {
-        member: 1,
-        amount: 200,
-        date: '2019-04-20T00:00:00.000Z',
-        description: 'Custom Compensation'
-    };
-    let bulk = {
-        billingReportId: 1,
-        entries: [
-            {
-                id: 4,
-                date: '2019-04-19',
-                from: '2019-04-19T07:00:00.000Z',
-                until: '2019-04-19T22:00:00.000Z',
-                charge: true
-            },
-            {
-                id: 5,
-                date: '2019-04-19',
-                from: '2019-04-19T07:00:00.000Z',
-                until: '2019-04-19T22:00:00.000Z',
-                charge: false
-            }
-        ]
-    };
-    before(() => {
+    let compensation;
+    let bulk;
+    before(() => __awaiter(this, void 0, void 0, function* () {
         app = TestHelper_1.default.app;
-    });
+        compensation = {
+            member: TestHelper_1.default.mockContact.id,
+            amount: 200,
+            date: '2019-04-20T00:00:00.000Z',
+            description: 'Custom Compensation'
+        };
+        let billingReport = (yield typeorm_1.getManager().getRepository(BillingReport_1.default).findOne()) ||
+            { id: 1, date: '2019-04-20' };
+        bulk = {
+            billingReportId: billingReport.id,
+            entries: [
+                {
+                    id: TestHelper_1.default.mockContact.id,
+                    date: billingReport.date,
+                    from: '2019-04-19T07:00:00.000Z',
+                    until: '2019-04-19T22:00:00.000Z',
+                    charge: true
+                },
+                {
+                    id: TestHelper_1.default.mockContact2.id,
+                    date: billingReport.date,
+                    from: '2019-04-19T07:00:00.000Z',
+                    until: '2019-04-19T22:00:00.000Z',
+                    charge: false
+                }
+            ]
+        };
+        return;
+    }));
     it('should add a new custom compensation', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .put('/api/compensations')
@@ -128,13 +135,13 @@ describe('CompensationController', function () {
     }));
     it('should get all for a specific member', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
-            .get('/api/compensations/1')
+            .get('/api/compensations/' + TestHelper_1.default.mockContact.id)
             .set('Cookie', TestHelper_1.default.authenticatedCookies)
             .expect(200)
             .then(res => {
             chai_1.expect(res.body.length).to.be.greaterThan(0);
             for (let entry of res.body) {
-                chai_1.expect(entry.member.id).to.be.equal(1);
+                chai_1.expect(entry.member.id).to.be.equal(TestHelper_1.default.mockContact.id);
                 chai_1.expect(entry.approved).to.be.true;
             }
         });

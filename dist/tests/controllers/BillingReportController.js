@@ -18,23 +18,25 @@ describe('BillingReportController', function () {
     this.timeout(5000);
     let app;
     let dbReport;
-    let report = {
-        orderId: 2,
-        els: [{ id: 3 }],
-        drivers: [{ id: 4 }],
-        date: '2019-04-19T00:00:00.000Z',
-        compensationEntries: {
-            '2': {
-                from: '2019-04-19T07:00:00.000Z',
-                until: '2019-04-19T22:00:00.000Z',
-                charge: true
-            }
-        },
-        food: true,
-        remarks: ''
-    };
+    let report;
     before(() => {
         app = TestHelper_1.default.app;
+        report = {
+            orderId: TestHelper_1.default.mockOrder.id,
+            els: [TestHelper_1.default.mockContact],
+            drivers: [TestHelper_1.default.mockContact],
+            date: '2019-04-19T00:00:00.000Z',
+            compensationEntries: {},
+            food: true,
+            remarks: '',
+            creatorId: TestHelper_1.default.mockUser.id
+        };
+        //@ts-ignore
+        report.compensationEntries[TestHelper_1.default.mockContact.id] = {
+            from: '2019-04-19T07:00:00.000Z',
+            until: '2019-04-19T22:00:00.000Z',
+            charge: true
+        };
     });
     it('should send me all the open orders with the necessary attributes', function () {
         let now = new Date();
@@ -83,10 +85,13 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.state).to.be.equal('pending');
             chai_1.expect(reportres.remarks).to.be.equal(report.remarks);
             chai_1.expect(reportres.compensations.length).to.be.equal(1);
-            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(2);
-            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from);
-            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until);
-            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge);
+            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(TestHelper_1.default.mockContact.id);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].from);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].until);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].charge);
             chai_1.expect(reportres.compensations[0].paied).to.be.equal(false);
             chai_1.expect(reportres.compensations[0].payout).to.be.equal(undefined);
             chai_1.expect(reportres.compensations[0].amount).to.be.equal(155);
@@ -117,10 +122,13 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.state).to.be.equal('pending');
             chai_1.expect(reportres.remarks).to.be.equal(report.remarks);
             chai_1.expect(reportres.compensations.length).to.be.equal(1);
-            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(2);
-            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from);
-            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until);
-            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge);
+            chai_1.expect(reportres.compensations[0].member.id).to.be.equal(TestHelper_1.default.mockContact.id);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].from);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].until);
+            //@ts-ignore
+            chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].charge);
             chai_1.expect(reportres.compensations[0].paied).to.be.equal(false);
             chai_1.expect(reportres.compensations[0].payout).to.be.equal(undefined);
             chai_1.expect(reportres.compensations[0].amount).to.be.equal('155.00');

@@ -4,30 +4,51 @@ import supertest = require('supertest');
 import { expect } from 'chai';
 import Order from '../../entities/Order';
 import BillingReport from '../../entities/BillingReport';
+import Contact from '../../entities/Contact';
 
 
 describe('BillingReportController', function () {
     this.timeout(5000)
     let app: Express.Application;
     let dbReport: BillingReport
-    let report = {
-        orderId: 2,
-        els: [{ id: 3 }],
-        drivers: [{ id: 4 }],
-        date: '2019-04-19T00:00:00.000Z',
+    let report: {
+        orderId: number,
+        date: string,
+        els: Array<Contact>,
+        drivers: Array<Contact>,
+        food: boolean,
+        remarks: string,
         compensationEntries: {
-            '2': {
-                from: '2019-04-19T07:00:00.000Z',
-                until: '2019-04-19T22:00:00.000Z',
-                charge: true
+            [index: string]: {
+                id: number,
+                member: Contact,
+                from: string,
+                until: string,
+                charge: boolean,
+                totalHours: number
             }
         },
-        food: true,
-        remarks: ''
-    }
+        creatorId: number
+    };
 
     before(() => {
         app = TestHelper.app
+        report = {
+            orderId: TestHelper.mockOrder.id,
+            els: [TestHelper.mockContact],
+            drivers: [TestHelper.mockContact],
+            date: '2019-04-19T00:00:00.000Z',
+            compensationEntries: {},
+            food: true,
+            remarks: '',
+            creatorId: TestHelper.mockUser.id
+        }
+        //@ts-ignore
+        report.compensationEntries[TestHelper.mockContact.id] = {
+            from: '2019-04-19T07:00:00.000Z',
+            until: '2019-04-19T22:00:00.000Z',
+            charge: true
+        }
     })
 
     it('should send me all the open orders with the necessary attributes', function () {
@@ -81,10 +102,13 @@ describe('BillingReportController', function () {
                 expect(reportres.remarks).to.be.equal(report.remarks)
 
                 expect(reportres.compensations.length).to.be.equal(1)
-                expect(reportres.compensations[0].member.id).to.be.equal(2)
-                expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from)
-                expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until)
-                expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge)
+                expect(reportres.compensations[0].member.id).to.be.equal(TestHelper.mockContact.id)
+                //@ts-ignore
+                expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].from)
+                //@ts-ignore
+                expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].until)
+                //@ts-ignore
+                expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].charge)
                 expect(reportres.compensations[0].paied).to.be.equal(false)
                 expect(reportres.compensations[0].payout).to.be.equal(undefined)
                 expect(reportres.compensations[0].amount).to.be.equal(155)
@@ -118,10 +142,13 @@ describe('BillingReportController', function () {
                 expect(reportres.remarks).to.be.equal(report.remarks)
 
                 expect(reportres.compensations.length).to.be.equal(1)
-                expect(reportres.compensations[0].member.id).to.be.equal(2)
-                expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries['2'].from)
-                expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries['2'].until)
-                expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries['2'].charge)
+                expect(reportres.compensations[0].member.id).to.be.equal(TestHelper.mockContact.id)
+                //@ts-ignore
+                expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].from)
+                //@ts-ignore
+                expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].until)
+                //@ts-ignore
+                expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].charge)
                 expect(reportres.compensations[0].paied).to.be.equal(false)
                 expect(reportres.compensations[0].payout).to.be.equal(undefined)
                 expect(reportres.compensations[0].amount).to.be.equal('155.00')

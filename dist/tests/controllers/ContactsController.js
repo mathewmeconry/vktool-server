@@ -67,17 +67,6 @@ describe('ContactsController', function () {
             }
         });
     }));
-    it('should get all ranks', () => __awaiter(this, void 0, void 0, function* () {
-        return supertest(app)
-            .get('/api/ranks')
-            .set('Cookie', TestHelper_1.default.authenticatedCookies)
-            .expect(200)
-            .then(res => {
-            chai_1.expect(res.body.length).to.be.greaterThan(0);
-            let ids = res.body.map(el => el.bexioId);
-            chai_1.expect(ids).to.be.members([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14]);
-        });
-    }));
     it('should edit a contact', () => __awaiter(this, void 0, void 0, function* () {
         return supertest(app)
             .post('/api/contacts')
