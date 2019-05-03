@@ -41,7 +41,7 @@ export default class BillingReportController {
             .where('order.validFrom <= :date', { date: now.toISOString() })
             .getMany()
 
-        orders = orders.filter(order => order.execDates.find(execDate => execDate >= before14Days && execDate <= in14Days))
+        orders = orders.filter(order => order.execDates.find(execDate => { return execDate >= before14Days && execDate <= in14Days }))
 
         res.send(orders.filter(order => order.execDates.length >= (order.billingReports || []).length))
     }
