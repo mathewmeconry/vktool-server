@@ -33,8 +33,8 @@ describe('BillingReportController', function () {
         };
         //@ts-ignore
         report.compensationEntries[TestHelper_1.default.mockContact.id] = {
-            from: '2019-04-19T07:00:00.000Z',
-            until: '2019-04-19T22:00:00.000Z',
+            from: '2019-04-19T06:00:00.000Z',
+            until: '2019-04-19T21:00:00.000Z',
             charge: true
         };
     });

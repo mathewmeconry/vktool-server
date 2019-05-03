@@ -49,15 +49,15 @@ describe('CompensationController', function () {
                 {
                     id: TestHelper.mockContact.id,
                     date: billingReport.date as unknown as string,
-                    from: '2019-04-19T07:00:00.000Z',
-                    until: '2019-04-19T22:00:00.000Z',
+                    from: '2019-04-19T06:00:00.000Z',
+                    until: '2019-04-19T21:00:00.000Z',
                     charge: true
                 },
                 {
                     id: TestHelper.mockContact2.id,
                     date: billingReport.date as unknown as string,
-                    from: '2019-04-19T07:00:00.000Z',
-                    until: '2019-04-19T22:00:00.000Z',
+                    from: '2019-04-19T06:00:00.000Z',
+                    until: '2019-04-19T21:00:00.000Z',
                     charge: false
                 }
             ]
