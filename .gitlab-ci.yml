@@ -36,9 +36,8 @@ stages:
 before_script:
   - export TYPEORM_HOST=$(echo $MARIADB_PORT_3306_TCP_ADDR)
   - yarn
+  - node_modules/.bin/typeorm migration:run
 
 test:
   stage: test
-  script: |
-    set
-    yarn run test
+  script: yarn run test
