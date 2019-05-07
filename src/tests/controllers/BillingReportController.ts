@@ -44,11 +44,11 @@ describe('BillingReportController', function () {
             creatorId: TestHelper.mockUser.id
         }
         //@ts-ignore
-        report.compensationEntries[TestHelper.mockContact.id] = {
+        report.compensationEntries[TestHelper.mockContact.id] = Object.assign({}, TestHelper.mockContact, {
             from: '2019-04-19T06:00:00.000Z',
             until: '2019-04-19T21:00:00.000Z',
             charge: true
-        }
+        })
     })
 
     it('should send me all the open orders with the necessary attributes', function () {
