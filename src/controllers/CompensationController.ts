@@ -110,7 +110,7 @@ export default class CompensationController {
                 req.body.amount,
                 new Date(req.body.date),
                 req.body.description,
-                AuthService.isAuthorized(req, AuthRoles.COMPENSATIONS_APPROVE)
+                AuthService.isAuthorized(req.user.roles, AuthRoles.COMPENSATIONS_APPROVE)
             )
             entry.updatedBy = req.user
 

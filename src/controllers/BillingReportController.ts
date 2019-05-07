@@ -19,7 +19,7 @@ export default class BillingReportController {
             .leftJoinAndSelect('billingReport.els', 'els')
             .leftJoinAndSelect('billingReport.drivers', 'drivers')
 
-        if (!AuthService.isAuthorized(req, AuthRoles.BILLINGREPORTS_READ)) {
+        if (!AuthService.isAuthorized(req.user.roles, AuthRoles.BILLINGREPORTS_READ)) {
             billingReportsQuery = billingReportsQuery.where('billingReport.creator = :id', { id: req.user.id })
         }
 
@@ -143,7 +143,7 @@ export default class BillingReportController {
         let billingReport = await billingReportRepo.createQueryBuilder('billingReport').where('id = :id', { id: req.body.id }).getOne()
 
         if (billingReport) {
-            if (AuthService.isAuthorized(req, AuthRoles.BILLINGREPORTS_EDIT) ||
+            if (AuthService.isAuthorized(req.user.roles, AuthRoles.BILLINGREPORTS_EDIT) ||
                 (billingReport.creator.id == req.user.id && billingReport.state === 'pending')) {
                 for (let i in req.body) {
                     if (i !== 'id') {
