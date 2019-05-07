@@ -21,6 +21,9 @@ export default class User extends Base<User> {
     @Column('simple-array')
     public roles: Array<string>
 
+    @Column({ precision: 6, type: 'timestamp' })
+    public lastLogin: Date
+
     @OneToOne(type => Contact, contact => contact.user, { nullable: true, eager: true })
     @JoinColumn()
     public bexioContact?: Contact
