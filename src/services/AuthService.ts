@@ -24,10 +24,12 @@ export default class AuthService {
 
     public static checkAuthorization(roles: Array<AuthRoles>): (req: Express.Request, res: Express.Response, next: Function) => void {
         return function (req, res, next) {
-            for (let role of roles) {
-                if (AuthService.isAuthorized(req, role)) {
-                    next()
-                    return
+            if (req.isAuthenticated()) {
+                for (let role of roles) {
+                    if (AuthService.isAuthorized(req.user.roles, role)) {
+                        next()
+                        return
+                    }
                 }
             }
 
@@ -38,8 +40,8 @@ export default class AuthService {
         }
     }
 
-    public static isAuthorized(req: Express.Request, role: AuthRoles): boolean {
-        if (req.isAuthenticated() && (req.user.roles.indexOf(role) > -1 || req.user.roles.indexOf(AuthRoles.ADMIN) > -1)) {
+    public static isAuthorized(roles: Array<AuthRoles>, role: AuthRoles): boolean {
+        if (roles.indexOf(role) > -1 || roles.indexOf(AuthRoles.ADMIN) > -1) {
             return true
         }
 
@@ -77,11 +79,12 @@ export default class AuthService {
             })
     }
 
-    public static async findUserByOutlookId(outlookId: string): Promise<User | undefined> {
+
+    private static async findUserByOutlookId(outlookId: string): Promise<User | undefined> {
         return getManager().getRepository(User).findOne({ outlookId: outlookId })
     }
 
-    public static addOutlookStrategy() {
+    private static addOutlookStrategy() {
         passport.use(new OutlookStrategy({
             clientID: "2209da49-23d9-4365-95d1-fa2dc84c7a8f",
             clientSecret: "yOB%SiU-yed3V18EL:Z7",
