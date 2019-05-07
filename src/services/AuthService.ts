@@ -63,6 +63,7 @@ export default class AuthService {
             user.displayName = 'Mock User'
             user.roles = [AuthRoles.ADMIN]
             user.provider = 'mock'
+            user.lastLogin = new Date()
             done(null, user)
             return
         }
@@ -105,6 +106,7 @@ export default class AuthService {
                     user.accessToken = accessToken,
                         user.refreshToken = refreshToken
                     user.displayName = profile.displayName
+                    user.lastLogin = new Date()
                     return done(null, await user.save())
                 } else {
                     let userInfo = {};
@@ -130,12 +132,12 @@ export default class AuthService {
                     }).then(async () => {
                         //@ts-ignore
                         if (refreshToken) userInfo.refreshToken = refreshToken
-                        let UserRepo = getManager().getRepository(User)
 
                         //@ts-ignore
-                        user = await UserRepo.findOne({ outlookId: userInfo.outlookId })
+                        user = await AuthService.findUserByOutlookId(user.outlookId)
                         if (!user) user = new User()
                         user = Object.assign(user, userInfo)
+                        user.lastLogin = new Date()
 
                         user.save().then(user => {
                             return done(null, user)
