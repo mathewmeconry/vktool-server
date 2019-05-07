@@ -71,7 +71,7 @@ export default class BillingReportController {
         let compensationEntries = []
         for (let i in req.body.compensationEntries) {
             let entry = req.body.compensationEntries[i]
-            let member = await contactRepo.findOneOrFail({ id: parseInt(i) })
+            let member = await contactRepo.findOneOrFail({ id: entry.id })
 
             let compensationEntry = new OrderCompensation(
                 member,
