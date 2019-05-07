@@ -1,7 +1,7 @@
 import { Entity, Column, OneToOne, JoinColumn, AfterLoad } from "typeorm";
 import Base from "./Base";
 import Contact from "./Contact";
-import { AuthRolesByRank } from "../interfaces/AuthRoles";
+import { AuthRolesByRank, AuthRolesByFunction } from "../interfaces/AuthRoles";
 import { IsString, IsOptional } from "class-validator";
 
 @Entity()
@@ -35,7 +35,15 @@ export default class User extends Base<User> {
         if (this.bexioContact && typeof this.bexioContact.getRank === 'function') {
             const rank = this.bexioContact.getRank() || { bexioId: -1 }
             this.roles = this.roles.concat(AuthRolesByRank[rank.bexioId] || [])
-            this.roles = this.roles.filter((element, index, arr) => arr.indexOf(element) === index)
         }
+
+        if(this.bexioContact && typeof this.bexioContact.getFunctions === 'function') {
+            for(let func of this.bexioContact.getFunctions()) {
+                this.roles = this.roles.concat(AuthRolesByFunction[func.bexioId])
+            }
+        }
+
+        this.roles = this.roles.filter((element, index, arr) => arr.indexOf(element) === index)
+
     }
 }

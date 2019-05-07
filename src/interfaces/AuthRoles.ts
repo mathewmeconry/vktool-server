@@ -32,6 +32,14 @@ export enum AuthRoles {
     ADMIN = 'admin'
 }
 
+export const AuthRolesByFunction: {[index:number]: Array<AuthRoles>} = {
+    // FHR
+    9: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.RANKS_READ
+    ]
+}
+
 export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
     // VK
     10: [],
