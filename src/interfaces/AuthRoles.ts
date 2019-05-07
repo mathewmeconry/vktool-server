@@ -7,6 +7,8 @@ export enum AuthRoles {
     MEMBERS_READ = 'members_read',
     MEMBERS_EDIT = 'members_edit',
 
+    MAILING_LISTS = 'mailing_lists',
+
     RANKS_READ = 'ranks_read',
     RANKS_EDIT = 'ranks_edit',
 
@@ -51,7 +53,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
     14: [
         AuthRoles.MEMBERS_READ,
         AuthRoles.RANKS_READ,
-        AuthRoles.BILLINGREPORTS_CREATE
+        AuthRoles.BILLINGREPORTS_CREATE,
+        AuthRoles.MAILING_LISTS
     ],
     // OZF
     15: [
@@ -62,7 +65,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.BILLINGREPORTS_READ,
         AuthRoles.ORDERS_READ,
         AuthRoles.COMPENSATIONS_READ,
-        AuthRoles.COMPENSATIONS_CREATE
+        AuthRoles.COMPENSATIONS_CREATE,
+        AuthRoles.MAILING_LISTS
     ],
     // Leiter Stv.
     29: [
@@ -84,7 +88,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.COMPENSATIONS_EDIT,
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
-        AuthRoles.DRAFT_READ
+        AuthRoles.DRAFT_READ,
+        AuthRoles.MAILING_LISTS
     ],
     // Leiter
     28: [
@@ -106,7 +111,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.COMPENSATIONS_EDIT,
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
-        AuthRoles.DRAFT_READ
+        AuthRoles.DRAFT_READ,
+        AuthRoles.MAILING_LISTS
     ],
     // VST
     16: [
@@ -128,6 +134,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.COMPENSATIONS_EDIT,
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
-        AuthRoles.DRAFT_READ
+        AuthRoles.DRAFT_READ,
+        AuthRoles.MAILING_LISTS
     ],
 }
