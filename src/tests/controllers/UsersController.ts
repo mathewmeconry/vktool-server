@@ -17,7 +17,7 @@ describe('UsersController', function () {
     it('should return the current user', async () => {
         return supertest(app)
         .get('/api/me')
-        .set('Cookie', TestHelper.authenticatedCookies)
+        .set('Cookie', TestHelper.authenticatedAdminCookies)
         .expect(200)
         .then(res => {
             let record: User = res.body

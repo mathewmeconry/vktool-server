@@ -26,7 +26,7 @@ describe('ContactsController', function () {
     it('should get all contacts', async () => {
         return supertest(app)
             .get('/api/contacts')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
@@ -36,7 +36,7 @@ describe('ContactsController', function () {
     it('should get all members', async () => {
         return supertest(app)
             .get('/api/members')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
@@ -67,7 +67,7 @@ describe('ContactsController', function () {
     it('should edit a contact', async () => {
         return supertest(app)
             .post('/api/contacts')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(editContact)
             .then(res => {

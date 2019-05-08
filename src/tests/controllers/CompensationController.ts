@@ -69,7 +69,7 @@ describe('CompensationController', function () {
     it('should add a new custom compensation', async () => {
         return supertest(app)
             .put('/api/compensations')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(compensation)
             .then(res => {
@@ -96,7 +96,7 @@ describe('CompensationController', function () {
     it('should add a bulk of order compensations', async () => {
         return supertest(app)
             .put('/api/compensations/bulk')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(bulk)
             .then(res => {
@@ -125,7 +125,7 @@ describe('CompensationController', function () {
     it('should approve the compensation', async () => {
         return supertest(app)
             .post('/api/compensations/approve')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send({ id: dbCompensation.id })
             .then(res => {
@@ -136,7 +136,7 @@ describe('CompensationController', function () {
     it('should delete the compensation', async () => {
         return supertest(app)
             .delete('/api/compensations')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send({ id: dbCompensation.id })
             .then(res => {
@@ -148,7 +148,7 @@ describe('CompensationController', function () {
     it('should get all compensations', async () => {
         return supertest(app)
             .get('/api/compensations')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
@@ -158,7 +158,7 @@ describe('CompensationController', function () {
     it('should get all for a specific member', async () => {
         return supertest(app)
             .get('/api/compensations/' + TestHelper.mockContact.id)
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
