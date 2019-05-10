@@ -16,7 +16,7 @@ describe('OrdersController', function () {
     it('should get all orders', async () => {
         return supertest(app)
         .get('/api/orders')
-        .set('Cookie', TestHelper.authenticatedCookies)
+        .set('Cookie', TestHelper.authenticatedAdminCookies)
         .expect(200)
         .then(res => {
             expect(res.body.length).to.be.greaterThan(0)

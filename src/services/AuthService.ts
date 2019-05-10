@@ -8,6 +8,7 @@ import Contact from '../entities/Contact';
 import config from 'config'
 import { getManager } from "typeorm";
 import { MockStrategy } from "passport-mock-strategy";
+import mockUser = require("passport-mock-strategy/lib/mock-user");
 
 export default class AuthService {
     public static init(app: Express.Application) {
@@ -16,7 +17,20 @@ export default class AuthService {
 
         AuthService.addOutlookStrategy()
 
-        if (process.env.TESTING) passport.use(new MockStrategy());
+        let mockUser: mockUser.User = {
+            id: 'mock-1',
+            name: {
+                givenName: 'mock',
+                familyName: 'mocking'
+            },
+            displayName: 'mock',
+            provider: 'mock-admin', emails: [{
+                value: 'fakemail@mail.com',
+                type: 'mocked'
+            }]
+        }
+        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-admin', user: Object.assign({}, mockUser, { id: 'mock-admin' }) }));
+        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-nonadmin', user: Object.assign({}, mockUser, { id: 'mock-nonadmin', provider: 'mock-nonadmin' }) }));
 
         app.use(passport.initialize())
         app.use(passport.session())
@@ -31,12 +45,19 @@ export default class AuthService {
                         return
                     }
                 }
-            }
 
-            res.status(403)
-            res.send({
-                error: 'Not authorized'
-            })
+                res.status(403)
+                res.send({
+                    error: 'Forbidden'
+                })
+                res.end()
+            } else {
+                res.status(401)
+                res.send({
+                    error: 'Not authorized'
+                })
+                res.end()
+            }
         }
     }
 
@@ -61,7 +82,7 @@ export default class AuthService {
             let user = new User()
             user.id = 1
             user.displayName = 'Mock User'
-            user.roles = [AuthRoles.ADMIN]
+            user.roles = (id.split('-')[1] === 'admin') ? [AuthRoles.ADMIN] : [AuthRoles.AUTHENTICATED]
             user.provider = 'mock'
             user.lastLogin = new Date()
             done(null, user)
@@ -103,8 +124,8 @@ export default class AuthService {
 
                 let user = await AuthService.findUserByOutlookId(profile.id)
                 if (user) {
-                    user.accessToken = accessToken,
-                        user.refreshToken = refreshToken
+                    user.accessToken = accessToken
+                    user.refreshToken = refreshToken
                     user.displayName = profile.displayName
                     user.lastLogin = new Date()
                     return done(null, await user.save())

@@ -15,7 +15,7 @@ describe('AuthController', () => {
         it('should return true', () => {
             return supertest(app)
                 .get('/api/isauth')
-                .set('Cookie', TestHelper.authenticatedCookies)
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
                 .expect(200)
                 .then(response => {
                     expect(response.body).to.has.ownProperty('authenticated')

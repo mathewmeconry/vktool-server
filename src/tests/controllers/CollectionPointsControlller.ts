@@ -22,7 +22,7 @@ describe('CollectionPointsController', function () {
     it('should add a new collection point', async () => {
         return supertest(app)
             .put('/api/collection-points')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(collectionPoint)
             .then((res) => {
@@ -37,7 +37,7 @@ describe('CollectionPointsController', function () {
     it('should return all collection points', async () => {
         return supertest(app)
             .get('/api/collection-points')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then((res) => {
                 let rec = res.body[res.body.length - 1]

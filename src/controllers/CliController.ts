@@ -1,7 +1,6 @@
 const express = require('express')
 import path from 'path'
 import * as Express from 'express'
-import { createServer, Server } from 'http'
 import { BexioService } from '../services/BexioService'
 import * as bodyParser from 'body-parser'
 import AuthRoutes from '../routes/AuthRoutes';
@@ -19,9 +18,8 @@ import FileStore from 'session-file-store'
 import CollectionPointsRoutes from '../routes/CollectionPointsRoutes';
 
 export default class CliController {
-    public static async startServer(): Promise<{ app: Express.Application, server: Server }> {
+    public static async startServer(): Promise<Express.Application> {
         let app: Express.Application = express()
-        const server = createServer(app)
 
         // CORS Headers
         app.use(function (req, res, next) {
@@ -44,7 +42,10 @@ export default class CliController {
             store: new (FileStore(session))(),
             secret: 'My super mega secret secret',
             resave: false,
-            saveUninitialized: true
+            saveUninitialized: true,
+            cookie: {
+                maxAge: (Date.now() + 30 * 86400 * 1000)
+            }
         }))
 
         // Authentication
@@ -64,10 +65,10 @@ export default class CliController {
             res.sendFile(path.join(__dirname + '/../../public/index.html'))
         })
 
-        server.listen(process.env.PORT || config.get('port'), () => {
+        app.listen(process.env.PORT || config.get('port'), () => {
             console.log('Listening on port: ' + (process.env.PORT || config.get('port')))
         })
 
-        return { app, server }
+        return app
     }
 }

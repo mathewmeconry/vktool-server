@@ -58,7 +58,7 @@ describe('BillingReportController', function () {
 
         return supertest(app)
             .get('/api/billing-reports/open')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body).to.be.string
@@ -85,7 +85,7 @@ describe('BillingReportController', function () {
     it('should create a new billing report', async () => {
         return supertest(app)
             .put('/api/billing-reports')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(report)
             .then(res => {
@@ -126,7 +126,7 @@ describe('BillingReportController', function () {
     it('should return all billing reports ', async () => {
         return supertest(app)
             .get('/api/billing-reports')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 let reportres: BillingReport = res.body[res.body.length - 1]
@@ -163,7 +163,7 @@ describe('BillingReportController', function () {
     it('should approve the report', async () => {
         return supertest(app)
             .post('/api/billing-reports/approve')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(dbReport)
             .then(res => {
@@ -174,7 +174,7 @@ describe('BillingReportController', function () {
     it('should decline the report', async () => {
         return supertest(app)
             .post('/api/billing-reports/decline')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(dbReport)
             .then(res => {
@@ -186,7 +186,7 @@ describe('BillingReportController', function () {
         dbReport.date = new Date('2019-04-20T00:00:00.000Z')
         return supertest(app)
             .post('/api/billing-reports')
-            .set('Cookie', TestHelper.authenticatedCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .send(dbReport)
             .then(res => {

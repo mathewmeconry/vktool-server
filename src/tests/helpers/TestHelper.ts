@@ -15,7 +15,8 @@ before(async () => {
 
 export default class TestHelper {
     public static app: Express.Application
-    public static authenticatedCookies: Array<string>
+    public static authenticatedAdminCookies: Array<string>
+    public static authenticatedNonAdminCookies: Array<string>
 
     public static mockUser: User
     public static mockGroup: ContactGroup
@@ -26,7 +27,7 @@ export default class TestHelper {
     public static mockOrder: Order
 
     public static async init() {
-        let { app } = await CliController.startServer()
+        let app = await CliController.startServer()
         TestHelper.app = app
 
         // @ts-ignore
@@ -40,11 +41,21 @@ export default class TestHelper {
         TestHelper.mockContact2 = await genMockContact(TestHelper.mockType, [TestHelper.mockGroup, TestHelper.mockMemberGroup])
         TestHelper.mockOrder = await genOrders(TestHelper.mockContact)
 
-        return supertest(TestHelper.app)
-            .get('/api/auth/mock')
-            .expect(200)
-            .then(res => {
-                TestHelper.authenticatedCookies = res.get('Set-Cookie')
-            })
+        return Promise.all(
+            [
+                supertest(TestHelper.app)
+                    .get('/api/auth/mock-admin')
+                    .expect(200)
+                    .then(res => {
+                        TestHelper.authenticatedAdminCookies = res.get('Set-Cookie')
+                    }),
+                supertest(TestHelper.app)
+                    .get('/api/auth/mock')
+                    .expect(200)
+                    .then(res => {
+                        TestHelper.authenticatedNonAdminCookies = res.get('Set-Cookie')
+                    })
+            ]
+        )
     }
 }
