@@ -42,7 +42,10 @@ export default class CliController {
             store: new (FileStore(session))(),
             secret: 'My super mega secret secret',
             resave: false,
-            saveUninitialized: true
+            saveUninitialized: true,
+            cookie: {
+                maxAge: (Date.now() + 30 * 86400 * 1000)
+            }
         }))
 
         // Authentication
