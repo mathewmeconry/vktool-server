@@ -10,27 +10,14 @@ export default class AuthController {
         })
     }
 
-    public static async auth(req: Express.Request, res: Express.Response): Promise<void> {
-        passport.authenticate('windowslive', {
-            scope: [
-                'openid',
-                'https://outlook.office.com/Mail.Read',
-                'profile',
-                'offline_access'
-            ]
-        })(req, res)
+    public static async authAzure(req: Express.Request, res: Express.Response, next: Function): Promise<void> {
+        passport.authenticate('azure_ad_oauth2')(req, res, next)
     }
 
-    public static async callback(req: Express.Request, res: Express.Response, next: Function): Promise<void> {
-        passport.authenticate('windowslive', { failureRedirect: '/login?error' }, (err, user, info) => {
-            req.login(user, (err) => {
-                if (err && (Object.keys(err).length !== 0 && err.constructor === Object)) {
-                    res.send(err)
-                } else {
-                    res.redirect(config.get('clientHost'))
-                }
-            })
-        })(req, res, next)
+    public static async callbackAzure(req: Express.Request, res: Express.Response, next: Function): Promise<void> {
+        passport.authenticate('azure_ad_oauth2', { failureRedirect: '/login' })(req, res, () => {
+            res.redirect(config.get('clientHost'))
+        })
     }
 
     public static logout(req: Express.Request, res: Express.Response): void {
