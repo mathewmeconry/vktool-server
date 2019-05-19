@@ -6,8 +6,8 @@ import AuthService from '../services/AuthService';
 
 export default function AuthRoutes(app: Express.Application) {
     app.get('/api/isauth', AuthController.isAuth)
-    app.get('/api/auth/outlook', AuthController.auth)
-    app.get('/api/auth/outlook/callback', AuthController.callback)
+    app.get('/api/auth/azure', AuthController.authAzure)
+    app.get('/api/auth/azure/callback', AuthController.callbackAzure)
     app.get('/api/logout', AuthController.logout)
 
     // route for mocked login

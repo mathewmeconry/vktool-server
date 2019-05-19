@@ -46,15 +46,15 @@ describe('AuthController', () => {
         })
     })
 
-    describe('outlook / office365', () => {
+    describe('azure AAD / office365', () => {
         describe('auth', () => {
             it('should send me to microsoft', () => {
                 return supertest(app)
-                    .get('/api/auth/outlook')
+                    .get('/api/auth/azure')
                     .expect(302)
                     .then(response => {
                         expect(response.header).to.has.ownProperty('location')
-                        expect(response.header.location).to.include('https://login.microsoftonline.com/common/oauth2/v2.0/authorize?')
+                        expect(response.header.location).to.include('https://login.windows.net/vkazu.ch/oauth2/authorize?resource=2209da49-23d9-4365-95d1-fa2dc84c7a8f')
                     })
             })
         })

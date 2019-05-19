@@ -2,20 +2,21 @@ import { AuthRoles, AuthRolesByRank } from "../interfaces/AuthRoles";
 import passport from 'passport'
 import * as Express from 'express'
 //@ts-ignore
-import { Strategy as OutlookStrategy } from 'passport-outlook'
 import User from '../entities/User';
 import Contact from '../entities/Contact';
 import config from 'config'
 import { getManager } from "typeorm";
 import { MockStrategy } from "passport-mock-strategy";
+import * as jwt from 'jsonwebtoken'
 import mockUser = require("passport-mock-strategy/lib/mock-user");
+import AzureAdOAuth2Strategy = require('passport-azure-ad-oauth2')
 
 export default class AuthService {
     public static init(app: Express.Application) {
         passport.serializeUser(AuthService.serializeUser);
         passport.deserializeUser(AuthService.deserializeUser);
 
-        AuthService.addOutlookStrategy()
+        AuthService.addAzureStrategy()
 
         let mockUser: mockUser.User = {
             id: 'mock-1',
@@ -106,68 +107,62 @@ export default class AuthService {
         return getManager().getRepository(User).findOne({ outlookId: outlookId })
     }
 
-    private static addOutlookStrategy() {
-        passport.use(new OutlookStrategy({
-            clientID: "2209da49-23d9-4365-95d1-fa2dc84c7a8f",
-            clientSecret: "yOB%SiU-yed3V18EL:Z7",
-            callbackURL: config.get('apiEndpoint') + '/api/auth/outlook/callback'
-        },
-            async function (accessToken: string, refreshToken: string, profile: { id: string, displayName: string, emails: Array<{ value: string }> }, done: any) {
-                let matched = false
-                for (let email of profile.emails) {
-                    if (email.value.match(/@vkazu\.ch$/)) matched = true
-                }
+    private static addAzureStrategy() {
+        passport.use(new AzureAdOAuth2Strategy({
+            clientID: '2209da49-23d9-4365-95d1-fa2dc84c7a8f',
+            clientSecret: 'yOB%SiU-yed3V18EL:Z7',
+            callbackURL: config.get('apiEndpoint') + '/api/auth/azure/callback',
+            resource: '2209da49-23d9-4365-95d1-fa2dc84c7a8f',
+            tenant: 'vkazu.ch'
+        }, async (accessToken: string, refreshToken: string, params: { id_token: string }, profile: passport.Profile, done: (err: Error | null, user?: User) => void) => {
+            const azureProfile = jwt.decode(params.id_token) as { oid: string, tid: string, upn: string, unique_name: string, name: string }
+            const outlookMultitendandId = `${azureProfile.oid}@${azureProfile.tid}`
 
-                if (!matched) {
-                    return done(new Error('No accepted Organization'))
-                }
+            let user = await AuthService.findUserByOutlookId(outlookMultitendandId)
+            if (user) {
+                user.accessToken = accessToken
+                user.refreshToken = refreshToken
+                user.displayName = profile.displayName
+                user.lastLogin = new Date()
+                return done(null, await user.save())
+            } else {
+                let userInfo = {};
+                getManager().getRepository(Contact).findOne({ mail: azureProfile.upn }).then(contact => {
+                    userInfo = {
+                        outlookId: outlookMultitendandId,
+                        accessToken: accessToken,
+                        refreshToken: '',
+                        displayName: azureProfile.name,
+                        roles: [AuthRoles.AUTHENTICATED],
+                        bexioContact: contact || undefined,
+                        provider: 'azure'
+                    }
+                }).catch(() => {
+                    userInfo = {
+                        outlookId: outlookMultitendandId,
+                        accessToken: accessToken,
+                        refreshToken: '',
+                        displayName: azureProfile.name,
+                        roles: [AuthRoles.AUTHENTICATED],
+                        provider: 'azure'
+                    }
+                }).then(async () => {
+                    //@ts-ignore
+                    if (refreshToken) userInfo.refreshToken = refreshToken
 
-                let user = await AuthService.findUserByOutlookId(profile.id)
-                if (user) {
-                    user.accessToken = accessToken
-                    user.refreshToken = refreshToken
-                    user.displayName = profile.displayName
+                    //@ts-ignore
+                    user = await AuthService.findUserByOutlookId(outlookMultitendandId)
+                    if (!user) user = new User()
+                    user = Object.assign(user, userInfo)
                     user.lastLogin = new Date()
-                    return done(null, await user.save())
-                } else {
-                    let userInfo = {};
-                    getManager().getRepository(Contact).findOne({ mail: profile.emails[0].value }).then(contact => {
-                        userInfo = {
-                            outlookId: profile.id,
-                            accessToken: accessToken,
-                            refreshToken: '',
-                            displayName: profile.displayName,
-                            roles: [AuthRoles.AUTHENTICATED],
-                            bexioContact: contact || undefined,
-                            provider: 'office365'
-                        }
-                    }).catch(() => {
-                        userInfo = {
-                            outlookId: profile.id,
-                            accessToken: accessToken,
-                            displayName: profile.displayName,
-                            roles: [AuthRoles.AUTHENTICATED],
-                            refreshToken: '',
-                            provider: 'office365'
-                        }
-                    }).then(async () => {
-                        //@ts-ignore
-                        if (refreshToken) userInfo.refreshToken = refreshToken
 
-                        //@ts-ignore
-                        user = await AuthService.findUserByOutlookId(user.outlookId)
-                        if (!user) user = new User()
-                        user = Object.assign(user, userInfo)
-                        user.lastLogin = new Date()
-
-                        user.save().then(user => {
-                            return done(null, user)
-                        }).catch(err => {
-                            return done(err)
-                        })
+                    user.save().then(user => {
+                        return done(null, user)
+                    }).catch((err: Error) => {
+                        return done(err)
                     })
-                }
+                })
             }
-        ));
+        }))
     }
 }
