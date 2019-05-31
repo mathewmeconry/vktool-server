@@ -1,14 +1,11 @@
 import Base from "./Base";
-import { Entity, Column, OneToMany, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne, getManager, Not, LessThan } from "typeorm";
 import Compensation from "./Compensation";
 import User from "./User";
 import { IsDate } from "class-validator";
 
 @Entity()
 export default class Payout extends Base<Payout> {
-    @Column('date')
-    public date: Date
-
     @OneToMany(type => Compensation, compensation => compensation.payout)
     @JoinColumn()
     public compensations: Array<Compensation<any>>
@@ -16,4 +13,33 @@ export default class Payout extends Base<Payout> {
     @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
+
+    @Column('date')
+    public until: Date
+
+    @Column('date')
+    public from: Date
+
+    constructor(until: Date, from = new Date('1970-01-01')) {
+        super()
+        this.until = until
+        this.from = from
+    }
+
+    public async claimCompensations() {
+        if (!this.id) throw new Error('Payout has first to be saved')
+
+        let qb = getManager().getRepository(Compensation).createQueryBuilder('compensation')
+        let query = qb.update()
+            .set({
+                payout: this
+            })
+            .where('payout is NULL')
+            .andWhere('date <= :dateUntil', { dateUntil: this.until })
+            .andWhere('date >= :dateFrom', { dateFrom: this.from })
+            .andWhere('approved = 1')
+            .andWhere('deletedAt is NULL')
+
+        return query.execute()
+    }
 }

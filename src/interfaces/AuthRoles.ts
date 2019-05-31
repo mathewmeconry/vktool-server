@@ -29,10 +29,14 @@ export enum AuthRoles {
     DRAFT_CREATE = 'draft_create',
     DRAFT_EDIT = 'draft_edit',
 
+    PAYOUTS_READ = 'payouts_read',
+    PAYOUTS_CREATE = 'payouts_create',
+    PAYOUTS_SEND = 'payouts_send',
+
     ADMIN = 'admin'
 }
 
-export const AuthRolesByFunction: {[index:number]: Array<AuthRoles>} = {
+export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
     // FHR
     9: [
         AuthRoles.MEMBERS_READ,
@@ -74,7 +78,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.ORDERS_READ,
         AuthRoles.COMPENSATIONS_READ,
         AuthRoles.COMPENSATIONS_CREATE,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ
     ],
     // Leiter Stv.
     29: [
@@ -97,7 +102,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ
     ],
     // Leiter
     28: [
@@ -120,7 +126,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ
     ],
     // VST
     16: [
@@ -143,6 +150,9 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ,
+        AuthRoles.PAYOUTS_CREATE,
+        AuthRoles.PAYOUTS_SEND
     ],
 }

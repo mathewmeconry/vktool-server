@@ -16,6 +16,7 @@ import config from 'config'
 import "reflect-metadata";
 import FileStore from 'session-file-store'
 import CollectionPointsRoutes from '../routes/CollectionPointsRoutes';
+import PayoutRoutes from '../routes/PayoutRoutes';
 
 export default class CliController {
     public static async startServer(): Promise<Express.Application> {
@@ -58,6 +59,7 @@ export default class CliController {
         CompensationRoutes(app)
         BillingReportRoutes(app)
         CollectionPointsRoutes(app)
+        PayoutRoutes(app)
         BexioService.addExpressHandlers(app)
 
         app.use(express.static(path.join(__dirname, '/../../public/')));
