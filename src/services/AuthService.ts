@@ -39,9 +39,6 @@ export default class AuthService {
 
     public static checkAuthorization(roles: Array<AuthRoles>): (req: Express.Request, res: Express.Response, next: Function) => void {
         return function (req, res, next) {
-            next()
-            return
-            
             if (req.isAuthenticated()) {
                 for (let role of roles) {
                     if (AuthService.isAuthorized(req.user.roles, role)) {
