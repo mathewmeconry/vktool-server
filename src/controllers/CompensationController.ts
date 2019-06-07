@@ -27,6 +27,7 @@ export default class CompensationController {
                 ])
                 .leftJoinAndSelect('compensation.member', 'member')
                 .leftJoinAndSelect('compensation.creator', 'creator')
+                .leftJoinAndSelect('compensation.payout', 'payout')
                 .leftJoinAndSelect('compensation.billingReport', 'billingReport')
                 .leftJoinAndSelect('billingReport.order', 'order')
                 .where('deletedAt IS NULL')
@@ -46,6 +47,7 @@ export default class CompensationController {
                 ])
                 .leftJoinAndSelect('compensation.member', 'member')
                 .leftJoinAndSelect('compensation.creator', 'creator')
+                .leftJoinAndSelect('compensation.payout', 'payout')
                 .where('deletedAt IS NULL')
                 .getMany()
         ]).then(data => {
