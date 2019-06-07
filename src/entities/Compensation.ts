@@ -33,7 +33,6 @@ export default class Compensation<T> extends Base<T> {
     public approvedBy?: User
 
     @Column('boolean', { default: false })
-    
     public paied: boolean
 
     @Column('date', { nullable: true })

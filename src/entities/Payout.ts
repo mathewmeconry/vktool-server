@@ -47,8 +47,10 @@ export default class Payout extends Base<Payout> {
 
     @AfterLoad()
     private calculateTotal() {
-        for (let compensation of this.compensations) {
-            this.total = this.total + compensation.amount
+        if (this.compensations && this.compensations.length > 0) {
+            for (let compensation of this.compensations) {
+                this.total = this.total + parseFloat(compensation.amount.toString())
+            }
         }
     }
 }

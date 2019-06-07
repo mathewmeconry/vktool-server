@@ -4,7 +4,17 @@ import Payout from '../entities/Payout';
 
 export default class PayoutController {
     public static async getPayouts(req: Express.Request, res: Express.Response): Promise<void> {
-        res.send(await getManager().getRepository(Payout).find({ relations: ['compensations'] }))
+        res.send(await getManager().getRepository(Payout).find({
+            join: {
+                alias: 'payout',
+                leftJoinAndSelect: {
+                    compensations: 'payout.compensations',
+                    billingReport: 'compensations.billingReport',
+                    member: 'compensations.member',
+                    order: 'billingReport.order'
+                }
+            }
+        }))
     }
 
     public static async createPayout(req: Express.Request, res: Express.Response): Promise<void> {
