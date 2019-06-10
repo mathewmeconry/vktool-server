@@ -39,6 +39,18 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         this.charge = charge
     }
 
+    get description() {
+        if (this.billingReport && this.billingReport.order) {
+            if (this.billingReport.order.contact && !this.billingReport.order.contact.hasOwnProperty('firstname')) {
+                return `${this.billingReport.order.title} (${this.billingReport.order.contact.lastname})`
+            }
+
+            return this.billingReport.order.title
+        }
+
+        return ''
+    }
+
     @BeforeInsert()
     public calcAmount() {
         this.calculateHours()
@@ -91,4 +103,5 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         this.dayHours = dayHours
         this.nightHours = nightHours
     }
+
 }

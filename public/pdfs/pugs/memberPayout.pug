@@ -1,0 +1,22 @@
+extends layout.pug
+
+block header
+    style(type="text/css") !{compiledStyle}
+
+block content
+    h2 Auszahlung Verkehrskadetten-Entschädiung
+
+    h3 Solidperiode #{from} bis #{until}
+
+    table(class="table table-striped")
+        thead
+            tr
+                th Datum
+                th Beschreibung
+                th Betrag
+        tbody
+            each compensation in compensations
+                tr
+                    td #{compensation.date}
+                    td #{compensation.description}
+                    td CHF #{compensation.amount}
