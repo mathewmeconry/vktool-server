@@ -1,13 +1,28 @@
 extends layout.pug
 
+mixin prependZeros(number)
+    #{`00${number}`.slice(-2)}
+
 block header
     style(type="text/css") !{compiledStyle}
 
 block content
     h2 Auszahlung Verkehrskadetten-Entschädiung
-
+    br
     h3 Solidperiode #{from} bis #{until}
+    br
 
+    div(class="header")
+        div(class="bankingInformation")
+            p(class="bold") Bankinformationen
+            p #{member.bankName}
+            p #{member.iban}
+            p #{member.accountHolder}
+        div(class="address")
+            p(class="bold") #{member.firstname} #{member.lastname}
+            p #{member.address}
+            p #{member.postcode} #{member.city}
+        
     table(class="table table-striped")
         thead
             tr
@@ -17,6 +32,18 @@ block content
         tbody
             each compensation in compensations
                 tr
-                    td #{compensation.date}
-                    td #{compensation.description}
-                    td CHF #{compensation.amount}
+                    td #{`00${compensation.date.getDate()}`.slice(-2)}.#{`00${compensation.date.getMonth() + 1}`.slice(-2)}.#{compensation.date.getFullYear()}
+                    if compensation.from && compensation.until
+                        td #{compensation.description} (#{compensation.from.getHours()}:#{compensation.from.getMinutes()} - #{compensation.until.getHours()}:#{compensation.until.getMinutes()})
+                    else
+                        td #{compensation.description}
+                    td CHF #{compensation.amount.toFixed(2)}
+
+        tr(class="total")
+            td Total
+            td
+            td CHF #{total.toFixed(2)}
+
+    br
+    br
+    p(class="info-text") Bitte prüfe die Liste auf Fehler und melde allfällige Abweichungen per E-Mail info@vkazu.ch.

@@ -29,7 +29,8 @@ export default class PayoutService {
     }
 
     public static async generatePDF4Member(payout: Payout, member: Contact): Promise<Buffer> {
-        const compensations = await CompensationService.getByPayoutAndMember(payout.id, member.id)
+        const compensations = (await CompensationService.getByPayoutAndMember(payout.id, member.id)).sort((a, b) => (a.date > b.date) ? 1 : -1)
+        const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
 
         return new Promise<Buffer>((resolve, reject) => {
             fs.readFile(path.resolve(__dirname, '../../public/logo.png'), async (err, data) => {
@@ -46,6 +47,8 @@ export default class PayoutService {
                     htmlTemplateOptions: {
                         from: (payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : '',
                         until: moment(payout.until).format('DD.MM.YYYY'),
+                        total: compensationTotal,
+                        member,
                         compensations
                     },
                     pdfOptions: {
@@ -71,10 +74,13 @@ export default class PayoutService {
 
     public static async generateHTML4Member(payout: Payout, member: Contact): Promise<String> {
         const compensations = await CompensationService.getByPayoutAndMember(payout.id, member.id)
+        const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
 
         return pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/memberPayout.pug'), {
             until: payout.until,
             compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/pdfs/scss/memberPayout.scss') }).css,
+            total: compensationTotal,
+            member,
             compensations
         })
     }

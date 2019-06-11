@@ -2,11 +2,40 @@
 
 table {
   border-collapse: collapse;
+  width: 100%;
   thead tr {
     text-align: left;
     border-bottom: 1px solid black;
   }
   tbody td {
-      padding: 5px;
+    padding: 5px;
   }
+}
+
+h3, p {
+  padding: 0;
+  margin: 0;
+}
+
+.header {
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  .address {
+    margin-right: 20mm;
+  }
+}
+.bold {
+  font-weight: bold;
+}
+
+.total {
+  border-top: 1px solid black;
+  font-weight: bold;
+}
+
+.info-text {
+  font-size: 8pt;
 }
