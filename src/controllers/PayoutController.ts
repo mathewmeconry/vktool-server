@@ -52,7 +52,10 @@ export default class PayoutController {
     }
 
     public static async generatePDF4Member(req: Express.Request, res: Express.Response): Promise<void> {
-        if (!req.body.hasOwnProperty('payoutId') || !req.body.hasOwnProperty('memberId')) {
+        const payoutId = req.body.payoutId || req.params.payout
+        const memberId = req.body.memberId || req.params.member
+
+        if (!payoutId || !memberId) {
             res.status(402)
             res.send({
                 message: 'Invalid request (field payoutId or memberId is missing)'
@@ -61,9 +64,9 @@ export default class PayoutController {
             res.contentType('application/pdf')
             res.send(
                 (await PayoutService.generatePDF4Member(
-                    await getManager().getRepository(Payout).findOneOrFail(req.body.payoutId),
-                    await getManager().getRepository(Contact).findOneOrFail(req.body.memberId))
-                ).toString()
+                    await getManager().getRepository(Payout).findOneOrFail(payoutId),
+                    await getManager().getRepository(Contact).findOneOrFail(memberId))
+                )
             )
         }
 

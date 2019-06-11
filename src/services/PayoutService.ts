@@ -57,7 +57,6 @@ export default class PayoutService {
                         headerTemplate: pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'), { logo: `data:image/png;base64,${data.toString('base64')}` }),
                         footerTemplate: pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug')),
                         format: 'A4',
-                        path: 'compensation.pdf',
                         margin: {
                             top: '25mm',
                             left: '0',
@@ -67,7 +66,7 @@ export default class PayoutService {
                     }
                 }
 
-                resolve(generatePdf(options))
+                resolve(await generatePdf(options))
             })
         })
     }
