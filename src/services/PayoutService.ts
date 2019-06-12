@@ -8,7 +8,7 @@ import fs from 'fs'
 import * as pug from 'pug'
 import Contact from "../entities/Contact";
 import sass from 'node-sass'
-import moment = require("moment");
+import moment from 'moment'
 
 export default class PayoutService {
     public static async reclaimCompensations(payout: Payout): Promise<void> {
