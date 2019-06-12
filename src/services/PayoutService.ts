@@ -15,6 +15,8 @@ export default class PayoutService {
         if (!payout.id) throw new Error('Payout has first to be saved')
 
         let qb = getManager().getRepository(Compensation).createQueryBuilder('compensation')
+        await qb.update().set({ payout: null }).where('payout = :payout', { payout: payout.id }).execute()
+
         let query = qb.update()
             .set({
                 payout: payout

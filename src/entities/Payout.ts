@@ -3,7 +3,6 @@ import { Entity, Column, OneToMany, JoinColumn, ManyToOne, getManager, Not, Less
 import Compensation from "./Compensation";
 import User from "./User";
 import { IsDate } from "class-validator";
-import CompensationService from "../services/CompensationService";
 
 @Entity()
 export default class Payout extends Base<Payout> {
