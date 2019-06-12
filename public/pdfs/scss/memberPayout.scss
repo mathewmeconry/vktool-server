@@ -1,16 +1,4 @@
-@charset "UTF-8";
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  thead tr {
-    text-align: left;
-    border-bottom: 1px solid black;
-  }
-  tbody td {
-    padding: 5px;
-  }
-}
+@import 'base';
 
 h3, p {
   padding: 0;
