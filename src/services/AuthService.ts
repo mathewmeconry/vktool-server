@@ -109,11 +109,11 @@ export default class AuthService {
 
     private static addAzureStrategy() {
         passport.use(new AzureAdOAuth2Strategy({
-            clientID: '2209da49-23d9-4365-95d1-fa2dc84c7a8f',
-            clientSecret: 'yOB%SiU-yed3V18EL:Z7',
+            clientID: config.get('azure.clientID'),
+            clientSecret: config.get('azure.clientSecret'),
             callbackURL: config.get('apiEndpoint') + '/api/auth/azure/callback',
-            resource: '2209da49-23d9-4365-95d1-fa2dc84c7a8f',
-            tenant: 'vkazu.ch'
+            resource: config.get('azure.resource'),
+            tenant: config.get('azure.tenant')
         }, async (accessToken: string, refreshToken: string, params: { id_token: string }, profile: passport.Profile, done: (err: Error | null, user?: User) => void) => {
             const azureProfile = jwt.decode(params.id_token) as { oid: string, tid: string, upn: string, unique_name: string, name: string }
             const outlookMultitendandId = `${azureProfile.oid}@${azureProfile.tid}`

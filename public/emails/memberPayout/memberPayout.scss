@@ -1,0 +1,42 @@
+div.content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  font-size: 11pt;
+  font-family: Arial, sans-serif;
+
+  .logo img {
+    width: 50%;
+    margin: 0 auto;
+    display: flex;
+  }
+
+  div {
+    width: 750px;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+
+    td,
+    th {
+      padding: 5px;
+      text-align: left;
+    }
+
+    thead {
+      tr {
+        background-color: black;
+        color: white;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .total {
+    border-top: 1px solid black;
+    font-weight: bold;
+  }
+}

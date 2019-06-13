@@ -11,6 +11,7 @@ import sass from 'node-sass'
 import moment from 'moment'
 
 export default class PayoutService {
+
     public static async reclaimCompensations(payout: Payout): Promise<void> {
         if (!payout.id) throw new Error('Payout has first to be saved')
 
@@ -30,7 +31,7 @@ export default class PayoutService {
         await query.execute()
     }
 
-    public static async generatePDF4Member(payout: Payout, member: Contact): Promise<Buffer> {
+    public static async generateMemberPDF(payout: Payout, member: Contact): Promise<Buffer> {
         const compensations = (await CompensationService.getByPayoutAndMember(payout.id, member.id)).sort((a, b) => (a.date > b.date) ? 1 : -1)
         const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
 
@@ -73,9 +74,10 @@ export default class PayoutService {
         })
     }
 
-    public static async generateHTML4Member(payout: Payout, member: Contact): Promise<String> {
+    public static async generateMemberHTML(payout: Payout, member: Contact): Promise<String> {
         const compensations = await CompensationService.getByPayoutAndMember(payout.id, member.id)
         const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
+
 
         return pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/memberPayout.pug'), {
             until: payout.until,
@@ -83,6 +85,31 @@ export default class PayoutService {
             total: compensationTotal,
             member,
             compensations
+        })
+    }
+
+    public static async generateMemberMail(payout: Payout, member: Contact): Promise<string> {
+        const compensations = await CompensationService.getByPayoutAndMember(payout.id, member.id)
+        const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
+
+        return new Promise<string>((resolve, reject) => {
+            fs.readFile(path.resolve(__dirname, '../../public/logo.png'), async (err, data) => {
+                if (err) {
+                    reject(err)
+                    return
+                }
+
+                resolve(
+                    pug.renderFile(path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.pug'), {
+                        logo: `data:image/png;base64,${data.toString('base64')}`,
+                        until: payout.until,
+                        compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.scss') }).css,
+                        total: compensationTotal,
+                        member,
+                        compensations
+                    })
+                )
+            })
         })
     }
 }
