@@ -165,7 +165,7 @@ describe('BillingReportController', function () {
             .post('/api/billing-reports/approve')
             .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
-            .send(dbReport)
+            .send({ id: dbReport.id })
             .then(res => {
                 expect((res.body as BillingReport).state).to.be.equal('approved')
             })
