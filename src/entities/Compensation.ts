@@ -1,4 +1,4 @@
-import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager } from "typeorm";
+import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager, AfterLoad } from "typeorm";
 import Contact from "./Contact";
 import Payout from "./Payout";
 import User from "./User";
@@ -33,7 +33,6 @@ export default class Compensation<T> extends Base<T> {
     public approvedBy?: User
 
     @Column('boolean', { default: false })
-    
     public paied: boolean
 
     @Column('date', { nullable: true })
@@ -81,5 +80,11 @@ export default class Compensation<T> extends Base<T> {
             (<CustomCompensation>compensation).description !== undefined &&
             (<CustomCompensation>compensation).description !== null
         )
+    }
+
+    @AfterLoad()
+    private parseValues() {
+        this.amount = parseFloat(this.amount.toString())
+        this.date = new Date(this.date)
     }
 }

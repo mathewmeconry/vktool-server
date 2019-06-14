@@ -1,0 +1,29 @@
+@import 'base';
+
+h3, p {
+  padding: 0;
+  margin: 0;
+}
+
+.header {
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  .address {
+    margin-right: 20mm;
+  }
+}
+.bold {
+  font-weight: bold;
+}
+
+.total {
+  border-top: 1px solid black;
+  font-weight: bold;
+}
+
+.info-text {
+  font-size: 11pt;
+}

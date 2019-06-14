@@ -7,98 +7,15 @@ import Compensation from "../entities/Compensation";
 import CustomCompensation from "../entities/CustomCompensation";
 import BillingReport from "../entities/BillingReport";
 import OrderCompensation from "../entities/OrderCompensation";
+import CompensationService from "../services/CompensationService";
 
 export default class CompensationController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
-        Promise.all([
-            getManager()
-                .getRepository(OrderCompensation)
-                .createQueryBuilder('compensation')
-                .select([
-                    'compensation.id',
-                    'compensation.amount',
-                    'compensation.date',
-                    'compensation.approved',
-                    'compensation.approvedBy',
-                    'compensation.paied',
-                    'compensation.valutaDate',
-                    'compensation.from',
-                    'compensation.until'
-                ])
-                .leftJoinAndSelect('compensation.member', 'member')
-                .leftJoinAndSelect('compensation.creator', 'creator')
-                .leftJoinAndSelect('compensation.billingReport', 'billingReport')
-                .leftJoinAndSelect('billingReport.order', 'order')
-                .where('deletedAt IS NULL')
-                .getMany(),
-            getManager()
-                .getRepository(CustomCompensation)
-                .createQueryBuilder('compensation')
-                .select([
-                    'compensation.id',
-                    'compensation.description',
-                    'compensation.amount',
-                    'compensation.date',
-                    'compensation.approved',
-                    'compensation.approvedBy',
-                    'compensation.paied',
-                    'compensation.valutaDate'
-                ])
-                .leftJoinAndSelect('compensation.member', 'member')
-                .leftJoinAndSelect('compensation.creator', 'creator')
-                .where('deletedAt IS NULL')
-                .getMany()
-        ]).then(data => {
-            res.send((data[0] as any).concat(data[1]))
-        })
+        res.send(await CompensationService.getAll())
     }
 
     public static async getUser(req: Express.Request, res: Express.Response): Promise<void> {
-        Promise.all([
-            getManager()
-                .getRepository(OrderCompensation)
-                .createQueryBuilder('compensation')
-                .select([
-                    'compensation.id',
-                    'compensation.amount',
-                    'compensation.date',
-                    'compensation.approved',
-                    'compensation.approvedBy',
-                    'compensation.paied',
-                    'compensation.valutaDate',
-                    'compensation.from',
-                    'compensation.until'
-                ])
-                .leftJoinAndSelect('compensation.member', 'member')
-                .leftJoinAndSelect('compensation.creator', 'creator')
-                .leftJoinAndSelect('compensation.billingReport', 'billingReport')
-                .leftJoinAndSelect('billingReport.order', 'order')
-                .where('deletedAt IS NULL')
-                .andWhere('memberId = :id', { id: parseInt(req.params.member) })
-                .andWhere('compensation.approved = true')
-                .getMany(),
-            getManager()
-                .getRepository(CustomCompensation)
-                .createQueryBuilder('compensation')
-                .select([
-                    'compensation.id',
-                    'compensation.description',
-                    'compensation.amount',
-                    'compensation.date',
-                    'compensation.approved',
-                    'compensation.approvedBy',
-                    'compensation.paied',
-                    'compensation.valutaDate'
-                ])
-                .leftJoinAndSelect('compensation.member', 'member')
-                .leftJoinAndSelect('compensation.creator', 'creator')
-                .where('deletedAt IS NULL')
-                .andWhere('memberId = :id', { id: parseInt(req.params.member) })
-                .andWhere('compensation.approved = true')
-                .getMany()
-        ]).then(data => {
-            res.send((data[0] as any).concat(data[1]))
-        })
+        res.send(await CompensationService.getByMember(parseInt(req.params.member)))
     }
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {

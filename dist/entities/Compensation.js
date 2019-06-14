@@ -50,6 +50,10 @@ let Compensation = class Compensation extends Base_1.default {
         return (compensation.description !== undefined &&
             compensation.description !== null);
     }
+    parseValues() {
+        this.amount = parseFloat(this.amount.toString());
+        this.date = new Date(this.date);
+    }
 };
 __decorate([
     typeorm_1.ManyToOne(type => Contact_1.default, contact => contact.compensations, { eager: true }),
@@ -106,6 +110,12 @@ __decorate([
     typeorm_1.JoinColumn(),
     __metadata("design:type", User_1.default)
 ], Compensation.prototype, "deletedBy", void 0);
+__decorate([
+    typeorm_1.AfterLoad(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Compensation.prototype, "parseValues", null);
 Compensation = __decorate([
     typeorm_1.Entity(),
     typeorm_1.TableInheritance({ column: { type: "varchar", name: "type" } }),

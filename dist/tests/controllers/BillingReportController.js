@@ -131,9 +131,9 @@ describe('BillingReportController', function () {
             chai_1.expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper_1.default.mockContact.id].charge);
             chai_1.expect(reportres.compensations[0].paied).to.be.equal(false);
             chai_1.expect(reportres.compensations[0].payout).to.be.equal(undefined);
-            chai_1.expect(reportres.compensations[0].amount).to.be.equal('155.00');
+            chai_1.expect(reportres.compensations[0].amount).to.be.equal(155);
             chai_1.expect(reportres.compensations[0].approved).to.be.equal(false);
-            chai_1.expect(reportres.compensations[0].date).to.be.equal('2019-04-19');
+            chai_1.expect(reportres.compensations[0].date).to.be.equal('2019-04-19T00:00:00.000Z');
             chai_1.expect(reportres.compensations[0].dayHours).to.be.equal(14);
             chai_1.expect(reportres.compensations[0].nightHours).to.be.equal(1);
             chai_1.expect(reportres.compensations[0].valutaDate).to.be.equal(null);
@@ -144,7 +144,7 @@ describe('BillingReportController', function () {
             .post('/api/billing-reports/approve')
             .set('Cookie', TestHelper_1.default.authenticatedAdminCookies)
             .expect(200)
-            .send(dbReport)
+            .send({ id: dbReport.id })
             .then(res => {
             chai_1.expect(res.body.state).to.be.equal('approved');
         });

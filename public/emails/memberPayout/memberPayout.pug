@@ -1,0 +1,28 @@
+doctype html
+html
+	head
+		meta(charset='utf-8')
+		style(type="text/css") !{compiledStyle}
+
+	body
+		div(class="content")
+			div(class="greeting")
+				h1 Hallo #{member.firstname}
+			div(class="info")
+				p Anbei senden wir dir die definitve Abrechnung der letzten Einsatzperiode. 
+				p Die Entschädigung wird in den nächsten Tagen auf deinem Konto eintreffen.
+
+				p Bitte prüfe die Abrechnung auf Abweichungen, und melde uns diese innerhalb der nächsten 7 Tage per E-Mail (#[a(href="mailto:info@vkazu.ch") info@vkazu.ch]).
+				p Die Auflistung findest du als PDF im Anhang.
+			br
+			br
+			div(class="logo")
+				img(src=`${apiEndpoint}/logo.png`, alt="VKAZU-logo")
+			div(class="icons")
+				a(href="https://goo.gl/WrD3an")
+					img(src=`${apiEndpoint}/icons/google-maps.svg`, alt="google-maps")
+				a(href="https://www.facebook.com/vkazuCH/")
+					img(src=`${apiEndpoint}/icons/facebook.svg`, alt="facebook")
+				a(href="https://www.instagram.com/verkehrskadetten_zuerich/")
+					img(src=`${apiEndpoint}/icons/instagram.svg`, alt="instagram")
+
