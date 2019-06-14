@@ -109,6 +109,7 @@ export default class BillingReportController {
 
                 if (state === 'approve') {
                     billingReport.state = 'approved'
+                    billingReport.approvedBy = req.user
                     await transaction.createQueryBuilder()
                         .update(OrderCompensation)
                         .set({ approved: true, updatedBy: req.user })
@@ -119,8 +120,8 @@ export default class BillingReportController {
                     billingReport.state = 'declined'
                 }
                 billingReport.updatedBy = req.user
-                await transaction.save(billingReport)
-
+                billingReport = await transaction.save(billingReport)
+            }).then(() => {
                 res.send(billingReport)
             }).catch(err => {
                 res.status(500)
