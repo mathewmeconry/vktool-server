@@ -108,21 +108,19 @@ export default class BillingReportController {
                 billingReport = billingReport as BillingReport
 
                 if (state === 'approve') {
+                    billingReport.state = 'approved'
                     await transaction.createQueryBuilder()
                         .update(OrderCompensation)
                         .set({ approved: true, updatedBy: req.user })
                         .where('billingReport = :id', { id: billingReport.id })
                         .andWhere('deletedAt IS NULL')
                         .execute()
-                }
-
-                if (state === 'approve') {
-                    billingReport.state = 'approved'
                 } else {
                     billingReport.state = 'declined'
                 }
                 billingReport.updatedBy = req.user
                 await transaction.save(billingReport)
+
                 res.send(billingReport)
             }).catch(err => {
                 res.status(500)
