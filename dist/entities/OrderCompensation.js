@@ -30,6 +30,15 @@ let OrderCompensation = class OrderCompensation extends Compensation_1.default {
         this.until = until;
         this.charge = charge;
     }
+    get description() {
+        if (this.billingReport && this.billingReport.order) {
+            if (this.billingReport.order.contact && !this.billingReport.order.contact.hasOwnProperty('firstname')) {
+                return `${this.billingReport.order.title} (${this.billingReport.order.contact.lastname})`;
+            }
+            return this.billingReport.order.title;
+        }
+        return '';
+    }
     calcAmount() {
         this.calculateHours();
         this.amount = (this.dayHours * 10) + (this.nightHours * 15);

@@ -35,6 +35,7 @@ const config_1 = __importDefault(require("config"));
 require("reflect-metadata");
 const session_file_store_1 = __importDefault(require("session-file-store"));
 const CollectionPointsRoutes_1 = __importDefault(require("../routes/CollectionPointsRoutes"));
+const PayoutRoutes_1 = __importDefault(require("../routes/PayoutRoutes"));
 class CliController {
     static startServer() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -72,6 +73,7 @@ class CliController {
             CompensationRoutes_1.default(app);
             BillingReportRoutes_1.default(app);
             CollectionPointsRoutes_1.default(app);
+            PayoutRoutes_1.default(app);
             BexioService_1.BexioService.addExpressHandlers(app);
             app.use(express.static(path_1.default.join(__dirname, '/../../public/')));
             app.get('*', (req, res) => {

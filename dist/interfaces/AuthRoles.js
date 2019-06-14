@@ -23,6 +23,9 @@ var AuthRoles;
     AuthRoles["DRAFT_READ"] = "draft_read";
     AuthRoles["DRAFT_CREATE"] = "draft_create";
     AuthRoles["DRAFT_EDIT"] = "draft_edit";
+    AuthRoles["PAYOUTS_READ"] = "payouts_read";
+    AuthRoles["PAYOUTS_CREATE"] = "payouts_create";
+    AuthRoles["PAYOUTS_SEND"] = "payouts_send";
     AuthRoles["ADMIN"] = "admin";
 })(AuthRoles = exports.AuthRoles || (exports.AuthRoles = {}));
 exports.AuthRolesByFunction = {
@@ -66,7 +69,8 @@ exports.AuthRolesByRank = {
         AuthRoles.ORDERS_READ,
         AuthRoles.COMPENSATIONS_READ,
         AuthRoles.COMPENSATIONS_CREATE,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ
     ],
     // Leiter Stv.
     29: [
@@ -89,7 +93,8 @@ exports.AuthRolesByRank = {
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ
     ],
     // Leiter
     28: [
@@ -112,7 +117,8 @@ exports.AuthRolesByRank = {
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ
     ],
     // VST
     16: [
@@ -135,7 +141,10 @@ exports.AuthRolesByRank = {
         AuthRoles.DRAFT_READ,
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ,
+        AuthRoles.PAYOUTS_CREATE,
+        AuthRoles.PAYOUTS_SEND
     ],
 };
 //# sourceMappingURL=AuthRoles.js.map

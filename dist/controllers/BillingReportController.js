@@ -88,6 +88,8 @@ class BillingReportController {
                 typeorm_1.getManager().transaction((transaction) => __awaiter(this, void 0, void 0, function* () {
                     billingReport = billingReport;
                     if (state === 'approve') {
+                        billingReport.state = 'approved';
+                        billingReport.approvedBy = req.user;
                         yield transaction.createQueryBuilder()
                             .update(OrderCompensation_1.default)
                             .set({ approved: true, updatedBy: req.user })
@@ -95,16 +97,14 @@ class BillingReportController {
                             .andWhere('deletedAt IS NULL')
                             .execute();
                     }
-                    if (state === 'approve') {
-                        billingReport.state = 'approved';
-                    }
                     else {
                         billingReport.state = 'declined';
                     }
                     billingReport.updatedBy = req.user;
-                    yield transaction.save(billingReport);
+                    billingReport = yield transaction.save(billingReport);
+                })).then(() => {
                     res.send(billingReport);
-                })).catch(err => {
+                }).catch(err => {
                     res.status(500);
                     res.send({
                         message: 'sorry man...'

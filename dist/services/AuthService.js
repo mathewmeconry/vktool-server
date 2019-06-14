@@ -118,11 +118,11 @@ class AuthService {
     }
     static addAzureStrategy() {
         passport_1.default.use(new AzureAdOAuth2Strategy({
-            clientID: '2209da49-23d9-4365-95d1-fa2dc84c7a8f',
-            clientSecret: 'yOB%SiU-yed3V18EL:Z7',
+            clientID: config_1.default.get('azure.clientID'),
+            clientSecret: config_1.default.get('azure.clientSecret'),
             callbackURL: config_1.default.get('apiEndpoint') + '/api/auth/azure/callback',
-            resource: '2209da49-23d9-4365-95d1-fa2dc84c7a8f',
-            tenant: 'vkazu.ch'
+            resource: config_1.default.get('azure.resource'),
+            tenant: config_1.default.get('azure.tenant')
         }, (accessToken, refreshToken, params, profile, done) => __awaiter(this, void 0, void 0, function* () {
             const azureProfile = jwt.decode(params.id_token);
             const outlookMultitendandId = `${azureProfile.oid}@${azureProfile.tid}`;
