@@ -151,7 +151,7 @@ describe('BillingReportController', function () {
                 expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].charge)
                 expect(reportres.compensations[0].paied).to.be.equal(false)
                 expect(reportres.compensations[0].payout).to.be.equal(undefined)
-                expect(reportres.compensations[0].amount).to.be.equal('155.00')
+                expect(reportres.compensations[0].amount).to.be.equal(155)
                 expect(reportres.compensations[0].approved).to.be.equal(false)
                 expect(reportres.compensations[0].date).to.be.equal('2019-04-19')
                 expect(reportres.compensations[0].dayHours).to.be.equal(14)
