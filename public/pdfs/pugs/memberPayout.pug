@@ -4,6 +4,8 @@ block header
     style(type="text/css") !{compiledStyle}
 
 block content
+    div(style={float: 'right'})
+        p #{location}, #{date}
     h2 Auszahlung Verkehrskadetten-Entschädigung
     br
     h3 Soldperiode #{from} bis #{until}
@@ -43,4 +45,5 @@ block content
 
     br
     br
-    p(class="info-text") Bitte prüfe die Liste auf Fehler und melde allfällige Abweichungen per E-Mail an info@vkazu.ch.
+    p(class="info-text") Bitte prüfe die Liste auf Fehler und melde allfällige Abweichungen in den nächstn 7 Tage per E-Mail an #[a(href="mailto:info@vkazu.ch") info@vkazu.ch].
+        

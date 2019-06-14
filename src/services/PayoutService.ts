@@ -49,6 +49,8 @@ export default class PayoutService {
                         file: path.resolve(__dirname, '../../public/pdfs/scss/memberPayout.scss')
                     },
                     htmlTemplateOptions: {
+                        location: 'Wallisellen',
+                        date: moment(new Date()).format('DD.MM.YYYY'),
                         from: (payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : '',
                         until: moment(payout.until).format('DD.MM.YYYY'),
                         total: compensationTotal,
@@ -81,7 +83,9 @@ export default class PayoutService {
 
 
         return pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/memberPayout.pug'), {
-            until: payout.until,
+            location: 'Wallisellen',
+            date: moment(new Date()).format('DD.MM.YYYY'),
+            until: moment(payout.until).format('DD.MM.YYYY'),
             compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/pdfs/scss/memberPayout.scss') }).css,
             total: compensationTotal,
             member,
@@ -100,7 +104,6 @@ export default class PayoutService {
                 resolve(
                     pug.renderFile(path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.pug'), {
                         apiEndpoint: config.get('apiEndpoint'),
-                        until: payout.until,
                         compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.scss') }).css,
                         member
                     })
