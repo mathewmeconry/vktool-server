@@ -103,7 +103,9 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
         AuthRoles.MAILING_LISTS,
-        AuthRoles.PAYOUTS_READ
+        AuthRoles.PAYOUTS_READ,
+        AuthRoles.PAYOUTS_CREATE,
+        AuthRoles.PAYOUTS_SEND
     ],
     // Leiter
     28: [
@@ -127,7 +129,9 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.DRAFT_EDIT,
         AuthRoles.DRAFT_READ,
         AuthRoles.MAILING_LISTS,
-        AuthRoles.PAYOUTS_READ
+        AuthRoles.PAYOUTS_READ,
+        AuthRoles.PAYOUTS_CREATE,
+        AuthRoles.PAYOUTS_SEND
     ],
     // VST
     16: [
