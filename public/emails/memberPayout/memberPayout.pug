@@ -6,8 +6,6 @@ html
 
 	body
 		div(class="content")
-			div(class="logo")
-				img(src=logo, alt="VKAZU-logo")
 			div(class="greeting")
 				h1 Hallo #{member.firstname}
 			div(class="info")
@@ -15,25 +13,16 @@ html
 				p Die Entschädigung wird in den nächsten Tagen auf deinem Konto eintreffen.
 
 				p Bitte prüfe die Abrechnung auf Abweichungen, und melde uns diese innerhalb der nächsten Tage per E-Mail (info@vkazu.ch).
-				p Die Auflistung findest du auch als PDF im Anhang.
-			div(class="compensations")
-				table
-					thead
-						tr
-							th Datum
-							th Beschreibung
-							th Betrag
-					tbody
-						each compensation in compensations
-							tr
-								td #{`00${compensation.date.getDate()}`.slice(-2)}.#{`00${compensation.date.getMonth() + 1}`.slice(-2)}.#{compensation.date.getFullYear()}
-								if compensation.from && compensation.until
-									td #{compensation.description} (#{compensation.from.getHours()}:#{compensation.from.getMinutes()} - #{compensation.until.getHours()}:#{compensation.until.getMinutes()})
-								else
-									td #{compensation.description}
-								td CHF #{compensation.amount.toFixed(2)}
-						tr(class="total")
-							td Total
-							td
-							td CHF #{total.toFixed(2)}
+				p Die Auflistung findest du als PDF im Anhang.
+			br
+			br
+			div(class="logo")
+				img(src=`${apiEndpoint}/logo.png`, alt="VKAZU-logo")
+			div(class="icons")
+				a(href="https://goo.gl/WrD3an")
+					img(src=`${apiEndpoint}/icons/google-maps.svg`, alt="google-maps")
+				a(href="https://www.facebook.com/vkazuCH/")
+					img(src=`${apiEndpoint}/icons/facebook.svg`, alt="facebook")
+				a(href="https://www.instagram.com/verkehrskadetten_zuerich/")
+					img(src=`${apiEndpoint}/icons/instagram.svg`, alt="instagram")
 

@@ -9,6 +9,7 @@ import * as pug from 'pug'
 import Contact from "../entities/Contact";
 import sass from 'node-sass'
 import moment from 'moment'
+import config = require("config");
 
 export default class PayoutService {
 
@@ -89,9 +90,6 @@ export default class PayoutService {
     }
 
     public static async generateMemberMail(payout: Payout, member: Contact): Promise<string> {
-        const compensations = await CompensationService.getByPayoutAndMember(payout.id, member.id)
-        const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
-
         return new Promise<string>((resolve, reject) => {
             fs.readFile(path.resolve(__dirname, '../../public/logo.png'), async (err, data) => {
                 if (err) {
@@ -101,12 +99,10 @@ export default class PayoutService {
 
                 resolve(
                     pug.renderFile(path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.pug'), {
-                        logo: `data:image/png;base64,${data.toString('base64')}`,
+                        apiEndpoint: config.get('apiEndpoint'),
                         until: payout.until,
                         compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.scss') }).css,
-                        total: compensationTotal,
-                        member,
-                        compensations
+                        member
                     })
                 )
             })
