@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "scripts": {
     "prepare": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
-    "build": "yarn run prepare",
+    "build": "yarn run prepare && npm rebuild node-sass",
     "buildTest": "./node_modules/typescript/bin/tsc -p tsconfig.json",
     "migrate": "node ./node_modules/typeorm/cli.js migration:run",
     "dev": "npm run prepare && npm run migrate && TZ='UTC' node --inspect dist/index.js",
