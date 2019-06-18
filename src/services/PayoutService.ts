@@ -69,6 +69,14 @@ export default class PayoutService {
                             bottom: '25mm',
                             right: '0'
                         }
+                    },
+                    puppeteerOptions: {
+                        userDataDir: '/tmp',
+                        headless: true,
+                        args: [
+                            '--disable-dev-shm-usage',
+                            '--no-sandbox'
+                        ]
                     }
                 }
 
