@@ -1,12 +1,9 @@
 {
   "version": "0.0.1",
   "scripts": {
-    "prepare": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
-    "build": "yarn run prepare",
-    "buildTest": "./node_modules/typescript/bin/tsc -p tsconfig.json",
+    "build": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "migrate": "node ./node_modules/typeorm/cli.js migration:run",
     "dev": "npm run prepare && npm run migrate && TZ='UTC' node --inspect dist/index.js",
-    "prestart": "npm run prepare && npm run migrate",
     "start": "TZ='UTC' node dist/index.js",
     "typeorm": "node ./node_modules/typeorm/cli.js",
     "test": "yarn buildTest && TZ='UTC' NODE_ENV=dev TESTING=true node_modules/.bin/mocha --recursive --exit dist/tests"
