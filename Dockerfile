@@ -31,8 +31,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
-# ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 RUN mkdir -p /app
 
@@ -55,7 +53,6 @@ COPY --from=builder /app/package.json /app/
 
 RUN mkdir -p /app/sessions/
 
-ENV NODE_ENV production
 ENV TYPEORM_ENTITIES "dist/entities/*.js"
 ENV TYPEORM_MIGRATIONS "dist/migrations/*.js"
 ENV TYPEORM_MIGRATIONS_RUN true
