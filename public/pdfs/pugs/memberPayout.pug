@@ -36,7 +36,7 @@ block content
                         td #{compensation.description} (#{`00${compensation.from.getHours()}`.slice(-2)}:#{`00${compensation.from.getMinutes()}`.slice(-2)} - #{`00${compensation.until.getHours()}`.slice(-2)}:#{`00${compensation.until.getMinutes()}+++++++++++++++++++++++++++++++++++++++++++`.slice(-2)})
                     else
                         td #{compensation.description}
-                    td CHF #{compensation.amount.toFixed(2)}
+                    td(style={'white-space': 'nowrap'}) CHF #{compensation.amount.toFixed(2)}
 
         tr(class="total")
             td Total
