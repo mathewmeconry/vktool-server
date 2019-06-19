@@ -33,7 +33,7 @@ block content
                 tr
                     td #{`00${compensation.date.getDate()}`.slice(-2)}.#{`00${compensation.date.getMonth() + 1}`.slice(-2)}.#{compensation.date.getFullYear()}
                     if compensation.from && compensation.until
-                        td #{compensation.description} (#{compensation.from.getHours()}:#{compensation.from.getMinutes()} - #{compensation.until.getHours()}:#{compensation.until.getMinutes()})
+                        td #{compensation.description} (#{`00${compensation.from.getHours()}`.slice(-2)}:#{`00${compensation.from.getMinutes()}`.slice(-2)} - #{`00${compensation.until.getHours()}`.slice(-2)}:#{`00${compensation.until.getMinutes()}+++++++++++++++++++++++++++++++++++++++++++`.slice(-2)})
                     else
                         td #{compensation.description}
                     td CHF #{compensation.amount.toFixed(2)}

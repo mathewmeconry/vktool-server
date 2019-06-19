@@ -64,11 +64,13 @@ export default class PayoutController {
                 message: 'Invalid request (field payoutId or memberId is missing)'
             })
         } else {
+            const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
             res.contentType('application/pdf')
+            res.setHeader('Content-Disposition', `inline; filename=Verkehrskadetten-Entschädigung ${member.lastname} ${member.firstname}.pdf`)
             res.send(
                 (await PayoutService.generateMemberPDF(
                     await getManager().getRepository(Payout).findOneOrFail(payoutId),
-                    await getManager().getRepository(Contact).findOneOrFail(memberId))
+                    member)
                 )
             )
         }
