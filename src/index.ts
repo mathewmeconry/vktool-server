@@ -8,7 +8,7 @@ async function init() {
     let connectionOptions = await getConnectionOptions()
 
     // @ts-ignore
-    if (process.env.NODE_ENV === 'production') connectionOptions['ssl'] = true
+    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') connectionOptions['ssl'] = true
     await createConnection(connectionOptions)
 
 
