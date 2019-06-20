@@ -3,7 +3,7 @@
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "migrate": "node ./node_modules/typeorm/cli.js migration:run",
-    "dev": "npm run prepare && npm run migrate && TZ='UTC' node --inspect dist/index.js",
+    "dev": "npm run build && npm run migrate && TZ='UTC' node --inspect dist/index.js",
     "start": "TZ='UTC' node dist/index.js",
     "typeorm": "node ./node_modules/typeorm/cli.js",
     "test": "yarn buildTest && TZ='UTC' NODE_ENV=dev TESTING=true node_modules/.bin/mocha --recursive --exit dist/tests"
@@ -18,10 +18,6 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
-    "@types/node-sass": "^4.11.0",
-    "@types/nodemailer": "^6.2.0",
-    "@types/pug": "^2.0.4",
-    "@types/puppeteer": "^1.12.4",
     "@types/config": "^0.0.34",
     "@types/express": "^4.16.0",
     "@types/express-session": "^1.15.11",
@@ -29,11 +25,15 @@
     "@types/jsonwebtoken": "^8.3.2",
     "@types/mysql": "^2.15.5",
     "@types/node": "^10.12.18",
+    "@types/node-sass": "^4.11.0",
+    "@types/nodemailer": "^6.2.0",
     "@types/passport": "^1.0.0",
+    "@types/pug": "^2.0.4",
+    "@types/puppeteer": "^1.12.4",
     "@types/session-file-store": "^1.2.0",
     "@types/uuid": "^3.4.4",
     "@types/yargs": "^13.0.0",
-    "bexio": "^0.2.1",
+    "bexio": "^0.2.3",
     "class-validator": "^0.9.1",
     "config": "^3.0.1",
     "express": "^4.16.4",
