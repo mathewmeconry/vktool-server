@@ -1,1 +1,0 @@
-{"version":3,"file":"1555363760397-remarksDefault.js","sourceRoot":"","sources":["../../src/migrations/1555363760397-remarksDefault.ts"],"names":[],"mappings":";;;;;;;;;;AAEA,MAAa,2BAA2B;IAEvB,EAAE,CAAC,WAAwB;;YACpC,MAAM,WAAW,CAAC,KAAK,CAAC,mEAAmE,CAAC,CAAC;QACjG,CAAC;KAAA;IAEY,IAAI,CAAC,WAAwB;;YACtC,MAAM,WAAW,CAAC,KAAK,CAAC,uEAAuE,CAAC,CAAC;QACrG,CAAC;KAAA;CAEJ;AAVD,kEAUC"}
