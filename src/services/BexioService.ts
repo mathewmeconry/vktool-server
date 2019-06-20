@@ -1,4 +1,4 @@
-import Bexio, { Scopes } from 'bexio';
+import Bexio, { Scopes, BillsStatic } from 'bexio';
 import * as Express from 'express'
 import ContactType from '../entities/ContactType';
 import ContactGroup from '../entities/ContactGroup';
@@ -10,7 +10,7 @@ import { getManager, In } from 'typeorm';
 import yargs from 'yargs'
 
 export namespace BexioService {
-    let bexioAPI = new Bexio(config.get('bexio.clientId'), config.get('bexio.clientSecret'), config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW])
+    let bexioAPI = new Bexio(config.get('bexio.clientId'), config.get('bexio.clientSecret'), config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW, Scopes.KB_BILL_EDIT, Scopes.KB_BILL_SHOW])
     let fakeloginInProgress = false
 
     export function isInitialized(): boolean {
@@ -359,7 +359,7 @@ export namespace BexioService {
                                 if (orderDB) {
                                     orderDB.positions = positions
                                     await orderDB.save()
-                                    
+
                                     console.log('Synced ' + savePromises.length)
                                     resolve()
                                 }
@@ -376,5 +376,20 @@ export namespace BexioService {
                 reject()
             })
         })
+    }
+
+    export async function createBill(positions: Array<BillsStatic.CustomPositionCreate | BillsStatic.ArticlePositionCreate>, member: Contact, mwst: boolean = true, termsOfPaymentText: string = '', title: string = ''): Promise<BillsStatic.BillFull> {
+        let bill: BillsStatic.BillCreate = {
+            contact_id: member.bexioId,
+            user_id: 3, // user of Mathias Scherer
+            terms_of_payment_text: termsOfPaymentText,
+            contact_address_manual: `${member.address}, ${member.postcode} ${member.city}`,
+            mwst_type: (mwst) ? 0 : 1,
+            positions,
+            title
+        }
+
+        await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+        return bexioAPI.bills.create(bill)
     }
 }

@@ -32,10 +32,7 @@ block content
             each compensation in compensations
                 tr
                     td #{`00${compensation.date.getDate()}`.slice(-2)}.#{`00${compensation.date.getMonth() + 1}`.slice(-2)}.#{compensation.date.getFullYear()}
-                    if compensation.from && compensation.until
-                        td #{compensation.description} (#{`00${compensation.from.getHours()}`.slice(-2)}:#{`00${compensation.from.getMinutes()}`.slice(-2)} - #{`00${compensation.until.getHours()}`.slice(-2)}:#{`00${compensation.until.getMinutes()}+++++++++++++++++++++++++++++++++++++++++++`.slice(-2)})
-                    else
-                        td #{compensation.description}
+                    td #{compensation.description}
                     td(style={'white-space': 'nowrap'}) CHF #{compensation.amount.toFixed(2)}
 
         tr(class="total")

@@ -10,6 +10,8 @@ import Contact from "../entities/Contact";
 import sass from 'node-sass'
 import moment from 'moment'
 import config = require("config");
+import { BexioService } from "./BexioService";
+import { BillsStatic } from "bexio";
 
 export default class PayoutService {
 
@@ -33,7 +35,7 @@ export default class PayoutService {
     }
 
     public static async generateMemberPDF(payout: Payout, member: Contact): Promise<Buffer> {
-        const compensations = (await CompensationService.getByPayoutAndMember(payout.id, member.id)).sort((a, b) => (a.date > b.date) ? 1 : -1)
+        const compensations = (await CompensationService.getByPayoutAndMember(payout.id, member.id))
         const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
 
         return new Promise<Buffer>((resolve, reject) => {
@@ -118,5 +120,23 @@ export default class PayoutService {
                 )
             })
         })
+    }
+
+    public static async sendMemberToBexio(payout: Payout, member: Contact): Promise<void> {
+        const compensations = await CompensationService.getByPayoutAndMember(payout.id, member.id)
+
+        const positions = compensations.map<BillsStatic.CustomPositionCreate>(comp => {
+            return {
+                amount: '1',
+                type: "KbPositionCustom",
+                tax_id: 13,
+                text: `${moment(comp.date).format('DD.MM.YYYY')} / ${comp.description}`,
+                unit_price: comp.amount.toFixed(3),
+                account_id: 179, 
+                discount_in_percent: 0,
+                unit_id: 1
+            }
+        })
+        await BexioService.createBill(positions, member, true, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`)
     }
 }

@@ -39,7 +39,7 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         this.charge = charge
     }
 
-    get description() {
+    get descriptionWithoutTime() {
         if (this.billingReport && this.billingReport.order) {
             if (this.billingReport.order.contact && !this.billingReport.order.contact.hasOwnProperty('firstname')) {
                 return `${this.billingReport.order.title} (${this.billingReport.order.contact.lastname})`
@@ -49,6 +49,14 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         }
 
         return ''
+    }
+
+    get description() {
+        if (this.from && this.until) {
+            return `${this.descriptionWithoutTime} (${`00${this.from.getHours()}`.slice(-2)}:${`00${this.from.getMinutes()}`.slice(-2)} - ${`00${this.until.getHours()}`.slice(-2)}:${`00${this.until.getMinutes()}`.slice(-2)})`
+        } else {
+            return this.descriptionWithoutTime
+        }
     }
 
     @BeforeInsert()
