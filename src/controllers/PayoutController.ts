@@ -4,6 +4,7 @@ import Payout from '../entities/Payout';
 import PayoutService from '../services/PayoutService';
 import Contact from '../entities/Contact';
 import EMailService from '../services/EMailService';
+import moment = require('moment');
 
 export default class PayoutController {
     private static emailService = new EMailService('no-reply@vkazu.ch')
@@ -197,5 +198,20 @@ export default class PayoutController {
         }
 
         res.end()
+    }
+
+    public static async generateXml(req: Express.Request, res: Express.Response): Promise<void> {
+        if (!req.params.hasOwnProperty('payout')) {
+            res.status(402)
+            res.send({
+                message: 'Invalid request (parameter payout is missing)'
+            })
+        } else {
+            const payout = await getManager().getRepository(Payout).findOneOrFail(req.params.payoutId)
+
+            res.contentType('application/xml')
+            res.setHeader('Content-Disposition', `attachment; filename=Soldperiode_${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD-MM-YYYY') : ''}_-_${moment(payout.until).format('DD-MM-YYYY')}.xml`)
+            res.send(await PayoutService.generatePainXml(payout))
+        }
     }
 }
