@@ -405,10 +405,10 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bexio@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/bexio/-/bexio-0.2.1.tgz#38a2c4c06e8c0c49714fb59d74bc5d302da9d8d8"
-  integrity sha512-Kf+FLZpxahwZRT64Wle85k0ksySm2R4Xa41/FX/zM/5yFmWf1JoFvgc21hnORXNLhHfJr1asMuprBJoIy38kvg==
+bexio@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/bexio/-/bexio-0.2.2.tgz#f92579d9f594cb130b0eae2ba690622961fa5bbd"
+  integrity sha512-5ZuSVffwsq73cd8st/Bs5LwYxcruGA/4juVHxLmov7B88EQyfjrBO6Yh2t32wtTpM6SzP4R1VVMIhnANn3zbaw==
   dependencies:
     request "^2.88.0"
     request-promise-native "^1.0.5"

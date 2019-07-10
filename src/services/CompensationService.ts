@@ -9,7 +9,7 @@ export default class CompensationService {
             CompensationService.getCustomQuery().getMany()
         ])
 
-        return data[0].concat(data[1])
+        return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
     }
 
     public static async getByMember(memberId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
@@ -18,7 +18,7 @@ export default class CompensationService {
             CompensationService.getCustomQuery().andWhere('memberId = :memberId', { memberId }).getMany()
         ])
 
-        return data[0].concat(data[1])
+        return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
     }
 
     public static async getByPayoutAndMember(payoutId: number, memberId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
@@ -27,7 +27,7 @@ export default class CompensationService {
             CompensationService.getCustomQuery().andWhere('payoutId = :payoutId', { payoutId }).andWhere('memberId = :memberId', { memberId }).getMany()
         ])
 
-        return data[0].concat(data[1])
+        return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
     }
 
     private static getOrderQuery() {

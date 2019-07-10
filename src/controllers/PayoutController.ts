@@ -149,7 +149,44 @@ export default class PayoutController {
                             }
                         ]
                     )
-                    
+
+                    resolve()
+                }))
+            }
+
+            await Promise.all(sendingPromises)
+            res.contentType('application/json')
+            res.send({ success: true })
+        }
+
+        res.end()
+    }
+
+    public static async sendToBexio(req: Express.Request, res: Express.Response): Promise<void> {
+        if (!req.body.hasOwnProperty('payoutId')) {
+            res.status(402)
+            res.send({
+                message: 'Invalid request (field payoutId is missing)'
+            })
+        } else {
+            const payout = await getManager().getRepository(Payout).findOneOrFail(req.body.payoutId)
+            let memberIds: Array<number>
+            let sendingPromises: Array<Promise<boolean>> = []
+
+            if (req.body.hasOwnProperty('memberIds')) {
+                memberIds = req.body.memberIds
+            } else {
+                memberIds = []
+                payout.compensations.map(comp => {
+                    if (memberIds.indexOf(comp.member.id) < 0) memberIds.push(comp.member.id)
+                })
+
+            }
+
+            for (const memberId of memberIds) {
+                sendingPromises.push(new Promise(async (resolve, reject) => {
+                    const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
+                    await PayoutService.sendMemberToBexio(payout, member)
                     resolve()
                 }))
             }
