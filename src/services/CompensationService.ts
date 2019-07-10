@@ -21,6 +21,15 @@ export default class CompensationService {
         return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
     }
 
+    public static async getByPayout(payoutId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
+        let data = await Promise.all<Array<OrderCompensation | CustomCompensation>>([
+            CompensationService.getOrderQuery().andWhere('payoutId = :payoutId', { payoutId }).getMany(),
+            CompensationService.getCustomQuery().andWhere('payoutId = :payoutId', { payoutId }).getMany()
+        ])
+
+        return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
+    }
+
     public static async getByPayoutAndMember(payoutId: number, memberId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
         let data = await Promise.all<Array<OrderCompensation | CustomCompensation>>([
             CompensationService.getOrderQuery().andWhere('payoutId = :payoutId', { payoutId }).andWhere('memberId = :memberId', { memberId }).getMany(),
