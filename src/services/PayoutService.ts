@@ -141,7 +141,7 @@ export default class PayoutService {
         await BexioService.createBill(positions, member, true, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`)
     }
 
-    public static generatePainXml(payout: Payout): Promise<string> {
+    public static generatePainXml(payout: Payout, memberIds?: Array<number>): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             const xmlFile = new sepaXML()
             const messageId = new Date().toISOString()
@@ -162,8 +162,10 @@ export default class PayoutService {
 
             const byMember: { [index: string]: Array<Compensation<any>> } = {}
             compensations.forEach((comp) => {
-                if (!byMember.hasOwnProperty(comp.member.id)) byMember[comp.member.id] = []
-                byMember[comp.member.id].push(comp)
+                if (!memberIds || memberIds.indexOf(comp.member.id) > -1) {
+                    if (!byMember.hasOwnProperty(comp.member.id)) byMember[comp.member.id] = []
+                    byMember[comp.member.id].push(comp)
+                }
             })
 
             for (const memberId in byMember) {
@@ -173,7 +175,7 @@ export default class PayoutService {
 
                 if (amount > 0) {
                     xmlFile.addTransaction({
-                        id: memberId,
+                        id: `${payout.id}-${memberId}`,
                         amount: amount.toFixed(2),
                         name: `${member.lastname} ${member.firstname}`,
                         iban: (member.iban) ? member.iban.replace(/ /g, '') : '',
@@ -186,7 +188,12 @@ export default class PayoutService {
                 if (err) {
                     reject(err)
                 } else {
-                    resolve(out.replace(/"EUR"/g, '"CHF"').replace('xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"', 'xmlns="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd"').replace('xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03 pain.001.001.03.xsd"', 'xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd  pain.001.001.03.ch.02.xsd"'))
+                    resolve(out
+                        .replace(/"EUR"/g, '"CHF"')
+                        .replace(/<PmtTpInf>.*<\/PmtTpInf>/msg, '')
+                        .replace(/<EndToEndId>/g, () => `<InstrId>${(Math.random() * 10000).toString().replace('.', '')}</InstrId><EndToEndId>`)
+                        .replace('xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"', 'xmlns="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd"')
+                        .replace('xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03 pain.001.001.03.xsd"', 'xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd  pain.001.001.03.ch.02.xsd"'))
                 }
             })
         })
