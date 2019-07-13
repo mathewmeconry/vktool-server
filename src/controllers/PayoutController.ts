@@ -201,17 +201,20 @@ export default class PayoutController {
     }
 
     public static async generateXml(req: Express.Request, res: Express.Response): Promise<void> {
-        if (!req.params.hasOwnProperty('payout')) {
+        const payoutId = req.body.payoutId || req.params.payout
+        const memberIds = req.body.memberIds || req.params.memberIds
+
+        if (!payoutId) {
             res.status(402)
             res.send({
-                message: 'Invalid request (parameter payout is missing)'
+                message: 'Invalid request (field payoutId is missing)'
             })
         } else {
             const payout = await getManager().getRepository(Payout).findOneOrFail(req.params.payoutId)
 
             res.contentType('application/xml')
             res.setHeader('Content-Disposition', `attachment; filename=Soldperiode_${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD-MM-YYYY') : ''}_-_${moment(payout.until).format('DD-MM-YYYY')}.xml`)
-            res.send(await PayoutService.generatePainXml(payout))
+            res.send(await PayoutService.generatePainXml(payout, memberIds))
         }
     }
 }
