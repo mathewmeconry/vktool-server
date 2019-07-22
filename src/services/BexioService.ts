@@ -1,4 +1,4 @@
-import Bexio, { Scopes, BillsStatic } from 'bexio';
+import Bexio, { Scopes, BillsStatic, ContactsStatic, OrdersStatic } from 'bexio';
 import * as Express from 'express'
 import ContactType from '../entities/ContactType';
 import ContactGroup from '../entities/ContactGroup';
@@ -8,6 +8,8 @@ import Position from '../entities/Position';
 import config from 'config'
 import { getManager, In } from 'typeorm';
 import yargs from 'yargs'
+import Datacontainer from './DataContainer';
+import moment = require('moment');
 
 export namespace BexioService {
     let bexioAPI = new Bexio(config.get('bexio.clientId'), config.get('bexio.clientSecret'), config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW, Scopes.KB_BILL_EDIT, Scopes.KB_BILL_SHOW])
@@ -191,7 +193,11 @@ export namespace BexioService {
      */
     export async function syncContacts(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
-            let contacts = await bexioAPI.contacts.list({})
+            let contacts = await bexioAPI.contacts.search({}, [{
+                field: ContactsStatic.ContactSearchParameters.updated_at,
+                value: moment(Datacontainer.get<Date>('bexio.contacts.lastSync') || '1970-01-01').format('Y-MM-DD hh:mm:ss'),
+                criteria: '>='
+            }])
             let contactRepo = getManager().getRepository(Contact)
             let contactTypeRepo = getManager().getRepository(ContactType)
             let contactGroupRepo = getManager().getRepository(ContactGroup)
@@ -230,6 +236,7 @@ export namespace BexioService {
             }
 
             Promise.all(savePromises).then(() => {
+                Datacontainer.set('bexio.contacts.lastSync', new Date())
                 resolve()
             }).catch((err) => {
                 console.error(err)
@@ -306,7 +313,11 @@ export namespace BexioService {
      */
     export async function syncOrders(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
-            let orders = await bexioAPI.orders.list({})
+            let orders = await bexioAPI.orders.search({},  [{
+                field: OrdersStatic.OrderSearchParameters.updated_at,
+                value: moment(Datacontainer.get<Date>('bexio.orders.lastSync') || '1970-01-01').format('Y-MM-DD hh:mm:ss'),
+                criteria: '>='
+            }])
             let contactRepo = getManager().getRepository(Contact)
             let savePromises: Array<any> = []
 
@@ -361,6 +372,7 @@ export namespace BexioService {
                                     await orderDB.save()
 
                                     console.log('Synced ' + savePromises.length)
+                                    Datacontainer.set('bexio.orders.lastSync', new Date())
                                     resolve()
                                 }
                             })
