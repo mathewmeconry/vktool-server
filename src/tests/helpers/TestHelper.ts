@@ -9,7 +9,8 @@ import Contact from '../../entities/Contact';
 import Order from '../../entities/Order';
 import User from '../../entities/User';
 
-before(async () => {
+before(async function () {
+    this.timeout(20000)
     return TestHelper.init()
 })
 
