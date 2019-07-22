@@ -164,7 +164,6 @@ describe('CompensationController', function () {
                 expect(res.body.length).to.be.greaterThan(0)
                 for (let entry of (res.body as Array<OrderCompensation | CustomCompensation>)) {
                     expect(entry.member.id).to.be.equal(TestHelper.mockContact.id)
-                    expect(entry.approved).to.be.true
                 }
             })
     })
