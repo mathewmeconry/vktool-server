@@ -185,14 +185,10 @@ export default class PayoutController {
             }
 
             for (const memberId of memberIds) {
-                sendingPromises.push(new Promise(async (resolve, reject) => {
-                    const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
-                    await PayoutService.sendMemberToBexio(payout, member)
-                    resolve()
-                }))
+                const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
+                await PayoutService.sendMemberToBexio(payout, member)
             }
 
-            await Promise.all(sendingPromises)
             res.contentType('application/json')
             res.send({ success: true })
         }

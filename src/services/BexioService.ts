@@ -312,7 +312,7 @@ export namespace BexioService {
 
             console.log('Syncing ' + orders.length)
             for (let order of orders) {
-                let bexioOrder = await bexioAPI.orders.show({}, order.id.toString())
+                let bexioOrder = await bexioAPI.orders.show({}, order.id)
                 if (bexioOrder) {
                     let contact = await contactRepo.findOne({ bexioId: bexioOrder.contact_id })
 
@@ -378,7 +378,7 @@ export namespace BexioService {
         })
     }
 
-    export async function createBill(positions: Array<BillsStatic.CustomPositionCreate | BillsStatic.ArticlePositionCreate>, member: Contact, mwst: boolean = true, termsOfPaymentText: string = '', title: string = ''): Promise<BillsStatic.BillFull> {
+    export async function createBill(positions: Array<BillsStatic.CustomPositionCreate | BillsStatic.ArticlePositionCreate>, member: Contact, mwst: boolean = true, termsOfPaymentText: string = '', title: string = '', issue: boolean = false): Promise<BillsStatic.BillFull> {
         let bill: BillsStatic.BillCreate = {
             contact_id: member.bexioId,
             user_id: 3, // user of Mathias Scherer
@@ -389,7 +389,13 @@ export namespace BexioService {
             title
         }
 
-        await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
-        return bexioAPI.bills.create(bill)
+        if (!BexioService.isInitialized()) {
+            await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+        }
+        const fullBill = await bexioAPI.bills.create(bill)
+        if (issue) {
+            await bexioAPI.bills.issue(fullBill.id)
+        }
+        return fullBill
     }
 }

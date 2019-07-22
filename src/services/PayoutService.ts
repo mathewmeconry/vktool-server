@@ -138,7 +138,7 @@ export default class PayoutService {
                 unit_id: 1
             }
         })
-        await BexioService.createBill(positions, member, true, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`)
+        await BexioService.createBill(positions, member, true, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`, `Entschädiungsauszahlung ${moment(payout.from).format('DD.MM.YYYY')}`, true)
     }
 
     public static generatePainXml(payout: Payout, memberIds?: Array<number>): Promise<string> {
