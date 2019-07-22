@@ -6,7 +6,7 @@
     "dev": "npm run build && npm run migrate && TZ='UTC' node --inspect dist/index.js",
     "start": "TZ='UTC' node dist/index.js",
     "typeorm": "node ./node_modules/typeorm/cli.js",
-    "test": "yarn buildTest && TZ='UTC' NODE_ENV=dev TESTING=true node_modules/.bin/mocha --recursive --exit dist/tests"
+    "test": "yarn build && TZ='UTC' NODE_ENV=dev TESTING=true node_modules/.bin/mocha --recursive --exit dist/tests"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -24,7 +24,7 @@
     "@types/iban": "^0.0.30",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/mysql": "^2.15.5",
-    "@types/node": "^10.12.18",
+    "@types/node": "^12.6.8",
     "@types/node-sass": "^4.11.0",
     "@types/nodemailer": "^6.2.0",
     "@types/passport": "^1.0.0",
