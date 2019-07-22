@@ -133,29 +133,24 @@ export default class PayoutController {
             }
 
             for (const memberId of memberIds) {
-                sendingPromises.push(new Promise(async (resolve, reject) => {
-                    const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
-                    const email = await PayoutService.generateMemberMail(payout, member)
-                    const pdf = await PayoutService.generateMemberPDF(payout, member)
+                const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
+                const email = await PayoutService.generateMemberMail(payout, member)
+                const pdf = await PayoutService.generateMemberPDF(payout, member)
 
-                    await PayoutController.emailService.sendMail(
-                        member.mail,
-                        'info@vkazu.ch',
-                        'Abrechnung Verkehrskadetten-Entschädigung',
-                        email,
-                        [
-                            {
-                                filename: `Verkehrskadetten-Entschädigung ${member.lastname} ${member.firstname}.pdf`,
-                                content: pdf
-                            }
-                        ]
-                    )
-
-                    resolve()
-                }))
+                await PayoutController.emailService.sendMail(
+                    member.mail,
+                    'info@vkazu.ch',
+                    'Abrechnung Verkehrskadetten-Entschädigung',
+                    email,
+                    [
+                        {
+                            filename: `Verkehrskadetten-Entschädigung ${member.lastname} ${member.firstname}.pdf`,
+                            content: pdf
+                        }
+                    ]
+                )
             }
 
-            await Promise.all(sendingPromises)
             res.contentType('application/json')
             res.send({ success: true })
         }
