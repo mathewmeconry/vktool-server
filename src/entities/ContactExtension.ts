@@ -13,7 +13,8 @@ export enum ContactExtensionInterface {
     exitDate,
     bankName,
     iban,
-    accountHolder
+    accountHolder,
+    moreMails
 }
 
 @Entity()
@@ -43,6 +44,9 @@ export default class ContactExtension extends Base<ContactExtension> {
 
     @Column('text', { nullable: true })
     public accountHolder?: string
+
+    @Column('simple-array', { nullable: true })
+    public moreMails?: Array<string>
 
     @ManyToOne(type => User)
     @JoinColumn()

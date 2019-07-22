@@ -75,6 +75,7 @@ export default class Contact extends BexioBase<Contact> {
     public bankName?: string
     public iban?: string
     public accountHolder?: string
+    public moreMails?: Array<string>
 
     public isMember(): boolean {
         return (this.contactGroups.find(group => group.bexioId === 7)) ? true : false

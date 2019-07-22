@@ -39,6 +39,7 @@ export default class ContactsController {
             contact.bankName = req.body.bankName || contact.bankName
             contact.iban = req.body.iban || contact.iban
             contact.accountHolder = req.body.accountHolder || contact.accountHolder
+            contact.moreMails = req.body.moreMails || contact.moreMails
 
             try {
                 await contact.save()
