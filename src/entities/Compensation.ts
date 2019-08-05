@@ -35,11 +35,11 @@ export default class Compensation<T> extends Base<T> {
     @Column('boolean', { default: false })
     public paied: boolean
 
-    @Column('date', { nullable: true })
-    public valutaDate?: Date
-
     @ManyToOne(type => Payout, payout => payout.compensations, { nullable: true, eager: true })
     public payout?: Payout
+
+    @Column({ nullable: true })
+    public bexioBill?: number
 
     @ManyToOne(type => User)
     @JoinColumn()
@@ -52,7 +52,7 @@ export default class Compensation<T> extends Base<T> {
     @JoinColumn()
     public deletedBy: User
 
-    constructor(member: Contact, creator: User, amount: number, date: Date, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {
+    constructor(member: Contact, creator: User, amount: number, date: Date, approved: boolean = false, paied: boolean = false, payout?: Payout) {
         super()
         this.member = member
         this.creator = creator
@@ -60,7 +60,6 @@ export default class Compensation<T> extends Base<T> {
         this.date = date
         this.approved = approved
         this.paied = paied
-        this.valutaDate = valutaDate
         this.payout = payout
     }
 

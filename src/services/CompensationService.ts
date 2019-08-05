@@ -50,7 +50,6 @@ export default class CompensationService {
                 'compensation.approved',
                 'compensation.approvedBy',
                 'compensation.paied',
-                'compensation.valutaDate',
                 'compensation.from',
                 'compensation.until'
             ])
@@ -75,7 +74,6 @@ export default class CompensationService {
                 'compensation.approved',
                 'compensation.approvedBy',
                 'compensation.paied',
-                'compensation.valutaDate'
             ])
             .leftJoinAndSelect('compensation.member', 'member')
             .leftJoinAndSelect('compensation.creator', 'creator')
