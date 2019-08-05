@@ -17,4 +17,6 @@ export default function PayoutRoutes(app: Express.Application) {
     app.post('/api/payouts/email', AuthService.checkAuthorization([AuthRoles.PAYOUTS_SEND]), PayoutController.sendMails)
     app.post('/api/payouts/bexio', AuthService.checkAuthorization([AuthRoles.PAYOUTS_SEND]), PayoutController.sendToBexio)
     app.post('/api/payouts/xml', AuthService.checkAuthorization([AuthRoles.PAYOUTS_SEND]), PayoutController.generateXml)
+    app.post('/api/payouts/markAsPaied', AuthService.checkAuthorization([AuthRoles.COMPENSATIONS_EDIT]), PayoutController.markAsPaied)
+    app.post('/api/payouts/markAsUnpaied', AuthService.checkAuthorization([AuthRoles.COMPENSATIONS_EDIT]), PayoutController.markAsUnpaied)
 }
