@@ -29,8 +29,8 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
     @Column('boolean')
     public charge: boolean
 
-    constructor(member: Contact, creator: User, date: Date, billingReport: BillingReport, from: Date, until: Date, dayHours: number = 0, nightHours: number = 0, charge: boolean = true, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {
-        super(member, creator, 0, date, approved, paied, valutaDate, payout)
+    constructor(member: Contact, creator: User, date: Date, billingReport: BillingReport, from: Date, until: Date, dayHours: number = 0, nightHours: number = 0, charge: boolean = true, approved: boolean = false, paied: boolean = false, payout?: Payout) {
+        super(member, creator, 0, date, approved, paied, payout)
         this.billingReport = billingReport
         this.dayHours = dayHours
         this.nightHours = nightHours

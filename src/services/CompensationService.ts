@@ -50,9 +50,9 @@ export default class CompensationService {
                 'compensation.approved',
                 'compensation.approvedBy',
                 'compensation.paied',
-                'compensation.valutaDate',
                 'compensation.from',
-                'compensation.until'
+                'compensation.until',
+                'compensation.bexioBill'
             ])
             .leftJoinAndSelect('compensation.member', 'member')
             .leftJoinAndSelect('compensation.creator', 'creator')
@@ -75,7 +75,7 @@ export default class CompensationService {
                 'compensation.approved',
                 'compensation.approvedBy',
                 'compensation.paied',
-                'compensation.valutaDate'
+                'compensation.bexioBill'
             ])
             .leftJoinAndSelect('compensation.member', 'member')
             .leftJoinAndSelect('compensation.creator', 'creator')

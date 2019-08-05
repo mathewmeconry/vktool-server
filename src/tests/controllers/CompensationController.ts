@@ -80,7 +80,6 @@ describe('CompensationController', function () {
                 expect(dbCompensation.date).to.be.equal(compensation.date)
                 expect(dbCompensation.approved).to.be.true
                 expect(dbCompensation.paied).to.be.false
-                expect(dbCompensation.valutaDate).to.be.null
                 expect(dbCompensation.payout).to.be.undefined
                 expect(dbCompensation.description).to.be.equal(compensation.description)
 
@@ -115,7 +114,6 @@ describe('CompensationController', function () {
                     expect(rec.billingReport.id).to.be.equal(bulk.billingReportId)
 
                     expect(rec.paied).to.be.false
-                    expect(rec.valutaDate).to.be.null
                     expect(rec.payout).to.be.undefined
 
                 }

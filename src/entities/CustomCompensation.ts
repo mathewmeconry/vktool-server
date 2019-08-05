@@ -10,8 +10,8 @@ export default class CustomCompensation extends Compensation<CustomCompensation>
     @Column('text')
     public description: string
 
-    constructor(member: Contact, creator: User, amount: number, date: Date, description: string, approved: boolean = false, paied: boolean = false, valutaDate?: Date, payout?: Payout) {
-        super(member, creator, amount, date, approved, paied, valutaDate, payout)
+    constructor(member: Contact, creator: User, amount: number, date: Date, description: string, approved: boolean = false, paied: boolean = false, payout?: Payout) {
+        super(member, creator, amount, date, approved, paied, payout)
 
         this.description = description
     }

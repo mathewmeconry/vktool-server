@@ -10,6 +10,8 @@ import { getManager, In } from 'typeorm';
 import yargs from 'yargs'
 import Datacontainer from './DataContainer';
 import moment = require('moment');
+import OrderCompensation from '../entities/OrderCompensation';
+import CustomCompensation from '../entities/CustomCompensation';
 
 export namespace BexioService {
     let bexioAPI = new Bexio(config.get('bexio.clientId'), config.get('bexio.clientSecret'), config.get('apiEndpoint') + '/bexio/callback', [Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW, Scopes.KB_BILL_EDIT, Scopes.KB_BILL_SHOW])
@@ -89,6 +91,19 @@ export namespace BexioService {
                                             process.exit(0)
                                         }
                                     })
+                                    .command({
+                                        command: 'billStatuses',
+                                        builder: {
+                                            force: {
+                                                alias: 'f'
+                                            }
+                                        },
+                                        handler: async () => {
+                                            await BexioService.syncBillStatuses()
+                                            console.log('sync completed')
+                                            process.exit(0)
+                                        }
+                                    })
                             },
                             handler: () => { }
                         })
@@ -132,7 +147,7 @@ export namespace BexioService {
             if (req.header('X-Azure')) res.send('started')
             if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             await Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()])
-            await Promise.all([BexioService.syncContacts(), BexioService.syncOrders()])
+            await Promise.all([BexioService.syncContacts(), BexioService.syncOrders(), BexioService.syncBillStatuses()])
         })
 
         app.get('/bexio/sync/contactTypes', async (req, res) => {
@@ -165,6 +180,15 @@ export namespace BexioService {
         app.get('/bexio/sync/orders', async (req, res) => {
             if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
             BexioService.syncOrders().then(() => {
+                res.send('Synced')
+            }).catch(() => {
+                res.send('Something went wrong!')
+            })
+        })
+
+        app.get('/bexio/sync/billStatuses',  async (req, res) => {
+            if (req.header('X-Azure')) await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'))
+            BexioService.syncBillStatuses().then(() => {
                 res.send('Synced')
             }).catch(() => {
                 res.send('Something went wrong!')
@@ -313,7 +337,7 @@ export namespace BexioService {
      */
     export async function syncOrders(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
-            let orders = await bexioAPI.orders.search({},  [{
+            let orders = await bexioAPI.orders.search({}, [{
                 field: OrdersStatic.OrderSearchParameters.updated_at,
                 value: moment(Datacontainer.get<Date>('bexio.orders.lastSync') || '1970-01-01').format('Y-MM-DD hh:mm:ss'),
                 criteria: '>='
@@ -388,6 +412,41 @@ export namespace BexioService {
                 reject()
             })
         })
+    }
+
+    export async function syncBillStatuses(): Promise<void> {
+        const ocQB = getManager()
+            .getRepository(OrderCompensation)
+            .createQueryBuilder('Compensation')
+        const ccQB = getManager()
+            .getRepository(CustomCompensation)
+            .createQueryBuilder('Compensation')
+
+        const orderCompensations: Array<{ bexioBill: number }> = await ocQB
+            .select('DISTINCT bexioBill', 'bexioBill')
+            .where('bexioBill IS NOT NULL')
+            .execute()
+
+        const customCompensations: Array<{ bexioBill: number }> = await ccQB
+            .select('DISTINCT bexioBill', 'bexioBill')
+            .where('bexioBill IS NOT NULL')
+            .execute()
+
+        const allBills = orderCompensations.concat(customCompensations)
+        allBills.filter((val, index) => allBills.indexOf(val) === index)
+        const allBillsIds = allBills.map(el => el.bexioBill)
+
+        for (const id of allBillsIds) {
+            console.log(`syncing bexio bill ${id}`)
+            const bill = await bexioAPI.bills.show({}, id)
+            if (parseFloat(bill.total_remaining_payments) == 0) {
+                await ocQB.update().set({ paied: true }).where('bexioBill = :bexioBillId', { bexioBillId: id }).execute()
+                await ccQB.update().set({ paied: true }).where('bexioBill = :bexioBillId', { bexioBillId: id }).execute()
+            } else {
+                await ocQB.update().set({ paied: false }).where('bexioBill = :bexioBillId', { bexioBillId: id }).execute()
+                await ccQB.update().set({ paied: false }).where('bexioBill = :bexioBillId', { bexioBillId: id }).execute()
+            }
+        }
     }
 
     export async function createBill(positions: Array<BillsStatic.CustomPositionCreate | BillsStatic.ArticlePositionCreate>, member: Contact, mwst: boolean = true, termsOfPaymentText: string = '', title: string = '', issue: boolean = false): Promise<BillsStatic.BillFull> {

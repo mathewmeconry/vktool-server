@@ -117,7 +117,6 @@ describe('BillingReportController', function () {
                 expect(reportres.compensations[0].date).to.be.equal(report.date)
                 expect(reportres.compensations[0].dayHours).to.be.equal(14)
                 expect(reportres.compensations[0].nightHours).to.be.equal(1)
-                expect(reportres.compensations[0].valutaDate).to.be.equal(null)
 
                 dbReport = reportres
             })
@@ -156,7 +155,6 @@ describe('BillingReportController', function () {
                 expect(reportres.compensations[0].date).to.be.equal('2019-04-19T00:00:00.000Z')
                 expect(reportres.compensations[0].dayHours).to.be.equal(14)
                 expect(reportres.compensations[0].nightHours).to.be.equal(1)
-                expect(reportres.compensations[0].valutaDate).to.be.equal(null)
             })
     })
 
