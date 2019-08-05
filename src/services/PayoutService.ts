@@ -202,4 +202,22 @@ export default class PayoutService {
             })
         })
     }
+
+    public static markAsPaied(payout: Payout, memberIds: Array<number>): Promise<void> {
+        return PayoutService.changePaiedStatus(payout, memberIds, true)
+    }
+
+    public static markAsUnpaied(payout: Payout, memberIds: Array<number>): Promise<void> {
+        return PayoutService.changePaiedStatus(payout, memberIds, false)
+    }
+
+    private static async changePaiedStatus(payout: Payout, memberIds: Array<number>, paied: boolean): Promise<void> {
+        for (const memberId of memberIds) {
+            const compensations = await CompensationService.getByPayoutAndMember(payout.id, memberId)
+            for (const compensation of compensations) {
+                compensation.paied = paied
+                await compensation.save()
+            }
+        }
+    }
 }
