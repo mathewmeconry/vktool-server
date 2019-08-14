@@ -11,6 +11,7 @@ export default class EMailService {
             host: config.get('mailer.host'),
             port: 587,
             secure: false,
+            requireTLS: true,
             auth: {
                 user: config.get('mailer.user'),
                 pass: config.get('mailer.pass')
