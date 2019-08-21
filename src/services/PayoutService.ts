@@ -12,6 +12,8 @@ import moment from 'moment'
 import config = require("config");
 import { BexioService } from "./BexioService";
 import { BillsStatic } from "bexio";
+import CustomCompensation from "../entities/CustomCompensation";
+import User from "../entities/User";
 const sepaXML = require('sepa-xml')
 
 export default class PayoutService {
@@ -149,7 +151,7 @@ export default class PayoutService {
         return new Promise<string>(async (resolve, reject) => {
             const xmlFile = new sepaXML()
             const messageId = new Date().toISOString()
-            const compensations = await CompensationService.getByPayout(payout.id)
+            const compensations = await CompensationService.getOpenByPayout(payout.id)
 
             xmlFile.setHeaderInfo({
                 messageId,
@@ -188,11 +190,11 @@ export default class PayoutService {
                 }
             }
 
-            xmlFile.compile((err: Error, out: string) => {
-                if (err) {
+            xmlFile.compile((err: Array<string>, out: string) => {
+                if (err.length > 1 || err[0] !== 'The list of transactions is empty.') {
                     reject(err)
                 } else {
-                    resolve(out
+                    resolve(out || ''
                         .replace(/"EUR"/g, '"CHF"')
                         .replace(/<PmtTpInf>.*<\/PmtTpInf>/msg, '')
                         .replace(/<EndToEndId>/g, () => `<InstrId>${(Math.random() * 10000).toString().replace('.', '')}</InstrId><EndToEndId>`)
@@ -203,21 +205,29 @@ export default class PayoutService {
         })
     }
 
-    public static markAsPaied(payout: Payout, memberIds: Array<number>): Promise<void> {
-        return PayoutService.changePaiedStatus(payout, memberIds, true)
-    }
-
-    public static markAsUnpaied(payout: Payout, memberIds: Array<number>): Promise<void> {
-        return PayoutService.changePaiedStatus(payout, memberIds, false)
-    }
-
-    private static async changePaiedStatus(payout: Payout, memberIds: Array<number>, paied: boolean): Promise<void> {
+    public static async transfer(payout: Payout, memberIds: Array<number>, creator: User): Promise<void> {
         for (const memberId of memberIds) {
-            const compensations = await CompensationService.getByPayoutAndMember(payout.id, memberId)
-            for (const compensation of compensations) {
-                compensation.paied = paied
-                await compensation.save()
+            const compensations = await CompensationService.getOpenByPayoutAndMember(payout.id, memberId)
+            if (compensations.length > 0) {
+                const total = compensations.map(el => el.amount).reduce((prev, current) => prev + current)
+                const transferCompensation = new CustomCompensation(
+                    compensations[0].member,
+                    creator,
+                    total,
+                    new Date(),
+                    `Übertrag der Entschädiungsperiode ${((payout.from > new Date('1970-01-01')) ? `${moment(payout.from).format('DD.MM.YYYY')} -` : '')}${moment(payout.until).format('DD.MM.YYYY')}`,
+                    true
+                )
+
+                await transferCompensation.save()
+
+                for (const compensation of compensations) {
+                    compensation.paied = true
+                    compensation.transferCompensation = transferCompensation
+                    await compensation.save()
+                }
             }
         }
     }
+
 }

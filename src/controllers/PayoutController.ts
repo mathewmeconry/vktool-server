@@ -209,7 +209,7 @@ export default class PayoutController {
         }
     }
 
-    public static async markAsPaied(req: Express.Request, res: Express.Response): Promise<void> {
+    public static async transfer(req: Express.Request, res: Express.Response): Promise<void> {
         const payoutId = req.body.payoutId || req.params.payout
         const memberIds = req.body.memberIds || req.params.memberIds
 
@@ -225,32 +225,8 @@ export default class PayoutController {
             })
         } else {
             const payout = await getManager().getRepository(Payout).findOneOrFail(req.params.payoutId)
-            await PayoutService.markAsPaied(payout, memberIds)
+            await PayoutService.transfer(payout, memberIds, req.user)
 
-            res.contentType('application/json')
-            res.send({ success: true })
-        }
-        res.end()
-    }
-
-    public static async markAsUnpaied(req: Express.Request, res: Express.Response): Promise<void> {
-        const payoutId = req.body.payoutId
-        const memberIds = req.body.memberIds
-
-        if (!payoutId) {
-            res.status(402)
-            res.send({
-                message: 'Invalid request (field payoutId is missing)'
-            })
-        } else if (!memberIds) {
-            res.status(402)
-            res.send({
-                message: 'Invalid request (field memberIds is missing)'
-            })
-        } else {
-            const payout = await getManager().getRepository(Payout).findOneOrFail(req.params.payoutId)
-            await PayoutService.markAsUnpaied(payout, memberIds)
-            
             res.contentType('application/json')
             res.send({ success: true })
         }

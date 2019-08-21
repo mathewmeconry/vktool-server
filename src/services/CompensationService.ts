@@ -14,8 +14,8 @@ export default class CompensationService {
 
     public static async getByMember(memberId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
         let data = await Promise.all<Array<OrderCompensation | CustomCompensation>>([
-            CompensationService.getOrderQuery().andWhere('memberId = :memberId', { memberId }).getMany(),
-            CompensationService.getCustomQuery().andWhere('memberId = :memberId', { memberId }).getMany()
+            CompensationService.getOrderQuery().andWhere('compensation.memberId = :memberId', { memberId }).getMany(),
+            CompensationService.getCustomQuery().andWhere('compensation.memberId = :memberId', { memberId }).getMany()
         ])
 
         return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
@@ -23,8 +23,17 @@ export default class CompensationService {
 
     public static async getByPayout(payoutId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
         let data = await Promise.all<Array<OrderCompensation | CustomCompensation>>([
-            CompensationService.getOrderQuery().andWhere('payoutId = :payoutId', { payoutId }).getMany(),
-            CompensationService.getCustomQuery().andWhere('payoutId = :payoutId', { payoutId }).getMany()
+            CompensationService.getOrderQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).getMany(),
+            CompensationService.getCustomQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).getMany()
+        ])
+
+        return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
+    }
+
+    public static async getOpenByPayout(payoutId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
+        let data = await Promise.all<Array<OrderCompensation | CustomCompensation>>([
+            CompensationService.getOrderQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).andWhere('compensation.paied = false').getMany(),
+            CompensationService.getCustomQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).andWhere('compensation.paied = false').getMany()
         ])
 
         return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
@@ -32,8 +41,17 @@ export default class CompensationService {
 
     public static async getByPayoutAndMember(payoutId: number, memberId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
         let data = await Promise.all<Array<OrderCompensation | CustomCompensation>>([
-            CompensationService.getOrderQuery().andWhere('payoutId = :payoutId', { payoutId }).andWhere('memberId = :memberId', { memberId }).getMany(),
-            CompensationService.getCustomQuery().andWhere('payoutId = :payoutId', { payoutId }).andWhere('memberId = :memberId', { memberId }).getMany()
+            CompensationService.getOrderQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).andWhere('compensation.memberId = :memberId', { memberId }).getMany(),
+            CompensationService.getCustomQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).andWhere('compensation.memberId = :memberId', { memberId }).getMany()
+        ])
+
+        return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
+    }
+
+    public static async getOpenByPayoutAndMember(payoutId: number, memberId: number): Promise<Array<OrderCompensation | CustomCompensation>> {
+        let data = await Promise.all<Array<OrderCompensation | CustomCompensation>>([
+            CompensationService.getOrderQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).andWhere('compensation.memberId = :memberId', { memberId }).andWhere('compensation.paied = false').getMany(),
+            CompensationService.getCustomQuery().andWhere('compensation.payoutId = :payoutId', { payoutId }).andWhere('compensation.memberId = :memberId', { memberId }).andWhere('compensation.paied = false').getMany()
         ])
 
         return data[0].concat(data[1]).sort((a, b) => (a.date > b.date) ? 1 : -1)
@@ -52,7 +70,7 @@ export default class CompensationService {
                 'compensation.paied',
                 'compensation.from',
                 'compensation.until',
-                'compensation.bexioBill'
+                'compensation.bexioBill',
             ])
             .leftJoinAndSelect('compensation.member', 'member')
             .leftJoinAndSelect('compensation.creator', 'creator')
@@ -60,7 +78,8 @@ export default class CompensationService {
             .leftJoinAndSelect('compensation.billingReport', 'billingReport')
             .leftJoinAndSelect('billingReport.order', 'order')
             .leftJoinAndSelect('order.contact', 'contact')
-            .where('deletedAt IS NULL')
+            .leftJoinAndSelect('compensation.transferCompensation', 'transferCompensation')
+            .where('compensation.deletedAt IS NULL')
     }
 
     private static getCustomQuery() {
@@ -80,6 +99,7 @@ export default class CompensationService {
             .leftJoinAndSelect('compensation.member', 'member')
             .leftJoinAndSelect('compensation.creator', 'creator')
             .leftJoinAndSelect('compensation.payout', 'payout')
-            .where('deletedAt IS NULL')
+            .leftJoinAndSelect('compensation.transferCompensation', 'transferCompensation')
+            .where('compensation.deletedAt IS NULL')
     }
 }

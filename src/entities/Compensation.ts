@@ -1,11 +1,11 @@
-import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager, AfterLoad } from "typeorm";
+import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager, AfterLoad, OneToMany } from "typeorm";
 import Contact from "./Contact";
 import Payout from "./Payout";
 import User from "./User";
 import Base from "./Base";
 import OrderCompensation from "./OrderCompensation";
-import CustomCompensation from "./CustomCompensation";
 import { IsOptional, IsNumber, IsDate, IsBoolean } from "class-validator";
+import CustomCompensation from "./CustomCompensation";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -40,6 +40,10 @@ export default class Compensation<T> extends Base<T> {
 
     @Column({ nullable: true })
     public bexioBill?: number
+
+    @ManyToOne(type => Compensation, { nullable: true })
+    @JoinColumn()
+    public transferCompensation?: Compensation<CustomCompensation>;
 
     @ManyToOne(type => User)
     @JoinColumn()

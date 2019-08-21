@@ -15,6 +15,4 @@ export default class CustomCompensation extends Compensation<CustomCompensation>
 
         this.description = description
     }
-
-    public calcAmount() { }
 }
