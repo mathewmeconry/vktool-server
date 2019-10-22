@@ -6,13 +6,13 @@
     "password": "password",
     "database": "vktool",
     "entities": [
-        "dist/entities/*.js"
+        "src/entities/*.ts"
     ],
     "subscribers": [
-        "dist/subscribers/*.js"
+        "src/subscribers/*.ts"
     ],
     "migrations": [
-        "dist/migrations/*.js"
+        "src/migrations/*.ts"
     ],
     "cli": {
         "entitiesDir": "src/entities",

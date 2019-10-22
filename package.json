@@ -1,21 +1,42 @@
 {
   "version": "0.0.1",
   "scripts": {
-    "build": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
     "migrate": "node ./node_modules/typeorm/cli.js migration:run",
-    "dev": "npm run build && npm run migrate && TZ='UTC' node --inspect dist/index.js",
+    "dev": "npm run migrate && TZ='UTC' node --inspect --r ts-node/register src/index.ts",
     "start": "TZ='UTC' node dist/index.js",
     "typeorm": "node ./node_modules/typeorm/cli.js",
-    "test": "yarn build && TZ='UTC' NODE_ENV=dev TESTING=true node_modules/.bin/mocha --recursive --exit dist/tests"
+    "test": "TZ='UTC' NODE_ENV=dev TESTING=true mocha --require ts-node/register --require source-map-support/register --full-trace --bail --exit --recursive ./src/tests/**/*.ts",
+    "coverage": "nyc npm run test"
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": true,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text",
+      "lcov"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^0.1.3",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "@types/superagent": "^4.1.1",
     "@types/supertest": "^2.0.7",
     "chai": "^4.2.0",
     "mocha": "^6.1.3",
-    "supertest": "^4.0.2"
+    "nyc": "^14.1.1",
+    "source-map-support": "^0.5.13",
+    "supertest": "^4.0.2",
+    "ts-node": "^8.4.1"
   },
   "dependencies": {
     "@types/config": "^0.0.34",
