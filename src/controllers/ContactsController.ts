@@ -4,6 +4,7 @@ import { getManager, In } from 'typeorm';
 import ContactGroup from '../entities/ContactGroup';
 import CollectionPoint from '../entities/CollectionPoint';
 import { AuthRoles } from '../interfaces/AuthRoles';
+import AuthService from '../services/AuthService';
 
 export default class ContactsController {
     public static async getContacts(req: Express.Request, res: Express.Response): Promise<void> {
@@ -12,7 +13,7 @@ export default class ContactsController {
 
     public static async getMembers(req: Express.Request, res: Express.Response): Promise<void> {
         let contacts: Contact[]
-        if (req.user.roles.indexOf(AuthRoles.MEMBERS_READ) > -1) {
+        if (AuthService.isAuthorized(req.user.roles, AuthRoles.MEMBERS_READ)) {
             contacts = await getManager().getRepository(Contact).find()
         } else {
             contacts = await getManager()
