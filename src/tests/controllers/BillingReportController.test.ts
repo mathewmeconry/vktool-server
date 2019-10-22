@@ -172,7 +172,7 @@ describe('BillingReportController', function () {
         })
     })
 
-    describe('approve', () => {
+    describe('approve/decline/reset', () => {
         it('should approve the report', async () => {
             return supertest(app)
                 .post('/api/billing-reports/approve')
@@ -184,16 +184,6 @@ describe('BillingReportController', function () {
                 })
         })
 
-        it('should return 500', async () => {
-            return supertest(app)
-                .post('/api/billing-reports/approve')
-                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-                .expect(500)
-                .send({ id: Infinity })
-        })
-    })
-
-    describe('decline', () => {
         it('should decline the report', async () => {
             return supertest(app)
                 .post('/api/billing-reports/decline')
@@ -205,16 +195,6 @@ describe('BillingReportController', function () {
                 })
         })
 
-        it('should return 500', async () => {
-            return supertest(app)
-                .post('/api/billing-reports/decline')
-                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-                .expect(500)
-                .send({ id: Infinity })
-        })
-    })
-
-    describe('reset', () => {
         it('should reset the report', async () => {
             return supertest(app)
                 .post('/api/billing-reports/reset')
@@ -226,12 +206,20 @@ describe('BillingReportController', function () {
                 })
         })
 
+        it('should return 403', async () => {
+            return supertest(app)
+                .post('/api/billing-reports/approve?bypass=false')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(403)
+                .send(dbReport)
+        })
+
         it('should return 500', async () => {
             return supertest(app)
-                .post('/api/billing-reports/reset')
+                .post('/api/billing-reports/approve')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                 .expect(500)
-                .send({ id: Infinity })
+                .send({ id: -2 })
         })
     })
 
