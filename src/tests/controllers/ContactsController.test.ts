@@ -26,7 +26,7 @@ describe('ContactsController', function () {
     it('should get all contacts', async () => {
         return supertest(app)
             .get('/api/contacts')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
@@ -64,10 +64,41 @@ describe('ContactsController', function () {
             })
     })
 
+    it('should get all members with basic info', async () => {
+        return supertest(app)
+            .get('/api/members')
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+            .expect(200)
+            .then(res => {
+                expect(res.body.length).to.be.greaterThan(0)
+                for (let member of (res.body as Array<Contact>)) {
+                    expect(member).to.have.ownProperty('firstname')
+                    expect(member).to.have.ownProperty('lastname')
+                    expect(member).to.have.ownProperty('address')
+                    expect(member).to.have.ownProperty('postcode')
+                    expect(member).to.have.ownProperty('city')
+                    expect(member).to.have.ownProperty('mail')
+                    expect(member).to.have.ownProperty('rank')
+                    expect(member).to.have.ownProperty('functions')
+                    expect(member).to.have.ownProperty('collectionPoint')
+                    expect(member).not.to.have.ownProperty('entryDate')
+                    expect(member).not.to.have.ownProperty('exitDate')
+                    expect(member).not.to.have.ownProperty('bankName')
+                    expect(member).not.to.have.ownProperty('iban')
+                    expect(member).not.to.have.ownProperty('accountHolder')
+
+                    let groupIds = member.contactGroups.map(el => {
+                        return el.bexioId
+                    })
+                    expect(groupIds).include(7)
+                }
+            })
+    })
+
     it('should edit a contact', async () => {
         return supertest(app)
             .post('/api/contacts')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .send(editContact)
             .then(res => {

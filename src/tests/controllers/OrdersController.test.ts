@@ -15,17 +15,17 @@ describe('OrdersController', function () {
 
     it('should get all orders', async () => {
         return supertest(app)
-        .get('/api/orders')
-        .set('Cookie', TestHelper.authenticatedAdminCookies)
-        .expect(200)
-        .then(res => {
-            expect(res.body.length).to.be.greaterThan(0)
-            let dbRecord: Order = res.body[0]
-            expect(dbRecord).to.have.ownProperty('documentNr')
-            expect(dbRecord).to.have.ownProperty('title')
-            expect(dbRecord).to.have.ownProperty('positions')
-            expect(dbRecord).to.have.ownProperty('execDates')
-            expect(dbRecord.execDates.length).to.be.greaterThan(0)
-        })
+            .get('/api/orders')
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+            .expect(200)
+            .then(res => {
+                expect(res.body.length).to.be.greaterThan(0)
+                let dbRecord: Order = res.body[0]
+                expect(dbRecord).to.have.ownProperty('documentNr')
+                expect(dbRecord).to.have.ownProperty('title')
+                expect(dbRecord).to.have.ownProperty('positions')
+                expect(dbRecord).to.have.ownProperty('execDates')
+                expect(dbRecord.execDates.length).to.be.greaterThan(0)
+            })
     })
 })

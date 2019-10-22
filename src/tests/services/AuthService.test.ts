@@ -27,7 +27,7 @@ describe('AuthService', () => {
     describe('AuthService middleware', () => {
         it('should return 403', async () => {
             return supertest(app)
-                .get('/check/authservice')
+                .get('/check/authservice?bypass=false')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                 .expect(403)
                 .then(res => {

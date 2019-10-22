@@ -19,9 +19,18 @@ export default class ContactsController {
             contacts = await getManager()
                 .getRepository(Contact)
                 .createQueryBuilder('contact')
-                .select(['contact.id', 'contact.firstname', 'contact.lastname'])
+                .select([
+                    'contact.id',
+                    'contact.firstname',
+                    'contact.lastname',
+                    'contact.address',
+                    'contact.postcode',
+                    'contact.city',
+                    'contact.mail'
+                ])
                 .leftJoinAndSelect('contact.contactGroups', 'contactGroups')
                 .getMany()
+            contacts.forEach(contact => contact.restrictData())
         }
         res.send(contacts.filter(contact => ((contact.contactGroups || []).find(group => group.bexioId === 7))))
     }

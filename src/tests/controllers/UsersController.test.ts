@@ -16,18 +16,18 @@ describe('UsersController', function () {
 
     it('should return the current user', async () => {
         return supertest(app)
-        .get('/api/me')
-        .set('Cookie', TestHelper.authenticatedAdminCookies)
-        .expect(200)
-        .then(res => {
-            let record: User = res.body
-            expect(record).to.has.ownProperty('displayName')
-            expect(record).to.has.ownProperty('roles')
-            expect(record).to.has.ownProperty('provider')
-            expect(record).to.has.ownProperty('lastLogin')
-            expect(record.roles.length).to.be.greaterThan(0)
-            expect(record.roles).include(AuthRoles.ADMIN)
-            expect(record.provider).to.be.equal('mock')
-        })
+            .get('/api/me')
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .expect(200)
+            .then(res => {
+                let record: User = res.body
+                expect(record).to.has.ownProperty('displayName')
+                expect(record).to.has.ownProperty('roles')
+                expect(record).to.has.ownProperty('provider')
+                expect(record).to.has.ownProperty('lastLogin')
+                expect(record.roles.length).to.be.greaterThan(0)
+                expect(record.roles).include(AuthRoles.ADMIN)
+                expect(record.provider).to.be.equal('mock')
+            })
     })
 })

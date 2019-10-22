@@ -58,7 +58,7 @@ describe('BillingReportController', function () {
 
         return supertest(app)
             .get('/api/billing-reports/open')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body).to.be.string
@@ -85,12 +85,12 @@ describe('BillingReportController', function () {
     it('should create a new billing report', async () => {
         return supertest(app)
             .put('/api/billing-reports')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .send(report)
             .then(res => {
                 let reportres: BillingReport = res.body
-                expect(reportres.creator.id).to.be.equal(1)
+                expect(reportres.creator.id).to.be.equal(TestHelper.mockUser.id)
                 expect(reportres.order.id).to.be.equal(report.orderId)
                 expect(reportres.els.length).to.be.equal(1)
                 expect(reportres.els[0].id).to.be.equal(report.els[0].id)
@@ -113,7 +113,7 @@ describe('BillingReportController', function () {
                 expect(reportres.compensations[0].payout).to.be.equal(undefined)
                 expect(reportres.compensations[0].amount).to.be.equal(155)
                 expect(reportres.compensations[0].approved).to.be.equal(false)
-                expect(reportres.compensations[0].creator.id).to.be.equal(1)
+                expect(reportres.compensations[0].creator.id).to.be.equal(TestHelper.mockUser.id)
                 expect(reportres.compensations[0].date).to.be.equal(report.date)
                 expect(reportres.compensations[0].dayHours).to.be.equal(14)
                 expect(reportres.compensations[0].nightHours).to.be.equal(1)
@@ -122,73 +122,174 @@ describe('BillingReportController', function () {
             })
     })
 
-    it('should return all billing reports ', async () => {
-        return supertest(app)
-            .get('/api/billing-reports')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
-            .expect(200)
-            .then(res => {
-                let reportres: BillingReport = res.body[res.body.length - 1]
-                expect(reportres.creator.id).to.be.equal(1)
-                expect(reportres.order.id).to.be.equal(report.orderId)
-                expect(reportres.els.length).to.be.equal(1)
-                expect(reportres.els[0].id).to.be.equal(report.els[0].id)
-                expect(reportres.drivers.length).to.be.equal(1)
-                expect(reportres.drivers[0].id).to.be.equal(report.drivers[0].id)
-                expect(reportres.date).to.be.equal('2019-04-19')
-                expect(reportres.food).to.be.equal(report.food)
-                expect(reportres.state).to.be.equal('pending')
-                expect(reportres.remarks).to.be.equal(report.remarks)
+    describe('read', () => {
+        it('should return all billing reports ', async () => {
+            return supertest(app)
+                .get('/api/billing-reports')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .expect(200)
+                .then(res => {
+                    let reportres: BillingReport = res.body[res.body.length - 1]
+                    expect(reportres.creator.id).to.be.equal(TestHelper.mockUser.id)
+                    expect(reportres.order.id).to.be.equal(report.orderId)
+                    expect(reportres.els.length).to.be.equal(1)
+                    expect(reportres.els[0].id).to.be.equal(report.els[0].id)
+                    expect(reportres.drivers.length).to.be.equal(1)
+                    expect(reportres.drivers[0].id).to.be.equal(report.drivers[0].id)
+                    expect(reportres.date).to.be.equal('2019-04-19')
+                    expect(reportres.food).to.be.equal(report.food)
+                    expect(reportres.state).to.be.equal('pending')
+                    expect(reportres.remarks).to.be.equal(report.remarks)
 
-                expect(reportres.compensations.length).to.be.equal(1)
-                expect(reportres.compensations[0].member.id).to.be.equal(TestHelper.mockContact.id)
-                //@ts-ignore
-                expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].from)
-                //@ts-ignore
-                expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].until)
-                //@ts-ignore
-                expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].charge)
-                expect(reportres.compensations[0].paied).to.be.equal(false)
-                expect(reportres.compensations[0].payout).to.be.equal(undefined)
-                expect(reportres.compensations[0].amount).to.be.equal(155)
-                expect(reportres.compensations[0].approved).to.be.equal(false)
-                expect(reportres.compensations[0].date).to.be.equal('2019-04-19T00:00:00.000Z')
-                expect(reportres.compensations[0].dayHours).to.be.equal(14)
-                expect(reportres.compensations[0].nightHours).to.be.equal(1)
-            })
+                    expect(reportres.compensations.length).to.be.equal(1)
+                    expect(reportres.compensations[0].member.id).to.be.equal(TestHelper.mockContact.id)
+                    //@ts-ignore
+                    expect(reportres.compensations[0].from).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].from)
+                    //@ts-ignore
+                    expect(reportres.compensations[0].until).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].until)
+                    //@ts-ignore
+                    expect(reportres.compensations[0].charge).to.be.equal(report.compensationEntries[TestHelper.mockContact.id].charge)
+                    expect(reportres.compensations[0].paied).to.be.equal(false)
+                    expect(reportres.compensations[0].payout).to.be.equal(undefined)
+                    expect(reportres.compensations[0].amount).to.be.equal(155)
+                    expect(reportres.compensations[0].approved).to.be.equal(false)
+                    expect(reportres.compensations[0].date).to.be.equal('2019-04-19T00:00:00.000Z')
+                    expect(reportres.compensations[0].dayHours).to.be.equal(14)
+                    expect(reportres.compensations[0].nightHours).to.be.equal(1)
+                })
+        })
+
+        it('should return only my billing reports ', async () => {
+            return supertest(app)
+                .get('/api/billing-reports')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(200)
+                .then(res => {
+                    for (const report of (res.body as BillingReport[])) {
+                        expect(report.creator.id).to.be.eq(TestHelper.mockUser.id)
+                    }
+                })
+        })
     })
 
-    it('should approve the report', async () => {
-        return supertest(app)
-            .post('/api/billing-reports/approve')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
-            .expect(200)
-            .send({ id: dbReport.id })
-            .then(res => {
-                expect((res.body as BillingReport).state).to.be.equal('approved')
-            })
+    describe('approve', () => {
+        it('should approve the report', async () => {
+            return supertest(app)
+                .post('/api/billing-reports/approve')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(200)
+                .send({ id: dbReport.id })
+                .then(res => {
+                    expect((res.body as BillingReport).state).to.be.equal('approved')
+                })
+        })
+
+        it('should return 500', async () => {
+            return supertest(app)
+                .post('/api/billing-reports/approve')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: Infinity })
+        })
     })
 
-    it('should decline the report', async () => {
-        return supertest(app)
-            .post('/api/billing-reports/decline')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
-            .expect(200)
-            .send(dbReport)
-            .then(res => {
-                expect((res.body as BillingReport).state).to.be.equal('declined')
-            })
+    describe('decline', () => {
+        it('should decline the report', async () => {
+            return supertest(app)
+                .post('/api/billing-reports/decline')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(200)
+                .send(dbReport)
+                .then(res => {
+                    expect((res.body as BillingReport).state).to.be.equal('declined')
+                })
+        })
+
+        it('should return 500', async () => {
+            return supertest(app)
+                .post('/api/billing-reports/decline')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: Infinity })
+        })
     })
 
-    it('should edit the reports date report', async () => {
-        dbReport.date = new Date('2019-04-20T00:00:00.000Z')
-        return supertest(app)
-            .post('/api/billing-reports')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
-            .expect(200)
-            .send(dbReport)
-            .then(res => {
-                expect((res.body as BillingReport).date).to.be.equal('2019-04-20T00:00:00.000Z')
-            })
+    describe('reset', () => {
+        it('should reset the report', async () => {
+            return supertest(app)
+                .post('/api/billing-reports/reset')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(200)
+                .send(dbReport)
+                .then(res => {
+                    expect((res.body as BillingReport).state).to.be.equal('pending')
+                })
+        })
+
+        it('should return 500', async () => {
+            return supertest(app)
+                .post('/api/billing-reports/reset')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: Infinity })
+        })
+    })
+
+    describe('edit', () => {
+        it('should edit the report date ', async () => {
+            dbReport.date = new Date('2019-04-01T00:00:00.000Z')
+            return supertest(app)
+                .post('/api/billing-reports')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(200)
+                .send(dbReport)
+                .then(res => {
+                    expect((res.body as BillingReport).date).to.be.equal('2019-04-01T00:00:00.000Z')
+                })
+        })
+
+
+        it('should edit the report date', async () => {
+            dbReport.date = new Date('2019-04-20T00:00:00.000Z')
+            return supertest(app)
+                .post('/api/billing-reports')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(200)
+                .send(dbReport)
+                .then(res => {
+                    expect((res.body as BillingReport).date).to.be.equal('2019-04-20T00:00:00.000Z')
+                })
+        })
+
+        it('should prevent from editing', async () => {
+            // approve again to trigger error
+            await supertest(app)
+                .post('/api/billing-reports/approve')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .expect(200)
+                .send(dbReport)
+
+            return supertest(app)
+                .post('/api/billing-reports')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(403)
+                .send(dbReport)
+        })
+
+        it('should return 500 with no payload', async () => {
+            return supertest(app)
+                .post('/api/billing-reports')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({})
+        })
+
+        it('should return 500 with wrong report id', async () => {
+            return supertest(app)
+                .post('/api/billing-reports')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: Infinity })
+        })
     })
 })
