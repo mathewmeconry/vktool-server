@@ -191,4 +191,46 @@ describe('CompensationController', function () {
                 }
             })
     })
+
+    describe('errors', () => {
+        it('it should fail to delete the non existing compensation', async () => {
+            return supertest(app)
+                .delete('/api/compensations')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: -1 })
+        })
+
+        it('should fial to add with no valid user provided', async () => {
+            return supertest(app)
+                .put('/api/compensations')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .expect(500)
+                .send({ ...compensation, member: -1 })
+        })
+
+        it('should not allow bulk for non permitted users', async () => {
+            return supertest(app)
+                .put('/api/compensations/bulk')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(403)
+                .send({ ...bulk, billingReportId: undefined })
+        })
+
+        it('should fail bulk with non valid billingReportId', async () => {
+            return supertest(app)
+                .put('/api/compensations/bulk')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ ...bulk, billingReportId: -1 })
+        })
+
+        it('should fail to approve the compensation', async () => {
+            return supertest(app)
+                .post('/api/compensations/approve')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: -1 })
+        })
+    })
 })

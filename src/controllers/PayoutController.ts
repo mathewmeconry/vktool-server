@@ -30,10 +30,18 @@ export default class PayoutController {
                 message: 'Invalid request (field until is missing)'
             })
         }
+        const payoutRepo = getManager().getRepository(Payout)
         let payout = new Payout(new Date(req.body.until), new Date(req.body.from))
-        payout = await getManager().getRepository(Payout).save(payout)
+        payout = await payoutRepo.save(payout)
         await PayoutService.reclaimCompensations(payout)
-        res.send(payout)
+        res.send(await payoutRepo.findOne(payout.id, {
+            join: {
+                alias: 'payout',
+                leftJoinAndSelect: {
+                    compensations: 'payout.compensations'
+                }
+            }
+        }))
     }
 
     public static async reclaim(req: Express.Request, res: Express.Response): Promise<void> {
@@ -43,7 +51,14 @@ export default class PayoutController {
                 message: 'Invalid request (field id is missing)'
             })
         }
-        const payout = await getManager().getRepository(Payout).findOne({ id: req.body.id })
+        const payout = await getManager().getRepository(Payout).findOne(req.body.id, {
+            join: {
+                alias: 'payout',
+                leftJoinAndSelect: {
+                    compensations: 'payout.compensations'
+                }
+            }
+        })
         if (payout) {
             await PayoutService.reclaimCompensations(payout)
             res.send(payout)
@@ -86,7 +101,7 @@ export default class PayoutController {
                 message: 'Invalid request (field payoutId or memberId is missing)'
             })
         } else {
-            res.contentType('application/pdf')
+            res.contentType('text/html')
             res.send(
                 (await PayoutService.generateMemberHTML(
                     await getManager().getRepository(Payout).findOneOrFail(req.body.payoutId),

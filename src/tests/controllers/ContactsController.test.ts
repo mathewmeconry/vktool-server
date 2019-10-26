@@ -118,4 +118,14 @@ describe('ContactsController', function () {
                 expect(contact.accountHolder).to.be.equal(editContact.accountHolder)
             })
     })
+    
+    describe('errors', () => {
+        it('should fail for non existing user', async () => {
+            return supertest(app)
+                .post('/api/contacts')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ ...editContact, id: -1 })
+        })
+    })
 })
