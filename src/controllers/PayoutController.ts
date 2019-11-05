@@ -4,7 +4,7 @@ import Payout from '../entities/Payout';
 import PayoutService from '../services/PayoutService';
 import Contact from '../entities/Contact';
 import EMailService from '../services/EMailService';
-import moment = require('moment');
+import moment from 'moment'
 
 export default class PayoutController {
     private static emailService = new EMailService('no-reply@vkazu.ch')
@@ -25,7 +25,7 @@ export default class PayoutController {
 
     public static async createPayout(req: Express.Request, res: Express.Response): Promise<void> {
         if (!req.body.until) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field until is missing)'
             })
@@ -46,10 +46,11 @@ export default class PayoutController {
 
     public static async reclaim(req: Express.Request, res: Express.Response): Promise<void> {
         if (!req.body.id) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field id is missing)'
             })
+            return
         }
         const payout = await getManager().getRepository(Payout).findOne(req.body.id, {
             join: {
@@ -75,47 +76,45 @@ export default class PayoutController {
         const memberId = req.body.memberId || req.params.member
 
         if (!payoutId || !memberId) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field payoutId or memberId is missing)'
             })
-        } else {
-            const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
-            res.contentType('application/pdf')
-            res.setHeader('Content-Disposition', `inline; filename=Verkehrskadetten-Entschädigung ${member.lastname} ${member.firstname}.pdf`)
-            res.send(
-                (await PayoutService.generateMemberPDF(
-                    await getManager().getRepository(Payout).findOneOrFail(payoutId),
-                    member)
-                )
-            )
+            return
         }
 
-        res.end()
+        const member = await getManager().getRepository(Contact).findOneOrFail(memberId)
+        res.contentType('application/pdf')
+        res.setHeader('Content-Disposition', `inline; filename=Verkehrskadetten-Entschädigung ${member.lastname} ${member.firstname}.pdf`)
+        res.send(
+            (await PayoutService.generateMemberPDF(
+                await getManager().getRepository(Payout).findOneOrFail(payoutId),
+                member)
+            )
+        )
     }
 
     public static async generateMemberHTML(req: Express.Request, res: Express.Response): Promise<void> {
         if (!req.body.hasOwnProperty('payoutId') || !req.body.hasOwnProperty('memberId')) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field payoutId or memberId is missing)'
             })
-        } else {
-            res.contentType('text/html')
-            res.send(
-                (await PayoutService.generateMemberHTML(
-                    await getManager().getRepository(Payout).findOneOrFail(req.body.payoutId),
-                    await getManager().getRepository(Contact).findOneOrFail(req.body.memberId))
-                ).toString()
-            )
+            return
         }
 
-        res.end()
+        res.contentType('text/html')
+        res.send(
+            (await PayoutService.generateMemberHTML(
+                await getManager().getRepository(Payout).findOneOrFail(req.body.payoutId),
+                await getManager().getRepository(Contact).findOneOrFail(req.body.memberId))
+            ).toString()
+        )
     }
 
     public static async generatePayoutPDF(req: Express.Request, res: Express.Response): Promise<void> {
         if (!req.params.hasOwnProperty('payout')) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (parameter payout is missing)'
             })
@@ -129,7 +128,7 @@ export default class PayoutController {
 
     public static async sendMails(req: Express.Request, res: Express.Response): Promise<void> {
         if (!req.body.hasOwnProperty('payoutId')) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field payoutId is missing)'
             })
@@ -175,7 +174,7 @@ export default class PayoutController {
 
     public static async sendToBexio(req: Express.Request, res: Express.Response): Promise<void> {
         if (!req.body.hasOwnProperty('payoutId')) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field payoutId is missing)'
             })
@@ -211,7 +210,7 @@ export default class PayoutController {
         const memberIds = req.body.memberIds || req.params.memberIds
 
         if (!payoutId) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field payoutId is missing)'
             })
@@ -229,12 +228,12 @@ export default class PayoutController {
         const memberIds = req.body.memberIds || req.params.memberIds
 
         if (!payoutId) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field payoutId is missing)'
             })
         } else if (!memberIds) {
-            res.status(402)
+            res.status(400)
             res.send({
                 message: 'Invalid request (field memberIds is missing)'
             })
