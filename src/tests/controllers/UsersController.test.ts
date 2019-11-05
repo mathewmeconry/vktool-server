@@ -30,4 +30,15 @@ describe('UsersController', function () {
                 expect(record.provider).to.be.equal('mock')
             })
     })
+
+    it('should return all users', async () => {
+        return supertest(app)
+            .get('/api/users')
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .expect(200)
+            .then(res => {
+                const records: User[] = res.body as User[]
+                expect(records.length).to.be.greaterThan(0)
+            })
+    })
 })

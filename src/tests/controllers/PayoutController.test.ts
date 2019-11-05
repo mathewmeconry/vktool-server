@@ -1,11 +1,12 @@
 import { expect } from "chai";
-import config = require("config");
 import * as Express from 'express'
 import supertest = require("supertest");
 import TestHelper from "../helpers/TestHelper";
 import Payout from "../../entities/Payout";
+const DomParser = require('dom-parser');
 
-describe('PayoutController', () => {
+describe('PayoutController', function () {
+    this.timeout(5000)
     let app: Express.Application;
     let dbPayout: Payout
     const payout = {
@@ -45,11 +46,11 @@ describe('PayoutController', () => {
                 })
         })
 
-        it('should fail with 402', async () => {
+        it('should fail with 400', async () => {
             return supertest(app)
                 .put('/api/payouts')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-                .expect(402)
+                .expect(400)
                 .send({ from: payout.from })
         })
     })
@@ -89,16 +90,16 @@ describe('PayoutController', () => {
                 .send({ id: dbPayout.id })
                 .then(res => {
                     const p = res.body as Payout
-                    expect(p.compensations.length).to.be.greaterThan(dbPayout.compensations.length)
-                    expect(p.total).to.be.greaterThan(dbPayout.total)
+                    expect(p.compensations.length).to.be.eq(dbPayout.compensations.length)
+                    expect(p.total).to.be.eq(dbPayout.total)
                 })
         })
 
-        it('should return a 402', async () => {
+        it('should return a 400', async () => {
             return supertest(app)
                 .post('/api/payouts/reclaim')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-                .expect(402)
+                .expect(400)
                 .send({})
         })
 
@@ -122,7 +123,7 @@ describe('PayoutController', () => {
 
             it('POST params', async () => {
                 return supertest(app)
-                    .get(`/api/payouts/member/pdf`)
+                    .post(`/api/payouts/member/pdf`)
                     .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                     .send({ payoutId: dbPayout.id, memberId: dbPayout.compensations[0].memberId })
                     .expect(200)
@@ -130,18 +131,18 @@ describe('PayoutController', () => {
 
             it('missing POST payoutId param', async () => {
                 return supertest(app)
-                    .get(`/api/payouts/member/pdf`)
+                    .post(`/api/payouts/member/pdf`)
                     .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                     .send({ memberId: dbPayout.compensations[0].memberId })
-                    .expect(402)
+                    .expect(400)
             })
 
             it('missing POST memberId param', async () => {
                 return supertest(app)
-                    .get(`/api/payouts/member/pdf`)
+                    .post(`/api/payouts/member/pdf`)
                     .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                     .send({ payoutId: dbPayout.id })
-                    .expect(200)
+                    .expect(400)
             })
         })
 
@@ -155,7 +156,7 @@ describe('PayoutController', () => {
 
             it('POST params', async () => {
                 return supertest(app)
-                    .get(`/api/payouts/member/html`)
+                    .post(`/api/payouts/member/html`)
                     .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                     .send({ payoutId: dbPayout.id, memberId: dbPayout.compensations[0].memberId })
                     .expect(200)
@@ -163,19 +164,42 @@ describe('PayoutController', () => {
 
             it('missing POST payoutId param', async () => {
                 return supertest(app)
-                    .get(`/api/payouts/member/html`)
+                    .post(`/api/payouts/member/html`)
                     .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                     .send({ memberId: dbPayout.compensations[0].memberId })
-                    .expect(402)
+                    .expect(400)
             })
 
             it('missing POST memberId param', async () => {
                 return supertest(app)
-                    .get(`/api/payouts/member/html`)
+                    .post(`/api/payouts/member/html`)
                     .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                     .send({ payoutId: dbPayout.id })
-                    .expect(200)
+                    .expect(400)
             })
+        })
+    })
+
+    describe('xml generation', () => {
+        it('should return a valid xml', async () => {
+            return supertest(app)
+                .post('/api/payouts/xml')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .send({ payoutId: dbPayout.id })
+                .expect(200)
+                .then(res => {
+                    const xml = res.body
+                    const parser = new DomParser();
+                    expect(parser.parseFromString(xml, 'application/xml')).not.include('parsererror')
+                })
+        })
+
+        it('missing payoutId param', async () => {
+            return supertest(app)
+                .post(`/api/payouts/xml`)
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .send({})
+                .expect(400)
         })
     })
 })

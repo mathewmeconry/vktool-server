@@ -52,7 +52,6 @@ describe('BillingReportController', function () {
     })
 
     it('should send me all the open orders with the necessary attributes', function () {
-        let now = new Date()
         let before14Days = new Date()
         before14Days.setDate(before14Days.getDate() - 14)
 

@@ -8,7 +8,7 @@ import config from 'config'
 import { getManager } from "typeorm";
 import { MockStrategy } from "passport-mock-strategy";
 import * as jwt from 'jsonwebtoken'
-import mockUser = require("passport-mock-strategy/lib/mock-user");
+import mockUser from "passport-mock-strategy/lib/mock-user";
 import AzureAdOAuth2Strategy = require('passport-azure-ad-oauth2')
 
 export default class AuthService {
