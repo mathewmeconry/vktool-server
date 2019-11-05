@@ -148,4 +148,13 @@ export default class Contact extends BexioBase<Contact> {
         override.save()
         return true
     }
+
+    // used to remove some senitive data
+    public restrictData(): void {
+        delete this.entryDate
+        delete this.exitDate
+        delete this.bankName
+        delete this.iban
+        delete this.accountHolder
+    }
 }

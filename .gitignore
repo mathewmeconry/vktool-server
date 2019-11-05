@@ -4,3 +4,5 @@ yarn-error.log
 sessions/
 .env
 dist/
+coverage/
+.nyc_output/

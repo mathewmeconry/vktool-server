@@ -98,7 +98,7 @@ export default class BillingReportController {
         res.send(billingReport)
     }
 
-    public static async approveDecline(req: Express.Request, res: Express.Response): Promise<void> {
+    public static async approveDeclineReset(req: Express.Request, res: Express.Response): Promise<void> {
         let billingReportRepo = getManager().getRepository(BillingReport)
         let billingReport = await billingReportRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne()
         let state = req.path.split('/')[req.path.split('/').length - 1]
@@ -107,18 +107,25 @@ export default class BillingReportController {
             getManager().transaction(async (transaction) => {
                 billingReport = billingReport as BillingReport
 
-                if (state === 'approve') {
-                    billingReport.state = 'approved'
-                    billingReport.approvedBy = req.user
-                    await transaction.createQueryBuilder()
-                        .update(OrderCompensation)
-                        .set({ approved: true, updatedBy: req.user })
-                        .where('billingReport = :id', { id: billingReport.id })
-                        .andWhere('deletedAt IS NULL')
-                        .execute()
-                } else {
-                    billingReport.state = 'declined'
+                switch (state) {
+                    case 'approve':
+                        billingReport.state = 'approved'
+                        billingReport.approvedBy = req.user
+                        await transaction.createQueryBuilder()
+                            .update(OrderCompensation)
+                            .set({ approved: true, updatedBy: req.user })
+                            .where('billingReport = :id', { id: billingReport.id })
+                            .andWhere('deletedAt IS NULL')
+                            .execute()
+                        break
+                    case 'decline':
+                        billingReport.state = 'declined'
+                        break
+                    case 'reset':
+                        billingReport.state = 'pending'
+                        break
                 }
+
                 billingReport.updatedBy = req.user
                 billingReport = await transaction.save(billingReport)
             }).then(() => {
@@ -143,9 +150,9 @@ export default class BillingReportController {
 
         if (billingReport) {
             if (AuthService.isAuthorized(req.user.roles, AuthRoles.BILLINGREPORTS_EDIT) ||
-                (billingReport.creator.id == req.user.id && billingReport.state === 'pending')) {
+                (billingReport.creatorId == req.user.id && billingReport.state === 'pending')) {
                 for (let i in req.body) {
-                    if (i !== 'id') {
+                    if (['id', 'state'].indexOf(i) < 0) {
                         //@ts-ignore
                         billingReport[i] = req.body[i]
                     }

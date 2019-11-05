@@ -42,10 +42,10 @@ describe('CompensationController', function () {
         let billingReport =
             (await getManager().getRepository(BillingReport).findOne()) ||
             { id: 1, date: '2019-04-20' }
-            
+
         bulk = {
             billingReportId: billingReport.id,
-                entries: [
+            entries: [
                 {
                     id: TestHelper.mockContact.id,
                     date: billingReport.date as unknown as string,
@@ -66,7 +66,7 @@ describe('CompensationController', function () {
         return
     })
 
-    it('should add a new custom compensation', async () => {
+    it('should add a approved compensation', async () => {
         return supertest(app)
             .put('/api/compensations')
             .set('Cookie', TestHelper.authenticatedAdminCookies)
@@ -75,7 +75,7 @@ describe('CompensationController', function () {
             .then(res => {
                 dbCompensation = res.body
                 expect(dbCompensation.member.id).to.be.equal(compensation.member)
-                expect(dbCompensation.creator.id).to.be.equal(1)
+                expect(dbCompensation.creator.id).to.be.equal(TestHelper.mockAdminUser.id)
                 expect(dbCompensation.amount).to.be.equal(compensation.amount)
                 expect(dbCompensation.date).to.be.equal(compensation.date)
                 expect(dbCompensation.approved).to.be.true
@@ -92,10 +92,36 @@ describe('CompensationController', function () {
             })
     })
 
+    it('should add a non approved compensation', async () => {
+        return supertest(app)
+            .put('/api/compensations')
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+            .expect(200)
+            .send(compensation)
+            .then(res => {
+                dbCompensation = res.body
+                expect(dbCompensation.member.id).to.be.equal(compensation.member)
+                expect(dbCompensation.creator.id).to.be.equal(TestHelper.mockUser.id)
+                expect(dbCompensation.amount).to.be.equal(compensation.amount)
+                expect(dbCompensation.date).to.be.equal(compensation.date)
+                expect(dbCompensation.approved).to.be.false
+                expect(dbCompensation.paied).to.be.false
+                expect(dbCompensation.payout).to.be.undefined
+                expect(dbCompensation.description).to.be.equal(compensation.description)
+
+                expect(dbCompensation).not.to.have.ownProperty('billingReport')
+                expect(dbCompensation).not.to.have.ownProperty('dayHours')
+                expect(dbCompensation).not.to.have.ownProperty('nightHours')
+                expect(dbCompensation).not.to.have.ownProperty('from')
+                expect(dbCompensation).not.to.have.ownProperty('until')
+                expect(dbCompensation).not.to.have.ownProperty('charge')
+            })
+    })
+
     it('should add a bulk of order compensations', async () => {
         return supertest(app)
             .put('/api/compensations/bulk')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .send(bulk)
             .then(res => {
@@ -104,7 +130,7 @@ describe('CompensationController', function () {
                 for (let i in (res.body as Array<CustomCompensation>)) {
                     let rec = res.body[i]
                     expect(rec.member.id).to.be.equal(bulk.entries[i].id)
-                    expect(rec.creator.id).to.be.equal(1)
+                    expect(rec.creator.id).to.be.equal(TestHelper.mockUser.id)
                     expect(rec.date).to.be.equal(bulk.entries[i].date)
                     expect(rec.dayHours).to.be.equal(14)
                     expect(rec.nightHours).to.be.equal(1)
@@ -123,7 +149,7 @@ describe('CompensationController', function () {
     it('should approve the compensation', async () => {
         return supertest(app)
             .post('/api/compensations/approve')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .send({ id: dbCompensation.id })
             .then(res => {
@@ -134,19 +160,19 @@ describe('CompensationController', function () {
     it('should delete the compensation', async () => {
         return supertest(app)
             .delete('/api/compensations')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .send({ id: dbCompensation.id })
             .then(res => {
                 expect(res.body.deletedAt).not.to.be.null
-                expect(res.body.deletedBy.id).to.be.equal(1)
+                expect(res.body.deletedBy.id).to.be.equal(TestHelper.mockUser.id)
             })
     })
 
     it('should get all compensations', async () => {
         return supertest(app)
             .get('/api/compensations')
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
@@ -156,7 +182,7 @@ describe('CompensationController', function () {
     it('should get all for a specific member', async () => {
         return supertest(app)
             .get('/api/compensations/' + TestHelper.mockContact.id)
-            .set('Cookie', TestHelper.authenticatedAdminCookies)
+            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
@@ -164,5 +190,47 @@ describe('CompensationController', function () {
                     expect(entry.member.id).to.be.equal(TestHelper.mockContact.id)
                 }
             })
+    })
+
+    describe('errors', () => {
+        it('it should fail to delete the non existing compensation', async () => {
+            return supertest(app)
+                .delete('/api/compensations')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: -1 })
+        })
+
+        it('should fial to add with no valid user provided', async () => {
+            return supertest(app)
+                .put('/api/compensations')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .expect(500)
+                .send({ ...compensation, member: -1 })
+        })
+
+        it('should not allow bulk for non permitted users', async () => {
+            return supertest(app)
+                .put('/api/compensations/bulk')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(403)
+                .send({ ...bulk, billingReportId: undefined })
+        })
+
+        it('should fail bulk with non valid billingReportId', async () => {
+            return supertest(app)
+                .put('/api/compensations/bulk')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ ...bulk, billingReportId: -1 })
+        })
+
+        it('should fail to approve the compensation', async () => {
+            return supertest(app)
+                .post('/api/compensations/approve')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .expect(500)
+                .send({ id: -1 })
+        })
     })
 })

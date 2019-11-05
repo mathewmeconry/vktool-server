@@ -25,7 +25,7 @@ export default class Payout extends Base<Payout> {
     constructor(until: Date, from = new Date('1970-01-01')) {
         super()
         this.until = until
-        this.from = from
+        this.from = (isNaN(from.getTime())) ? new Date('1970-01-01') : from
     }
 
     @AfterLoad()

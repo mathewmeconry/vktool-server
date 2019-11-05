@@ -1,7 +1,6 @@
 import AuthService from "../../services/AuthService";
 import { AuthRoles } from "../../interfaces/AuthRoles";
 import { expect } from "chai";
-import config = require("config");
 import * as Express from 'express'
 import supertest = require("supertest");
 import TestHelper from "../helpers/TestHelper";
@@ -28,7 +27,7 @@ describe('AuthService', () => {
     describe('AuthService middleware', () => {
         it('should return 403', async () => {
             return supertest(app)
-                .get('/check/authservice')
+                .get('/check/authservice?bypass=false')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                 .expect(403)
                 .then(res => {

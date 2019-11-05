@@ -12,11 +12,14 @@ export default class BillingReport extends Base<BillingReport> {
     @JoinColumn()
     public creator: User
 
+    @Column("int")
+    public creatorId: number
+
     @ManyToOne(type => Order, { eager: true })
     @JoinColumn()
     public order: Order
 
-    @Column({ nullable: true })   
+    @Column({ nullable: true })
     public orderId?: number;
 
     @Column("date")

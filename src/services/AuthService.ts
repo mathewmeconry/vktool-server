@@ -8,7 +8,7 @@ import config from 'config'
 import { getManager } from "typeorm";
 import { MockStrategy } from "passport-mock-strategy";
 import * as jwt from 'jsonwebtoken'
-import mockUser = require("passport-mock-strategy/lib/mock-user");
+import mockUser from "passport-mock-strategy/lib/mock-user";
 import AzureAdOAuth2Strategy = require('passport-azure-ad-oauth2')
 
 export default class AuthService {
@@ -30,16 +30,21 @@ export default class AuthService {
                 type: 'mocked'
             }]
         }
-        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-admin', user: Object.assign({}, mockUser, { id: 'mock-admin' }) }));
-        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-nonadmin', user: Object.assign({}, mockUser, { id: 'mock-nonadmin', provider: 'mock-nonadmin' }) }));
+        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-admin', user: Object.assign({}, mockUser, { id: `mock-admin-${Math.round(Math.random() * 10) + 1}` }) }));
+        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-nonadmin', user: Object.assign({}, mockUser, { id: `mock-nonadmin-${Math.round(Math.random() * 10) + 1}`, provider: 'mock-nonadmin' }) }));
 
         app.use(passport.initialize())
         app.use(passport.session())
     }
 
-    public static checkAuthorization(roles: Array<AuthRoles>): (req: Express.Request, res: Express.Response, next: Function) => void {
+    public static checkAuthorization(roles: Array<AuthRoles>): (req: Express.Request, res: Express.Response, next: Express.NextFunction) => void {
         return function (req, res, next) {
             if (req.isAuthenticated()) {
+                if (req.user.provider === 'mock' && req.query.bypass !== 'false') {
+                    next()
+                    return
+                }
+
                 for (let role of roles) {
                     if (AuthService.isAuthorized(req.user.roles, role)) {
                         next()
@@ -79,11 +84,12 @@ export default class AuthService {
     }
 
     public static deserializeUser(id: string, done: (err: any, user?: User) => void): void {
-        if (id.split('-')[0] === 'mock') {
+        const splittedId = id.split('-')
+        if (splittedId[0] === 'mock') {
             let user = new User()
-            user.id = 1
+            user.id = parseInt(splittedId[splittedId.length - 1])
             user.displayName = 'Mock User'
-            user.roles = (id.split('-')[1] === 'admin') ? [AuthRoles.ADMIN] : [AuthRoles.AUTHENTICATED]
+            user.roles = (splittedId[1] === 'admin') ? [AuthRoles.ADMIN] : [AuthRoles.AUTHENTICATED]
             user.provider = 'mock'
             user.lastLogin = new Date()
             done(null, user)

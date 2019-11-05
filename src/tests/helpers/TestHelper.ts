@@ -20,6 +20,7 @@ export default class TestHelper {
     public static authenticatedNonAdminCookies: Array<string>
 
     public static mockUser: User
+    public static mockAdminUser: User
     public static mockGroup: ContactGroup
     public static mockMemberGroup: ContactGroup
     public static mockType: ContactType
@@ -35,6 +36,7 @@ export default class TestHelper {
         await createConnection()
 
         TestHelper.mockUser = await genMockUser()
+        TestHelper.mockAdminUser = await genMockUser()
         TestHelper.mockGroup = await genMockContactGroup()
         TestHelper.mockMemberGroup = await genMockContactGroup(7)
         TestHelper.mockType = await genMockContactType()
@@ -49,12 +51,14 @@ export default class TestHelper {
                     .expect(200)
                     .then(res => {
                         TestHelper.authenticatedAdminCookies = res.get('Set-Cookie')
+                        TestHelper.mockAdminUser.id = parseInt(res.body.id.split('-')[res.body.id.split('-').length - 1])
                     }),
                 supertest(TestHelper.app)
                     .get('/api/auth/mock')
                     .expect(200)
                     .then(res => {
                         TestHelper.authenticatedNonAdminCookies = res.get('Set-Cookie')
+                        TestHelper.mockUser.id = parseInt(res.body.id.split('-')[res.body.id.split('-').length - 1])
                     })
             ]
         )

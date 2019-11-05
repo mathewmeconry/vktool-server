@@ -19,7 +19,11 @@ export default class CompensationController {
     }
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {
-        let member = await getManager().getRepository(Contact).findOneOrFail({ id: req.body.member })
+        let member;
+        try {
+            member = await getManager().getRepository(Contact).findOneOrFail({ id: req.body.member })
+        } catch (err) { }
+
         if (member) {
             let entry = new CustomCompensation(
                 member,
@@ -58,9 +62,11 @@ export default class CompensationController {
         let contactRepo = getManager().getRepository(Contact)
         let promises: Array<Promise<OrderCompensation | CustomCompensation>> = []
 
-        if (req.body.hasOwnProperty('billingReportId')) {
-            billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne()
-        }
+        try {
+            if (req.body.hasOwnProperty('billingReportId')) {
+                billingReport = await getManager().getRepository(BillingReport).createQueryBuilder('billingReport').where('id = :id', { id: req.body.billingReportId }).getOne()
+            }
+        } catch (err) { }
 
         if (billingReport) {
             for (let entry of req.body.entries) {
@@ -97,7 +103,11 @@ export default class CompensationController {
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
         let compensationRepo = getManager().getRepository(Compensation)
-        let compensation = await compensationRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne()
+        let compensation
+
+        try {
+            compensation = await compensationRepo.createQueryBuilder().where('id = :id', { id: req.body.id }).getOne()
+        } catch (err) { }
 
         if (compensation) {
             compensation.approved = true
