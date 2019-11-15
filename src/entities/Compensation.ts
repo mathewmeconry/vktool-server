@@ -1,4 +1,4 @@
-import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager, AfterLoad, OneToMany } from "typeorm";
+import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager, AfterLoad } from "typeorm";
 import Contact from "./Contact";
 import Payout from "./Payout";
 import User from "./User";
