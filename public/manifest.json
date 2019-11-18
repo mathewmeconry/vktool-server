@@ -1,15 +1,32 @@
 {
   "short_name": "VK Tool",
-  "name": "Super tool vo de VKAZU",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
-  ],
-  "start_url": ".",
+  "name": "VK Tool",
+  "icons": [{
+    "src": "icons/48.png",
+    "sizes": "48x48",
+    "type": "image/png"
+  }, {
+    "src": "icons/72.png",
+    "sizes": "72x72",
+    "type": "image/png"
+  }, {
+    "src": "icons/96.png",
+    "sizes": "96x96",
+    "type": "image/png"
+  }, {
+    "src": "icons/144.png",
+    "sizes": "144x144",
+    "type": "image/png"
+  },  {
+    "src": "icons/192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }],
+  "related_applications": [{
+    "platform": "Web"
+  }],
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#1c4aac",
   "background_color": "#ffffff"
 }

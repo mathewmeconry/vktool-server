@@ -12,4 +12,12 @@ export default abstract class Base<T> {
         //@ts-ignore
         return getManager().save<T>(this as T)
     }
+
+    @BeforeUpdate()
+    public beforeUpdate(): void {
+        for(const key in this) {
+            // @ts-ignore
+            if(this[key] === undefined) this[key] = null
+        }
+    }
 }

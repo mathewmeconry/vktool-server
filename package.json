@@ -3,8 +3,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "migrate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run",
-    "dev": "npm run migrate && TZ='UTC' node --inspect -r ts-node/register src/index.ts",
-    "start": "TZ='UTC' node dist/index.js",
+    "dev": "npm run migrate && TZ='Europe/Amsterdam' node --inspect -r ts-node/register src/index.ts",
+    "start": "node dist/index.js",
     "typeorm": "node ./node_modules/typeorm/cli.js",
     "test": "TZ='UTC' NODE_ENV=dev TESTING=true mocha --require ts-node/register --require source-map-support/register --full-trace --exit --recursive ./src/tests/**/*.test.ts",
     "coverage": "nyc npm run test"

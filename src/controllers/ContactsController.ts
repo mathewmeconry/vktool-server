@@ -55,8 +55,8 @@ export default class ContactsController {
             }
 
             contact.collectionPoint = await getManager().getRepository(CollectionPoint).findOne({ id: req.body.collectionPointId }) || contact.collectionPoint
-            contact.entryDate = new Date(req.body.entryDate || contact.entryDate)
-            contact.exitDate = new Date(req.body.exitDate || contact.exitDate)
+            contact.entryDate = (req.body.entryDate) ? new Date(req.body.entryDate) : undefined
+            contact.exitDate = (req.body.exitDate) ? new Date(req.body.exitDate) : undefined
             contact.bankName = req.body.bankName || contact.bankName
             contact.iban = req.body.iban || contact.iban
             contact.accountHolder = req.body.accountHolder || contact.accountHolder
