@@ -128,10 +128,10 @@ export default class AuthService {
             if (user) {
                 user.accessToken = accessToken
                 user.refreshToken = refreshToken
-                user.displayName = profile.displayName
+                user.displayName = azureProfile.name
                 user.lastLogin = new Date()
                 return done(null, await user.save())
-            } else {
+            } else { 
                 let userInfo = {};
                 getManager().getRepository(Contact).findOne({ mail: azureProfile.upn }).then(contact => {
                     userInfo = {
