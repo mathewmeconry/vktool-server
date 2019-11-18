@@ -56,7 +56,7 @@ export default class ContactExtension extends Base<ContactExtension> {
     public parseDates() {
         for (let i in this) {
             //@ts-ignore
-            if (i.toLocaleLowerCase().indexOf('date') > -1) this[i] = new Date(this[i])
+            if (i.toLocaleLowerCase().indexOf('date') > -1) this[i] = (this[i]) ? new Date(this[i]) : this[i]
         }
     }
 }
