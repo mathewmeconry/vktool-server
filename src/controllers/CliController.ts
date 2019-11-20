@@ -62,9 +62,12 @@ export default class CliController {
         PayoutRoutes(app)
         BexioService.addExpressHandlers(app)
 
-        app.use(express.static(path.join(__dirname, '/../../public/')));
-        app.get('*', (req, res) => {
+        app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));
+        app.get('/webapp/*', (req, res) => {
             res.sendFile(path.join(__dirname + '/../../public/index.html'))
+        })
+        app.get('*', (req, res) => {
+            res.redirect('/webapp/')
         })
 
         app.listen(process.env.PORT || config.get('port'), () => {
@@ -73,4 +76,4 @@ export default class CliController {
 
         return app
     }
-}
+}<
