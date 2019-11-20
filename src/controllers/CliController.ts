@@ -76,4 +76,4 @@ export default class CliController {
 
         return app
     }
-}<
+}
