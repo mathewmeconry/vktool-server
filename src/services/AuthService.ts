@@ -1,4 +1,4 @@
-import { AuthRoles, AuthRolesByRank } from "../interfaces/AuthRoles";
+import { AuthRoles } from "../interfaces/AuthRoles";
 import passport from 'passport'
 import * as Express from 'express'
 //@ts-ignore

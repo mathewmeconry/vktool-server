@@ -92,7 +92,7 @@ export default class Contact extends BexioBase<Contact> {
     }
 
     public getFunctions(): Array<ContactGroup> {
-        const functionGroups = [22, 9, 16, 32]
+        const functionGroups = [22, 9, 16, 32, 16]
 
         if (this.contactGroups) {
             return this.contactGroups.filter(group => functionGroups.indexOf(group.bexioId) > -1)

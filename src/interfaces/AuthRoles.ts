@@ -37,6 +37,32 @@ export enum AuthRoles {
 }
 
 export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
+     // VST
+     16: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.MEMBERS_EDIT,
+        AuthRoles.CONTACTS_EDIT,
+        AuthRoles.CONTACTS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.RANKS_EDIT,
+        AuthRoles.BILLINGREPORTS_CREATE,
+        AuthRoles.BILLINGREPORTS_READ,
+        AuthRoles.BILLINGREPORTS_APPROVE,
+        AuthRoles.BILLINGREPORTS_EDIT,
+        AuthRoles.ORDERS_READ,
+        AuthRoles.ORDERS_EDIT,
+        AuthRoles.COMPENSATIONS_READ,
+        AuthRoles.COMPENSATIONS_CREATE,
+        AuthRoles.COMPENSATIONS_APPROVE,
+        AuthRoles.COMPENSATIONS_EDIT,
+        AuthRoles.DRAFT_READ,
+        AuthRoles.DRAFT_EDIT,
+        AuthRoles.DRAFT_READ,
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.PAYOUTS_READ,
+        AuthRoles.PAYOUTS_CREATE,
+        AuthRoles.PAYOUTS_SEND
+    ],
     // FHR
     9: [
         AuthRoles.MEMBERS_READ,
@@ -132,31 +158,5 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.PAYOUTS_READ,
         AuthRoles.PAYOUTS_CREATE,
         AuthRoles.PAYOUTS_SEND
-    ],
-    // VST
-    16: [
-        AuthRoles.MEMBERS_READ,
-        AuthRoles.MEMBERS_EDIT,
-        AuthRoles.CONTACTS_EDIT,
-        AuthRoles.CONTACTS_READ,
-        AuthRoles.RANKS_READ,
-        AuthRoles.RANKS_EDIT,
-        AuthRoles.BILLINGREPORTS_CREATE,
-        AuthRoles.BILLINGREPORTS_READ,
-        AuthRoles.BILLINGREPORTS_APPROVE,
-        AuthRoles.BILLINGREPORTS_EDIT,
-        AuthRoles.ORDERS_READ,
-        AuthRoles.ORDERS_EDIT,
-        AuthRoles.COMPENSATIONS_READ,
-        AuthRoles.COMPENSATIONS_CREATE,
-        AuthRoles.COMPENSATIONS_APPROVE,
-        AuthRoles.COMPENSATIONS_EDIT,
-        AuthRoles.DRAFT_READ,
-        AuthRoles.DRAFT_EDIT,
-        AuthRoles.DRAFT_READ,
-        AuthRoles.MAILING_LISTS,
-        AuthRoles.PAYOUTS_READ,
-        AuthRoles.PAYOUTS_CREATE,
-        AuthRoles.PAYOUTS_SEND
-    ],
+    ]
 }
