@@ -1,6 +1,11 @@
 {
-  "short_name": "VK Tool",
-  "name": "VK Tool",
+  "short_name": "VK App",
+  "name": "VK App",
+  "scope": "/webapp/",
+  "start_url": "./",
+  "display": "standalone",
+  "theme_color": "#1c4aac",
+  "background_color": "#ffffff",
   "icons": [{
     "src": "icons/48.png",
     "sizes": "48x48",
@@ -36,9 +41,5 @@
   }],
   "related_applications": [{
     "platform": "Web"
-  }],
-  "start_url": "/",
-  "display": "standalone",
-  "theme_color": "#1c4aac",
-  "background_color": "#ffffff"
+  }]
 }
