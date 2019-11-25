@@ -52,8 +52,8 @@ describe('BillingReportController', function () {
     })
 
     it('should send me all the open orders with the necessary attributes', function () {
-        let before14Days = new Date()
-        before14Days.setDate(before14Days.getDate() - 14)
+        let before30Days = new Date()
+        before30Days.setDate(before30Days.getDate() - 30)
 
         return supertest(app)
             .get('/api/billing-reports/open')
@@ -74,7 +74,7 @@ describe('BillingReportController', function () {
 
                     expect(order.execDates).to.has.ownProperty('length')
                     expect(order.execDates.map(date => {
-                        if (new Date(date) >= before14Days) return true
+                        if (new Date(date) >= before30Days) return true
                         return false
                     })).includes(true)
                 }
