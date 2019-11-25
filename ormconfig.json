@@ -1,10 +1,11 @@
 {
     "type": "mariadb",
     "host": "localhost",
-    "port": 32768,
+    "port": 42249,
     "username": "root",
     "password": "password",
     "database": "vktool",
+    "maxQueryExecutionTime": 1000,
     "entities": [
         "src/entities/*.ts"
     ],

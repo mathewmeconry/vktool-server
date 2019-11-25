@@ -147,7 +147,7 @@ export default class PayoutService {
         })
     }
 
-    public static generatePainXml(payout: Payout, memberIds?: Array<number>): Promise<string> {
+    public static generatePainXml(payout: Payout, memberIds: Array<number>): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             const xmlFile = new sepaXML()
             const messageId = new Date().toISOString()
@@ -168,7 +168,7 @@ export default class PayoutService {
 
             const byMember: { [index: string]: Array<Compensation<any>> } = {}
             compensations.forEach((comp) => {
-                if (!memberIds || memberIds.indexOf(comp.member.id) > -1) {
+                if (memberIds.length === 0 || memberIds.indexOf(comp.member.id) > -1) {
                     if (!byMember.hasOwnProperty(comp.member.id)) byMember[comp.member.id] = []
                     byMember[comp.member.id].push(comp)
                 }
@@ -191,7 +191,7 @@ export default class PayoutService {
             }
 
             xmlFile.compile((err: Array<string>, out: string) => {
-                if (err.length > 1 || err[0] !== 'The list of transactions is empty.') {
+                if (err && (err.length > 1 || err[0] !== 'The list of transactions is empty.')) {
                     reject(err)
                 } else {
                     resolve(out || ''

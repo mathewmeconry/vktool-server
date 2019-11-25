@@ -13,7 +13,7 @@ describe('CliController', function () {
 
     it('should return the frontend', async () => {
         return supertest(app)
-            .get('/')
+            .get('/webapp/')
             .expect(200)
             .then(res => {
                 expect(res.text).to.include('<!doctype html><html')
