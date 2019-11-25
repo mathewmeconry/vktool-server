@@ -3,7 +3,6 @@ import * as Express from 'express'
 import supertest = require("supertest");
 import TestHelper from "../helpers/TestHelper";
 import Payout from "../../entities/Payout";
-const DomParser = require('dom-parser');
 
 describe('PayoutController', function () {
     this.timeout(5000)
@@ -187,9 +186,8 @@ describe('PayoutController', function () {
                 .send({ payoutId: dbPayout.id, memberIds: [] })
                 .expect(200)
                 .then(res => {
-                    const xml = res.body
-                    const parser = new DomParser();
-                    expect(parser.parseFromString(xml, 'application/xml')).not.include('parsererror')
+                    const xml = res.text
+                    expect(xml).to.include('<?xml version="1.0" encoding="UTF-8"?>')
                 })
         })
 
