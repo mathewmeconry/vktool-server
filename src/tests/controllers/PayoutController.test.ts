@@ -151,9 +151,6 @@ describe('PayoutController', function () {
                 return supertest(app)
                     .get(`/api/payouts/${dbPayout.id}/${dbPayout.compensations[0].memberId}/html`)
                     .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-                    .then(res => {
-                        debugger
-                    })
             })
 
             it('POST params', async () => {
@@ -187,10 +184,9 @@ describe('PayoutController', function () {
             return supertest(app)
                 .post('/api/payouts/xml')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-                .send({ payoutId: dbPayout.id })
+                .send({ payoutId: dbPayout.id, memberIds: [] })
                 .expect(200)
                 .then(res => {
-                    debugger
                     const xml = res.body
                     const parser = new DomParser();
                     expect(parser.parseFromString(xml, 'application/xml')).not.include('parsererror')

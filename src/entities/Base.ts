@@ -17,7 +17,7 @@ export default abstract class Base<T> {
     public beforeUpdate(): void {
         for(const key in this) {
             // @ts-ignore
-            if(this[key] === undefined) this[key] = null
+            if(this[key] === undefined && !this.hasOwnProperty(`${key}Id`)) this[key] = null
         }
     }
 }

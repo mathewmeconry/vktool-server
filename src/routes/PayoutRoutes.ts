@@ -7,6 +7,7 @@ export default function PayoutRoutes(app: Express.Application) {
     app.get('/api/payouts', AuthService.checkAuthorization([AuthRoles.PAYOUTS_READ]), PayoutController.getPayouts)
     app.get('/api/payouts/:payout/pdf', AuthService.checkAuthorization([AuthRoles.PAYOUTS_READ]), PayoutController.generatePayoutPDF)
     app.get('/api/payouts/:payout/:member/pdf', AuthService.checkAuthorization([AuthRoles.PAYOUTS_READ]), PayoutController.generateMemberPDF)
+    app.post('/api/payouts/:payout/:member/html', AuthService.checkAuthorization([AuthRoles.PAYOUTS_READ]), PayoutController.generateMemberHTML)
     app.get('/api/payouts/:payout/xml', AuthService.checkAuthorization([AuthRoles.PAYOUTS_SEND]), PayoutController.generateXml)
 
     app.put('/api/payouts', AuthService.checkAuthorization([AuthRoles.PAYOUTS_CREATE]), PayoutController.createPayout)

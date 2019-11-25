@@ -125,7 +125,7 @@ export default class BillingReportController {
                         billingReport.state = 'pending'
                         break
                 }
-
+                
                 billingReport.updatedBy = req.user
                 billingReport = await transaction.save(billingReport)
             }).then(() => {
@@ -150,7 +150,7 @@ export default class BillingReportController {
 
         if (billingReport) {
             if (AuthService.isAuthorized(req.user.roles, AuthRoles.BILLINGREPORTS_EDIT) ||
-                (billingReport.creatorId == req.user.id && billingReport.state === 'pending')) {
+                (billingReport.creatorId === parseInt(req.user.id, 10) && billingReport.state === 'pending')) {
                 for (let i in req.body) {
                     if (['id', 'state'].indexOf(i) < 0) {
                         //@ts-ignore

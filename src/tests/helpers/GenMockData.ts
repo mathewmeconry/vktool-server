@@ -46,6 +46,7 @@ export async function genMockContact(contactType: ContactType, contactGroups: Ar
     contact.postcode = '1111'
     contact.mail = 'mock@mail.com'
     contact.ownerId = 1
+    contact.iban = 'CH3908704016075473007'
     return contact.save()
 }
 

@@ -66,7 +66,7 @@ describe('CompensationController', function () {
         return
     })
 
-    it('should add a approved compensation', async () => {
+    it('should add an approved compensation', async () => {
         return supertest(app)
             .put('/api/compensations')
             .set('Cookie', TestHelper.authenticatedAdminCookies)

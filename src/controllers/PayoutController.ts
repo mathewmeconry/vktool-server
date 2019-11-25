@@ -215,7 +215,7 @@ export default class PayoutController {
                 message: 'Invalid request (field payoutId is missing)'
             })
         } else {
-            const payout = await getManager().getRepository(Payout).findOneOrFail(req.params.payoutId)
+            const payout = await getManager().getRepository(Payout).findOneOrFail(payoutId)
 
             res.contentType('application/xml')
             res.setHeader('Content-Disposition', `attachment; filename=Soldperiode_${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD-MM-YYYY') : ''}_-_${moment(payout.until).format('DD-MM-YYYY')}.xml`)
