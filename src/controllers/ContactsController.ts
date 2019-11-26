@@ -64,8 +64,8 @@ export default class ContactsController {
     }
 
     public static async getMemberListPdf(req: Express.Request, res: Express.Response): Promise<void> {
-        const members = await ContactService.getActiveMembers(AuthService.isAuthorized(req.user.roles, AuthRoles.MEMBERS_READ))
-
+        let members = await ContactService.getActiveMembers(AuthService.isAuthorized(req.user.roles, AuthRoles.MEMBERS_READ))
+        members = members.sort((a, b) => (`${a.lastname} ${a.firstname}` < `${b.lastname} ${b.firstname}`) ? -1 : 1)
         res.contentType('application/pdf')
         res.setHeader('Content-Disposition', `inline; filename=Mitgliederliste ${moment(new Date()).format('DD-MM-YYYY')}.pdf`)
         res.send(await PdfService.generateMemberList(members))
