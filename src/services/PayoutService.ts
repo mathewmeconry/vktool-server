@@ -194,7 +194,7 @@ export default class PayoutService {
                 if (err && (err.length > 1 || err[0] !== 'The list of transactions is empty.')) {
                     reject(err)
                 } else {
-                    resolve(out || ''
+                    resolve((out || '')
                         .replace(/"EUR"/g, '"CHF"')
                         .replace(/<PmtTpInf>.*<\/PmtTpInf>/msg, '')
                         .replace(/<EndToEndId>/g, () => `<InstrId>${(Math.random() * 10000).toString().replace('.', '')}</InstrId><EndToEndId>`)
