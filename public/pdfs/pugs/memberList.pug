@@ -1,0 +1,34 @@
+extends layout.pug
+
+block header
+    style(type="text/css") !{compiledStyle}
+
+block content
+    h2 Mitgliederliste #{date}
+    br
+
+    table
+        thead
+            tr
+                th Name
+                th Grad
+                th Funktionen
+                th Adresse
+                th Abholpunkt
+                th Festnetz
+                th Mobile
+                th E-Mail
+        tbody
+            each member in members
+                tr
+                    td(class="nowrap") #{`${member.lastname} ${member.firstname}`}
+                    td(id="rank") #{member.rank}
+                    td(id="functions") #{member.functions.join(',')}
+                    td #{`${member.address}, ${member.postcode} ${member.city}`}
+                    if member.collectionPoint
+                        td #{`${member.collectionPoint.address}, ${member.collectionPoint.postcode} ${member.collectionPoint.city}`}
+                    else
+                        td
+                    td(class="nowrap phone") #{member.phoneFixed}
+                    td(class="nowrap phone") #{member.phoneMobile}
+                    td #{member.mail}

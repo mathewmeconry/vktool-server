@@ -14,6 +14,7 @@ import { BexioService } from "./BexioService";
 import { BillsStatic } from "bexio";
 import CustomCompensation from "../entities/CustomCompensation";
 import User from "../entities/User";
+import PdfService from "./PdfService";
 const sepaXML = require('sepa-xml')
 
 export default class PayoutService {
@@ -41,53 +42,7 @@ export default class PayoutService {
         const compensations = (await CompensationService.getByPayoutAndMember(payout.id, member.id))
         const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount
 
-        return new Promise<Buffer>((resolve, reject) => {
-            fs.readFile(path.resolve(__dirname, '../../public/logo.png'), async (err, data) => {
-                if (err) {
-                    reject(err)
-                    return
-                }
-
-                const options: GeneratePdfOptions = {
-                    htmlTemplatePath: path.resolve(__dirname, '../../public/pdfs/pugs/memberPayout.pug'),
-                    styleOptions: {
-                        file: path.resolve(__dirname, '../../public/pdfs/scss/memberPayout.scss')
-                    },
-                    htmlTemplateOptions: {
-                        location: 'Wallisellen',
-                        date: moment(new Date()).format('DD.MM.YYYY'),
-                        from: (payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : '',
-                        until: moment(payout.until).format('DD.MM.YYYY'),
-                        total: compensationTotal,
-                        member,
-                        compensations
-                    },
-                    pdfOptions: {
-                        printBackground: true,
-                        displayHeaderFooter: true,
-                        headerTemplate: pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'), { logo: `data:image/png;base64,${data.toString('base64')}` }),
-                        footerTemplate: pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug')),
-                        format: 'A4',
-                        margin: {
-                            top: '25mm',
-                            left: '0',
-                            bottom: '25mm',
-                            right: '0'
-                        }
-                    },
-                    puppeteerOptions: {
-                        userDataDir: '/tmp',
-                        headless: true,
-                        args: [
-                            '--disable-dev-shm-usage',
-                            '--no-sandbox'
-                        ]
-                    }
-                }
-
-                resolve(await generatePdf(options))
-            })
-        })
+        return PdfService.generateMemberPayout(payout, member, compensations, compensationTotal)
     }
 
     public static async generateMemberHTML(payout: Payout, member: Contact): Promise<String> {
@@ -194,7 +149,7 @@ export default class PayoutService {
                 if (err && (err.length > 1 || err[0] !== 'The list of transactions is empty.')) {
                     reject(err)
                 } else {
-                    resolve(out || ''
+                    resolve((out || '')
                         .replace(/"EUR"/g, '"CHF"')
                         .replace(/<PmtTpInf>.*<\/PmtTpInf>/msg, '')
                         .replace(/<EndToEndId>/g, () => `<InstrId>${(Math.random() * 10000).toString().replace('.', '')}</InstrId><EndToEndId>`)

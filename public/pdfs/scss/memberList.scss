@@ -1,0 +1,22 @@
+@import "_base";
+
+td,
+th {
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
+  font-size: 9pt;
+  padding: 8px;
+}
+
+tbody {
+  tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}

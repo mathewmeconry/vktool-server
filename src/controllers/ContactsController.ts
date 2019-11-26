@@ -5,6 +5,9 @@ import ContactGroup from '../entities/ContactGroup';
 import CollectionPoint from '../entities/CollectionPoint';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import AuthService from '../services/AuthService';
+import ContactService from '../services/ContactService';
+import moment from 'moment'
+import PdfService from '../services/PdfService';
 
 export default class ContactsController {
     public static async getContacts(req: Express.Request, res: Express.Response): Promise<void> {
@@ -12,27 +15,7 @@ export default class ContactsController {
     }
 
     public static async getMembers(req: Express.Request, res: Express.Response): Promise<void> {
-        let contacts: Contact[]
-        if (AuthService.isAuthorized(req.user.roles, AuthRoles.MEMBERS_READ)) {
-            contacts = await getManager().getRepository(Contact).find()
-        } else {
-            contacts = await getManager()
-                .getRepository(Contact)
-                .createQueryBuilder('contact')
-                .select([
-                    'contact.id',
-                    'contact.firstname',
-                    'contact.lastname',
-                    'contact.address',
-                    'contact.postcode',
-                    'contact.city',
-                    'contact.mail'
-                ])
-                .leftJoinAndSelect('contact.contactGroups', 'contactGroups')
-                .getMany()
-            contacts.forEach(contact => contact.restrictData())
-        }
-        res.send(contacts.filter(contact => ((contact.contactGroups || []).find(group => group.bexioId === 7))))
+        res.send(await ContactService.getActiveMembers(AuthService.isAuthorized(req.user.roles, AuthRoles.MEMBERS_READ)))
     }
 
     public static async getRanks(req: Express.Request, res: Express.Response): Promise<void> {
@@ -78,5 +61,13 @@ export default class ContactsController {
                 message: 'sorry man...'
             })
         }
+    }
+
+    public static async getMemberListPdf(req: Express.Request, res: Express.Response): Promise<void> {
+        const members = await ContactService.getActiveMembers(AuthService.isAuthorized(req.user.roles, AuthRoles.MEMBERS_READ))
+
+        res.contentType('application/pdf')
+        res.setHeader('Content-Disposition', `inline; filename=Mitgliederliste ${moment(new Date()).format('DD-MM-YYYY')}.pdf`)
+        res.send(await PdfService.generateMemberList(members))
     }
 }
