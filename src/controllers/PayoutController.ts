@@ -238,7 +238,7 @@ export default class PayoutController {
                 message: 'Invalid request (field memberIds is missing)'
             })
         } else {
-            const payout = await getManager().getRepository(Payout).findOneOrFail(req.params.payoutId)
+            const payout = await getManager().getRepository(Payout).findOneOrFail(payoutId)
             await PayoutService.transfer(payout, memberIds, req.user)
 
             res.contentType('application/json')
