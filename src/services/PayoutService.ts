@@ -140,7 +140,7 @@ export default class PayoutService {
                         amount: amount.toFixed(2),
                         name: `${member.lastname} ${member.firstname}`,
                         iban: (member.iban) ? member.iban.replace(/ /g, '') : '',
-                        description: `Soldperiode ${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : ''} bis ${moment(payout.until).format('DD.MM.YYYY')}`
+                        description: `Entschädigungsperiode ${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : ''} bis ${moment(payout.until).format('DD.MM.YYYY')}`
                     });
                 }
             }
