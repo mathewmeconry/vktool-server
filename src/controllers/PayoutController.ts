@@ -181,7 +181,6 @@ export default class PayoutController {
         } else {
             const payout = await getManager().getRepository(Payout).findOneOrFail(req.body.payoutId)
             let memberIds: Array<number>
-            let sendingPromises: Array<Promise<boolean>> = []
 
             if (req.body.hasOwnProperty('memberIds')) {
                 memberIds = req.body.memberIds

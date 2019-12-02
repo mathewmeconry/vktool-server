@@ -38,6 +38,23 @@ export default class PayoutService {
         await query.execute()
     }
 
+    public static async generateOverviewPDF(payout: Payout): Promise<Buffer> {
+        const aggregated: {[index: string]: Contact & {amount: number, valutaDate: Date}} = {}
+        payout.compensations.forEach(el => {
+            let key = ''
+            if(el.transferCompensation) {
+                key = `${el.memberId}_${el.transferCompensation.date.toUTCString()}`
+            } else if(el.bexioBill) {
+                key = `${el.memberId}_${el.bexioBill}`
+            }
+
+            if(key) {
+                if(!aggregated.hasOwnProperty(key)) aggregated[key] = []
+                aggregated[key].push(el) 
+            }
+        })
+    }
+
     public static async generateMemberPDF(payout: Payout, member: Contact): Promise<Buffer> {
         const compensations = (await CompensationService.getByPayoutAndMember(payout.id, member.id))
         const compensationTotal = compensations.reduce((a, b) => { return { amount: a.amount + b.amount } }, { amount: 0 }).amount

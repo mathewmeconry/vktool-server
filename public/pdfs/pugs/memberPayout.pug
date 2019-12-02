@@ -33,7 +33,7 @@ block content
                 tr
                     td #{`00${compensation.date.getDate()}`.slice(-2)}.#{`00${compensation.date.getMonth() + 1}`.slice(-2)}.#{compensation.date.getFullYear()}
                     td #{compensation.description}
-                    td(style={'white-space': 'nowrap'}) CHF #{compensation.amount.toFixed(2)}
+                    td(class="nowrap") CHF #{compensation.amount.toFixed(2)}
 
         tr(class="total")
             td Total
