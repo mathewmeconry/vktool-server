@@ -69,6 +69,37 @@ export default class PdfService {
         )
     }
 
+    public static async generatePayoutOverview(payout: Payout, members: Array<Contact & { amount: number }>): Promise<Buffer> {
+        const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'))
+        return PdfService.generatePdf('payoutOverview.pug',
+            {
+                file: path.resolve(__dirname, '../../public/pdfs/scss/payoutOverview.scss')
+            },
+            {
+                location: 'Wallisellen',
+                date: moment(new Date()).format('DD.MM.YYYY'),
+                from: (payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : '',
+                until: moment(payout.until).format('DD.MM.YYYY'),
+                presidentName: 'Reto Bernasconi',
+                cashierName: 'Corinne Altherr',
+                members,
+            },
+            {
+                printBackground: true,
+                displayHeaderFooter: true,
+                headerTemplate: pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'), { logo: `data:image/png;base64,${logo.toString('base64')}` }),
+                footerTemplate: pug.renderFile(path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug'), { width: '125mm' }),
+                format: 'A4',
+                margin: {
+                    top: '25mm',
+                    left: '0',
+                    bottom: '25mm',
+                    right: '0'
+                }
+            }
+        )
+    }
+
     private static async generatePdf(htmlTemplate: string, styleOptions?: SassOptions, htmlTemplateOptions?: pug.Options & pug.LocalsObject, pdfOptions?: PDFOptions): Promise<Buffer> {
         const options: GeneratePdfOptions = {
             htmlTemplatePath: path.resolve(__dirname, '../../public/pdfs/pugs/', htmlTemplate),

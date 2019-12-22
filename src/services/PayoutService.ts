@@ -23,7 +23,7 @@ export default class PayoutService {
         if (!payout.id) throw new Error('Payout has first to be saved')
 
         let qb = getManager().getRepository(Compensation).createQueryBuilder('compensation')
-        await qb.update().set({ payout: null }).where('payout = :payout', { payout: payout.id }).execute()
+        await qb.update().set({ payout: undefined }).where('payout = :payout', { payout: payout.id }).execute()
 
         let query = qb.update()
             .set({
@@ -39,20 +39,21 @@ export default class PayoutService {
     }
 
     public static async generateOverviewPDF(payout: Payout): Promise<Buffer> {
-        const aggregated: {[index: string]: Contact & {amount: number, valutaDate: Date}} = {}
-        payout.compensations.forEach(el => {
-            let key = ''
-            if(el.transferCompensation) {
-                key = `${el.memberId}_${el.transferCompensation.date.toUTCString()}`
-            } else if(el.bexioBill) {
-                key = `${el.memberId}_${el.bexioBill}`
-            }
+        const data: Array<Contact & { amount: number }> = [];
 
-            if(key) {
-                if(!aggregated.hasOwnProperty(key)) aggregated[key] = []
-                aggregated[key].push(el) 
+        if (payout.compensations && payout.compensations.length > 0) {
+            const aggregated: { [index: string]: Compensation<any>[] } = {}
+            payout.compensations.forEach(el => {
+                if (!aggregated.hasOwnProperty((el.memberId || 0).toString())) aggregated[(el.memberId || 0).toString()] = [] as Compensation<any>[]
+                aggregated[(el.memberId || 0).toString()].push(el)
+            })
+
+            for (const memberId in aggregated) {
+                data.push(Object.assign(aggregated[memberId][0].member, { amount: aggregated[memberId].reduce((total, comp) => { return total + comp.amount }, 0) }))
             }
-        })
+        }
+
+        return PdfService.generatePayoutOverview(payout, data)
     }
 
     public static async generateMemberPDF(payout: Payout, member: Contact): Promise<Buffer> {

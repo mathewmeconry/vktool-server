@@ -7,19 +7,27 @@ block header
 block content
     div(style={float: 'right'})
         p #{location}, #{date}
-    h2 Abrechnung Verkehrskadetten-Entschädigung
+    h2 Abrechnung Verkehrskadetten-Entschädigungen
     br
     h3 Entschädigungsperiode #{from} bis #{until}
     br
-     table
+    table
         thead
             tr
                 th Name
                 th Betrag
-                th Valutadatum
         tbody
             each member in members
                 tr
                     td(class="nowrap") #{member.lastname} #{member.firstname}
                     td(class="nowrap") #{member.amount.toFixed(2)} CHF
-                    td #{`00${member.valutaDate.getDate()}`.slice(-2)}.#{`00${member.valutaDate.getMonth() + 1}`.slice(-2)}.#{member.valutaDate.getFullYear()}
+
+    div(id="signatures")
+        div(id="signature-president")
+            p #{presidentName}
+            p(class="description") Präsident
+            div(class="signature")
+        div(id="signature-cashier")
+            p #{cashierName}
+            p(class="description") Kassier
+            div(class="signature")

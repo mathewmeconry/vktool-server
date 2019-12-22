@@ -1,2 +1,23 @@
-@import 'base';
+@import "base";
 
+#signatures {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 10mm;
+  page-break-inside: avoid;
+
+  p {
+    padding: 0;
+    margin: 0;
+  }
+  .description {
+    font-style: italic;
+    font-size: 8pt;
+  }
+  .signature {
+    border-bottom: 1px solid black;
+    margin-top: 15mm;
+    width: 50mm;
+  }
+}
