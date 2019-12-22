@@ -66,7 +66,8 @@ export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
     // FHR
     9: [
         AuthRoles.MEMBERS_READ,
-        AuthRoles.RANKS_READ
+        AuthRoles.RANKS_READ,
+        AuthRoles.BILLINGREPORTS_CREATE
     ]
 }
 
