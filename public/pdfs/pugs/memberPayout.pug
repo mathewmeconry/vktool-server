@@ -8,7 +8,7 @@ block content
         p #{location}, #{date}
     h2 Auszahlung Verkehrskadetten-Entschädigung
     br
-    h3 Soldperiode #{from} bis #{until}
+    h3 Entschädigungsperiode #{from} bis #{until}
     br
 
     div(class="header")
@@ -33,7 +33,7 @@ block content
                 tr
                     td #{`00${compensation.date.getDate()}`.slice(-2)}.#{`00${compensation.date.getMonth() + 1}`.slice(-2)}.#{compensation.date.getFullYear()}
                     td #{compensation.description}
-                    td(style={'white-space': 'nowrap'}) CHF #{compensation.amount.toFixed(2)}
+                    td(class="nowrap") CHF #{compensation.amount.toFixed(2)}
 
         tr(class="total")
             td Total

@@ -23,7 +23,7 @@ export default class PayoutService {
         if (!payout.id) throw new Error('Payout has first to be saved')
 
         let qb = getManager().getRepository(Compensation).createQueryBuilder('compensation')
-        await qb.update().set({ payout: null }).where('payout = :payout', { payout: payout.id }).execute()
+        await qb.update().set({ payout: undefined }).where('payout = :payout', { payout: payout.id }).execute()
 
         let query = qb.update()
             .set({
@@ -36,6 +36,24 @@ export default class PayoutService {
             .andWhere('deletedAt is NULL')
 
         await query.execute()
+    }
+
+    public static async generateOverviewPDF(payout: Payout): Promise<Buffer> {
+        const data: Array<Contact & { amount: number }> = [];
+
+        if (payout.compensations && payout.compensations.length > 0) {
+            const aggregated: { [index: string]: Compensation<any>[] } = {}
+            payout.compensations.forEach(el => {
+                if (!aggregated.hasOwnProperty((el.memberId || 0).toString())) aggregated[(el.memberId || 0).toString()] = [] as Compensation<any>[]
+                aggregated[(el.memberId || 0).toString()].push(el)
+            })
+
+            for (const memberId in aggregated) {
+                data.push(Object.assign(aggregated[memberId][0].member, { amount: aggregated[memberId].reduce((total, comp) => { return total + comp.amount }, 0) }))
+            }
+        }
+
+        return PdfService.generatePayoutOverview(payout, data)
     }
 
     public static async generateMemberPDF(payout: Payout, member: Contact): Promise<Buffer> {
@@ -140,7 +158,7 @@ export default class PayoutService {
                         amount: amount.toFixed(2),
                         name: `${member.lastname} ${member.firstname}`,
                         iban: (member.iban) ? member.iban.replace(/ /g, '') : '',
-                        description: `Soldperiode ${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : ''} bis ${moment(payout.until).format('DD.MM.YYYY')}`
+                        description: `Entschädigungsperiode ${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD.MM.YYYY') : ''} bis ${moment(payout.until).format('DD.MM.YYYY')}`
                     });
                 }
             }

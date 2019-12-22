@@ -112,7 +112,7 @@ export default class PayoutController {
         )
     }
 
-    public static async generatePayoutPDF(req: Express.Request, res: Express.Response): Promise<void> {
+    public static async generatePayoutOverviewPDF(req: Express.Request, res: Express.Response): Promise<void> {
         if (!req.params.hasOwnProperty('payout')) {
             res.status(400)
             res.send({
@@ -120,7 +120,20 @@ export default class PayoutController {
             })
         } else {
             res.contentType('application/pdf')
-            // TODO: Implement PDF
+            res.send((await PayoutService.generateOverviewPDF(await getManager().getRepository(Payout).findOneOrFail({
+                where: {
+                    id: req.params.payout
+                },
+                join: {
+                    alias: 'payout',
+                    leftJoinAndSelect: {
+                        compensations: 'payout.compensations',
+                        billingReport: 'compensations.billingReport',
+                        member: 'compensations.member',
+                        order: 'billingReport.order'
+                    }
+                }
+            }))))
         }
 
         res.end()
@@ -181,7 +194,6 @@ export default class PayoutController {
         } else {
             const payout = await getManager().getRepository(Payout).findOneOrFail(req.body.payoutId)
             let memberIds: Array<number>
-            let sendingPromises: Array<Promise<boolean>> = []
 
             if (req.body.hasOwnProperty('memberIds')) {
                 memberIds = req.body.memberIds
@@ -218,7 +230,7 @@ export default class PayoutController {
             const payout = await getManager().getRepository(Payout).findOneOrFail(payoutId)
 
             res.contentType('application/xml')
-            res.setHeader('Content-Disposition', `attachment; filename=Soldperiode_${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD-MM-YYYY') : ''}_-_${moment(payout.until).format('DD-MM-YYYY')}.xml`)
+            res.setHeader('Content-Disposition', `attachment; filename=Entschaedigungsperiode_${(payout.from > new Date('1970-01-01')) ? moment(payout.from).format('DD-MM-YYYY') : ''}_-_${moment(payout.until).format('DD-MM-YYYY')}.xml`)
             res.send(await PayoutService.generatePainXml(payout, memberIds))
         }
     }

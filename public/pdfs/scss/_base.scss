@@ -7,7 +7,12 @@ table {
     text-align: left;
     border-bottom: 1px solid black;
   }
-  tbody td {
-    padding: 5px;
+  tbody {
+    td {
+      padding: 5px;
+    }
+    tr:nth-of-type(odd) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
   }
 }

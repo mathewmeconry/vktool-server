@@ -61,7 +61,7 @@
     "@types/session-file-store": "^1.2.0",
     "@types/uuid": "^3.4.4",
     "@types/yargs": "^13.0.0",
-    "bexio": "^0.5.1",
+    "bexio": "^0.7.0",
     "class-validator": "^0.9.1",
     "config": "^3.0.1",
     "express": "^4.16.4",
