@@ -39,7 +39,7 @@ export default class PayoutService {
     }
 
     public static async generateOverviewPDF(payout: Payout): Promise<Buffer> {
-        const data: Array<Contact & { amount: number }> = [];
+        let data: Array<Contact & { amount: number }> = [];
 
         if (payout.compensations && payout.compensations.length > 0) {
             const aggregated: { [index: string]: Compensation<any>[] } = {}
@@ -52,6 +52,8 @@ export default class PayoutService {
                 data.push(Object.assign(aggregated[memberId][0].member, { amount: aggregated[memberId].reduce((total, comp) => { return total + comp.amount }, 0) }))
             }
         }
+
+        data = data.sort((a, b) => (`${a.lastname} ${a.firstname}` < `${b.lastname} ${b.firstname}`) ? -1 : 1)
 
         return PdfService.generatePayoutOverview(payout, data)
     }
