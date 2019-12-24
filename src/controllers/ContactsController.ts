@@ -1,6 +1,6 @@
 import * as Express from 'express'
 import Contact from '../entities/Contact';
-import { getManager, In } from 'typeorm';
+import { getManager, In, FindManyOptions } from 'typeorm';
 import ContactGroup from '../entities/ContactGroup';
 import CollectionPoint from '../entities/CollectionPoint';
 import { AuthRoles } from '../interfaces/AuthRoles';
@@ -11,7 +11,11 @@ import PdfService from '../services/PdfService';
 
 export default class ContactsController {
     public static async getContacts(req: Express.Request, res: Express.Response): Promise<void> {
-        res.send(await getManager().getRepository(Contact).find())
+        const options: FindManyOptions<Contact> = {}
+        if (!AuthService.isAuthorized(req.user.roles, AuthRoles.CONTACTS_READ)) {
+            options.where = { id: req.user.bexioContact.id }
+        }
+        res.send(await getManager().getRepository(Contact).find(options))
     }
 
     public static async getMembers(req: Express.Request, res: Express.Response): Promise<void> {
