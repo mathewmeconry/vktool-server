@@ -2,7 +2,7 @@ import Contact from "../entities/Contact";
 import * as Express from 'express'
 import AuthService from "../services/AuthService";
 import { AuthRoles } from "../interfaces/AuthRoles";
-import { getManager, IsNull } from "typeorm";
+import { getManager } from "typeorm";
 import Compensation from "../entities/Compensation";
 import CustomCompensation from "../entities/CustomCompensation";
 import BillingReport from "../entities/BillingReport";
@@ -11,11 +11,11 @@ import CompensationService from "../services/CompensationService";
 
 export default class CompensationController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
-        res.send(await CompensationService.getAll())
-    }
-
-    public static async getUser(req: Express.Request, res: Express.Response): Promise<void> {
-        res.send(await CompensationService.getByMember(parseInt(req.params.member)))
+        if (AuthService.isAuthorized(req.user.roles, AuthRoles.COMPENSATIONS_READ)) {
+            res.send(await CompensationService.getAll())
+        } else {
+            res.send(await CompensationService.getByMember(req.user.bexioContact.id))
+        }
     }
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {
