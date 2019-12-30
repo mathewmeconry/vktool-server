@@ -130,8 +130,16 @@ export default class AuthService {
                 user.refreshToken = refreshToken
                 user.displayName = azureProfile.name
                 user.lastLogin = new Date()
+
+                try {
+                    const contact = await getManager().getRepository(Contact).findOne({ mail: azureProfile.upn })
+                    user.bexioContact = contact || undefined
+                } catch (e) {
+                    return done(e)
+                }
+
                 return done(null, await user.save())
-            } else { 
+            } else {
                 let userInfo = {};
                 getManager().getRepository(Contact).findOne({ mail: azureProfile.upn }).then(contact => {
                     userInfo = {
