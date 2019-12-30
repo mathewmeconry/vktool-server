@@ -15,10 +15,10 @@ export enum AuthRoles {
     ORDERS_READ = 'orders_read',
     ORDERS_EDIT = 'orders_edit',
 
-    COMPENSATIONS_READ = 'compensation_read',
-    COMPENSATIONS_CREATE = 'compensation_create',
-    COMPENSATIONS_EDIT = 'compensation_edit',
-    COMPENSATIONS_APPROVE = 'compensation_approve',
+    COMPENSATIONS_READ = 'compensations_read',
+    COMPENSATIONS_CREATE = 'compensations_create',
+    COMPENSATIONS_EDIT = 'compensations_edit',
+    COMPENSATIONS_APPROVE = 'compensations_approve',
 
     BILLINGREPORTS_READ = 'billingreports_read',
     BILLINGREPORTS_CREATE = 'billingreports_create',
