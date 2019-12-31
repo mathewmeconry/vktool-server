@@ -26,7 +26,7 @@ describe('ContactsController', function () {
     it('should get all contacts', async () => {
         return supertest(app)
             .get('/api/contacts')
-            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)

@@ -13,7 +13,9 @@ export default class ContactsController {
     public static async getContacts(req: Express.Request, res: Express.Response): Promise<void> {
         const options: FindManyOptions<Contact> = {}
         if (!AuthService.isAuthorized(req.user.roles, AuthRoles.CONTACTS_READ)) {
-            options.where = { id: req.user.bexioContact.id }
+            options.where = {
+                id: (req.user.bexioContact || { id: - 1 }).id
+            }
         }
         res.send(await getManager().getRepository(Contact).find(options))
     }
