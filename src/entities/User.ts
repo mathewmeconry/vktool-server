@@ -30,6 +30,11 @@ export default class User extends Base<User> {
 
     public provider: string
 
+    public save(): Promise<User> {
+        this.enrichPermissions()
+        return super.save();
+    }
+
     @AfterLoad()
     public enrichPermissions(): void {
         if (this.bexioContact && typeof this.bexioContact.getRank === 'function') {
@@ -37,8 +42,8 @@ export default class User extends Base<User> {
             this.roles = this.roles.concat(AuthRolesByRank[rank.bexioId] || [])
         }
 
-        if(this.bexioContact && typeof this.bexioContact.getFunctions === 'function') {
-            for(let func of this.bexioContact.getFunctions()) {
+        if (this.bexioContact && typeof this.bexioContact.getFunctions === 'function') {
+            for (let func of this.bexioContact.getFunctions()) {
                 this.roles = this.roles.concat(AuthRolesByFunction[func.bexioId])
             }
         }

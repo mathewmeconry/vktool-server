@@ -143,7 +143,6 @@ export default class AuthService {
                     return done(e)
                 }
 
-                user.enrichPermissions()
                 return done(null, await user.save())
             } else {
                 let userInfo = {};
