@@ -121,7 +121,7 @@ export default class AuthService {
             resource: config.get('azure.resource'),
             tenant: config.get('azure.tenant')
         }, async (accessToken: string, refreshToken: string, params: { id_token: string }, profile: passport.Profile, done: (err: Error | null, user?: User) => void) => {
-            const azureProfile = jwt.decode(params.id_token) as { oid: string, tid: string, upn: string, unique_name: string, name: string }
+            const azureProfile = jwt.decode(params.id_token) as { oid: string, tid: string, upn: string, unique_name: string, name: string, family_name: string, given_name: string }
             const outlookMultitendandId = `${azureProfile.oid}@${azureProfile.tid}`
 
             let user = await AuthService.findUserByOutlookId(outlookMultitendandId)
@@ -130,10 +130,29 @@ export default class AuthService {
                 user.refreshToken = refreshToken
                 user.displayName = azureProfile.name
                 user.lastLogin = new Date()
+
+                try {
+                    const contact = await getManager().getRepository(Contact).findOne({
+                        where: [
+                            { mail: azureProfile.upn },
+                            { firstname: azureProfile.given_name, lastname: azureProfile.family_name }
+                        ]
+                    })
+                    user.bexioContact = contact || undefined
+                } catch (e) {
+                    return done(e)
+                }
+
+                user.enrichPermissions()
                 return done(null, await user.save())
-            } else { 
+            } else {
                 let userInfo = {};
-                getManager().getRepository(Contact).findOne({ mail: azureProfile.upn }).then(contact => {
+                getManager().getRepository(Contact).findOne({
+                    where: [
+                        { mail: azureProfile.upn },
+                        { firstname: azureProfile.given_name, lastname: azureProfile.family_name }
+                    ]
+                }).then(contact => {
                     userInfo = {
                         outlookId: outlookMultitendandId,
                         accessToken: accessToken,

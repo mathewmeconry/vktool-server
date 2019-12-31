@@ -29,9 +29,15 @@ export default class PayoutController {
             res.send({
                 message: 'Invalid request (field until is missing)'
             })
+            return
         }
         const payoutRepo = getManager().getRepository(Payout)
-        let payout = new Payout(new Date(req.body.until), new Date(req.body.from))
+        let payout: Payout
+        if (req.body.from) {
+            payout = new Payout(new Date(req.body.until), new Date(req.body.from))
+        } else {
+            payout = new Payout(new Date(req.body.until))
+        }
         payout = await payoutRepo.save(payout)
         await PayoutService.reclaimCompensations(payout)
         res.send(await payoutRepo.findOne(payout.id, {

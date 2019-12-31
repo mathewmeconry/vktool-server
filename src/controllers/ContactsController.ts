@@ -13,7 +13,9 @@ export default class ContactsController {
     public static async getContacts(req: Express.Request, res: Express.Response): Promise<void> {
         const options: FindManyOptions<Contact> = {}
         if (!AuthService.isAuthorized(req.user.roles, AuthRoles.CONTACTS_READ)) {
-            options.where = { id: req.user.bexioContact.id }
+            options.where = {
+                id: (req.user.bexioContact || { id: - 1 }).id
+            }
         }
         res.send(await getManager().getRepository(Contact).find(options))
     }
@@ -41,7 +43,12 @@ export default class ContactsController {
                 return
             }
 
-            contact.collectionPoint = await getManager().getRepository(CollectionPoint).findOne({ id: req.body.collectionPointId }) || contact.collectionPoint
+            if (req.body.collectionPointId === undefined) {
+                contact.collectionPoint = undefined
+            } else {
+                contact.collectionPoint = await getManager().getRepository(CollectionPoint).findOne({ id: req.body.collectionPointId }) || contact.collectionPoint
+            }
+
             contact.entryDate = (req.body.entryDate) ? new Date(req.body.entryDate) : undefined
             contact.exitDate = (req.body.exitDate) ? new Date(req.body.exitDate) : undefined
             contact.bankName = req.body.bankName || contact.bankName
