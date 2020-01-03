@@ -55,15 +55,20 @@ export default class CliController {
         // Authentication
         AuthService.init(app)
 
-        AuthRoutes(app)
-        UserRoutes(app)
-        ContactsRoutes(app)
-        OrdersRoutes(app)
-        CompensationRoutes(app)
-        BillingReportRoutes(app)
-        CollectionPointsRoutes(app)
-        PayoutRoutes(app)
-        LogoffRoutes(app)
+        const apiRouter = Express.Router();
+
+        AuthRoutes(apiRouter)
+        UserRoutes(apiRouter)
+        ContactsRoutes(apiRouter)
+        OrdersRoutes(apiRouter)
+        CompensationRoutes(apiRouter)
+        BillingReportRoutes(apiRouter)
+        CollectionPointsRoutes(apiRouter)
+        PayoutRoutes(apiRouter)
+        LogoffRoutes(apiRouter)
+
+        app.use('/api', apiRouter)
+
         BexioService.addExpressHandlers(app)
 
         app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));

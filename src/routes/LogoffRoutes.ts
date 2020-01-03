@@ -3,7 +3,7 @@ import AuthService from "../services/AuthService"
 import { AuthRoles } from "../interfaces/AuthRoles"
 import LogoffController from "../controllers/LogoffController"
 
-export default function LogoffRoutes(app: Express.Application) {
+export default function LogoffRoutes(app: Express.Router) {
     app.get('/logoffs', AuthService.checkAuthorization([AuthRoles.AUTHENTICATED]), LogoffController.getAll)
 
     app.put('/logoffs/add', AuthService.checkAuthorization([AuthRoles.LOGOFFS_CREATE]), LogoffController.add)
