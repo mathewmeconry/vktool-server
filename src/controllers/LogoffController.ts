@@ -69,7 +69,7 @@ export default class LogoffController {
     }
 
     public static async delete(req: Express.Request, res: Express.Response): Promise<void> {
-        const logoffId = req.params.logoff || req.query.logoff || req.body.logoff
+        const logoffId = req.params.logoff || req.query.logoff
 
         const logoff = await getManager().getRepository(Logoff).findOne({ id: logoffId })
         if (!logoff) {
