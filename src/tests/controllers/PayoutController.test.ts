@@ -5,7 +5,7 @@ import TestHelper from "../helpers/TestHelper";
 import Payout from "../../entities/Payout";
 
 describe('PayoutController', function () {
-    this.timeout(5000)
+    this.timeout(20000)
     let app: Express.Application;
     let dbPayout: Payout
     const payout = {
