@@ -17,12 +17,12 @@ export default class LogoffController {
     }
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {
-        const { contactId, from, until } = req.body
-        const contact = await getManager().getRepository(Contact).findOne(contactId)
+        const { contact, from, until } = req.body
+        const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
         const fromDate = new Date(from)
         const untilDate = new Date(until)
 
-        if (!contact || !from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime())) {
+        if (!contactObj || !from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime())) {
             res.status(500)
             res.send({
                 message: 'sorry man...'
@@ -30,16 +30,17 @@ export default class LogoffController {
             return
         }
 
-        const logoff = new Logoff(contact, fromDate, untilDate)
+        const logoff = new Logoff(contactObj, fromDate, untilDate, req.user)
         await logoff.save()
+
         res.send(logoff)
     }
 
     public static async addBulk(req: Express.Request, res: Express.Response): Promise<void> {
-        const { contactId, logoffs } = req.body
-        const contact = await getManager().getRepository(Contact).findOne(contactId)
+        const { contact, logoffs } = req.body
+        const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
 
-        if (!contact) {
+        if (!contactObj) {
             res.status(500)
             res.send({
                 message: 'sorry man...'
@@ -61,7 +62,7 @@ export default class LogoffController {
         const savePromises = []
         for (const dates of logoffs) {
             const { from, until } = dates
-            const logoff = new Logoff(contact, new Date(from), new Date(until))
+            const logoff = new Logoff(contactObj, new Date(from), new Date(until), req.user)
             savePromises.push(logoff.save())
         }
 

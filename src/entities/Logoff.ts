@@ -26,10 +26,11 @@ export default class Logoff extends Base<Logoff> {
     @JoinColumn()
     public deletedBy: User
 
-    constructor(contact: Contact, from: Date, until: Date) {
+    constructor(contact: Contact, from: Date, until: Date, createdBy: User) {
         super()
         this.contact = contact
         this.from = from
         this.until = until
+        this.createdBy = createdBy
     }
 }
