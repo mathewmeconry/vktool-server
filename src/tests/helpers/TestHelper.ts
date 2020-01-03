@@ -1,13 +1,14 @@
 import * as Express from 'express'
 import CliController from '../../controllers/CliController';
 import supertest = require('supertest');
-import { getConnectionOptions, createConnection } from 'typeorm';
+import { createConnection } from 'typeorm';
 import { genOrders, genMockContactGroup, genMockContactType, genMockContact, genMockUser } from './GenMockData';
 import ContactGroup from '../../entities/ContactGroup';
 import ContactType from '../../entities/ContactType';
 import Contact from '../../entities/Contact';
 import Order from '../../entities/Order';
 import User from '../../entities/User';
+import BillingReport from '../../entities/BillingReport';
 
 before(async function () {
     this.timeout(20000)
@@ -27,6 +28,7 @@ export default class TestHelper {
     public static mockContact: Contact
     public static mockContact2: Contact
     public static mockOrder: Order
+    public static billingReport: BillingReport
 
     public static async init() {
         let app = await CliController.startServer()
