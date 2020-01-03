@@ -3,20 +3,23 @@ import path from 'path'
 import * as Express from 'express'
 import { BexioService } from '../services/BexioService'
 import * as bodyParser from 'body-parser'
+import session from 'express-session'
+import uuid from 'uuid'
+import AuthService from '../services/AuthService';
+import config from 'config'
+import "reflect-metadata";
+import FileStore from 'session-file-store'
+
+// Routes
+import UserRoutes from '../routes/UserRoutes';
 import AuthRoutes from '../routes/AuthRoutes';
 import ContactsRoutes from '../routes/ContactsRoutes';
 import OrdersRoutes from '../routes/OrdersRoutes';
 import CompensationRoutes from '../routes/CompensationRoutes';
 import BillingReportRoutes from '../routes/BillingReportRoutes';
-import session from 'express-session'
-import uuid from 'uuid'
-import AuthService from '../services/AuthService';
-import UserRoutes from '../routes/UserRoutes';
-import config from 'config'
-import "reflect-metadata";
-import FileStore from 'session-file-store'
 import CollectionPointsRoutes from '../routes/CollectionPointsRoutes';
 import PayoutRoutes from '../routes/PayoutRoutes';
+import LogoffRoutes from '../routes/LogoffRoutes'
 
 export default class CliController {
     public static async startServer(): Promise<Express.Application> {
@@ -60,6 +63,7 @@ export default class CliController {
         BillingReportRoutes(app)
         CollectionPointsRoutes(app)
         PayoutRoutes(app)
+        LogoffRoutes(app)
         BexioService.addExpressHandlers(app)
 
         app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));
