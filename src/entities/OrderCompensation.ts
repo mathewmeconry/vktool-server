@@ -1,5 +1,5 @@
 import Compensation from "./Compensation";
-import { ManyToOne, Column, BeforeInsert, ChildEntity } from "typeorm";
+import { ManyToOne, Column, BeforeInsert, ChildEntity, BeforeUpdate } from "typeorm";
 import BillingReport from "./BillingReport";
 import Payout from "./Payout";
 import User from "./User";
@@ -59,7 +59,13 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         }
     }
 
+    public save(): Promise<OrderCompensation> {
+        this.calcAmount()
+        return super.save()
+    }
+
     @BeforeInsert()
+    @BeforeUpdate()
     public calcAmount() {
         this.calculateHours()
         this.amount = (this.dayHours * 10) + (this.nightHours * 15)
