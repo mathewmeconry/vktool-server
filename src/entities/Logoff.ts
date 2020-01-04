@@ -15,6 +15,12 @@ export default class Logoff extends Base<Logoff> {
     @Column('datetime', { precision: 6 })
     public until: Date
 
+    @Column('bool')
+    public approved: boolean
+
+    @Column('text', { nullable: true })
+    public remarks?: string
+
     @ManyToOne(type => User)
     @JoinColumn()
     public createdBy: User
@@ -26,11 +32,13 @@ export default class Logoff extends Base<Logoff> {
     @JoinColumn()
     public deletedBy: User
 
-    constructor(contact: Contact, from: Date, until: Date, createdBy: User) {
+    constructor(contact: Contact, from: Date, until: Date, approved: boolean, remarks: string, createdBy: User) {
         super()
         this.contact = contact
         this.from = from
         this.until = until
+        this.approved = approved
+        this.remarks = (remarks) ? remarks : undefined
         this.createdBy = createdBy
     }
 }
