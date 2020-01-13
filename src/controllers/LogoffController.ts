@@ -1,9 +1,9 @@
 import * as Express from 'express'
-import { getManager, FindManyOptions } from "typeorm";
-import Logoff from "../entities/Logoff";
-import { AuthRoles } from "../interfaces/AuthRoles";
-import AuthService from "../services/AuthService";
-import Contact from '../entities/Contact';
+import { getManager, FindManyOptions } from "typeorm"
+import Logoff from "../entities/Logoff"
+import { AuthRoles } from "../interfaces/AuthRoles"
+import AuthService from "../services/AuthService"
+import Contact from '../entities/Contact'
 
 export default class LogoffController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
@@ -17,10 +17,11 @@ export default class LogoffController {
     }
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {
-        const { contact, from, until } = req.body
+        const { contact, from, until, remarks } = req.body
         const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
         const fromDate = new Date(from)
         const untilDate = new Date(until)
+        const approved = AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)
 
         if (!contactObj || !from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime())) {
             res.status(500)
@@ -30,7 +31,7 @@ export default class LogoffController {
             return
         }
 
-        const logoff = new Logoff(contactObj, fromDate, untilDate, req.user)
+        const logoff = new Logoff(contactObj, fromDate, untilDate, approved, remarks, req.user)
         await logoff.save()
 
         res.send(logoff)
@@ -39,6 +40,7 @@ export default class LogoffController {
     public static async addBulk(req: Express.Request, res: Express.Response): Promise<void> {
         const { contact, logoffs } = req.body
         const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
+        const approved = AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)
 
         if (!contactObj) {
             res.status(500)
@@ -60,13 +62,29 @@ export default class LogoffController {
         }
 
         const savePromises = []
-        for (const dates of logoffs) {
-            const { from, until } = dates
-            const logoff = new Logoff(contactObj, new Date(from), new Date(until), req.user)
-            savePromises.push(logoff.save())
+        for (const logoff of logoffs) {
+            const { from, until, remarks } = logoff
+            const logoffObj = new Logoff(contactObj, new Date(from), new Date(until), approved, remarks, req.user)
+            savePromises.push(logoffObj.save())
         }
 
         res.send(await Promise.all(savePromises))
+    }
+
+    public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
+        const logoff = await getManager().getRepository(Logoff).findOne({ id: req.body.id })
+        if (!logoff) {
+            res.status(500)
+            res.send({
+                message: 'sorry man...'
+            })
+            return
+        }
+
+        logoff.approved = true
+        await logoff.save()
+
+        res.send(logoff)
     }
 
     public static async delete(req: Express.Request, res: Express.Response): Promise<void> {

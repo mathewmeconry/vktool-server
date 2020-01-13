@@ -1,7 +1,7 @@
-import { Entity, JoinColumn, Column, ManyToOne } from "typeorm";
-import Contact from "./Contact";
-import Base from "./Base";
-import User from "./User";
+import { Entity, JoinColumn, Column, ManyToOne } from "typeorm"
+import Contact from "./Contact"
+import Base from "./Base"
+import User from "./User"
 
 @Entity()
 export default class Logoff extends Base<Logoff> {
@@ -38,7 +38,7 @@ export default class Logoff extends Base<Logoff> {
         this.from = from
         this.until = until
         this.approved = approved
-        this.remarks = (remarks) ? remarks : undefined
+        this.remarks = remarks || undefined
         this.createdBy = createdBy
     }
 }

@@ -36,6 +36,7 @@ export enum AuthRoles {
     LOGOFFS_READ = 'logoffs_read',
     LOGOFFS_CREATE = 'logoffs_create',
     LOGOFFS_EDIT = 'logoffs_edit',
+    LOGOFFS_APPROVE = 'logoffs_approve',
 
     ADMIN = 'admin'
 }
