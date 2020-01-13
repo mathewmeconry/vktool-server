@@ -5,7 +5,7 @@
     "migrate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run",
     "dev": "npm run migrate && TZ='Europe/Amsterdam' node --inspect -r ts-node/register src/index.ts",
     "start": "node dist/index.js",
-    "typeorm": "node ./node_modules/typeorm/cli.js",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js",
     "test": "TZ='UTC' NODE_ENV=dev TESTING=true mocha --require ts-node/register --require source-map-support/register --full-trace --exit --inspect --recursive ./src/tests/**/*.test.ts",
     "coverage": "nyc npm run test"
   },
@@ -61,7 +61,7 @@
     "@types/session-file-store": "^1.2.0",
     "@types/uuid": "^3.4.4",
     "@types/yargs": "^13.0.0",
-    "bexio": "^0.7.0",
+    "bexio": "^0.7.1",
     "class-validator": "^0.9.1",
     "config": "^3.0.1",
     "express": "^4.16.4",
