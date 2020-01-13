@@ -5,24 +5,25 @@ import { BexioService } from '../services/BexioService'
 import * as bodyParser from 'body-parser'
 import session from 'express-session'
 import uuid from 'uuid'
-import AuthService from '../services/AuthService';
+import AuthService from '../services/AuthService'
 import config from 'config'
-import "reflect-metadata";
+import "reflect-metadata"
 import FileStore from 'session-file-store'
 
 // Routes
-import UserRoutes from '../routes/UserRoutes';
-import AuthRoutes from '../routes/AuthRoutes';
-import ContactsRoutes from '../routes/ContactsRoutes';
-import OrdersRoutes from '../routes/OrdersRoutes';
-import CompensationRoutes from '../routes/CompensationRoutes';
-import BillingReportRoutes from '../routes/BillingReportRoutes';
-import CollectionPointsRoutes from '../routes/CollectionPointsRoutes';
-import PayoutRoutes from '../routes/PayoutRoutes';
+import UserRoutes from '../routes/UserRoutes'
+import AuthRoutes from '../routes/AuthRoutes'
+import ContactsRoutes from '../routes/ContactsRoutes'
+import OrdersRoutes from '../routes/OrdersRoutes'
+import CompensationRoutes from '../routes/CompensationRoutes'
+import BillingReportRoutes from '../routes/BillingReportRoutes'
+import CollectionPointsRoutes from '../routes/CollectionPointsRoutes'
+import PayoutRoutes from '../routes/PayoutRoutes'
 import LogoffRoutes from '../routes/LogoffRoutes'
+import { Server } from 'http'
 
 export default class CliController {
-    public static async startServer(): Promise<Express.Application> {
+    public static async startServer(): Promise<{ app: Express.Application; server: Server }> {
         let app: Express.Application = express()
 
         // CORS Headers
@@ -31,12 +32,12 @@ export default class CliController {
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
             res.header("Access-Control-Allow-Credentials", "true")
-            next();
-        });
+            next()
+        })
 
         // Bodyparser for json rest
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(bodyParser.json())
+        app.use(bodyParser.urlencoded({ extended: true }))
 
         // Session
         app.use(session({
@@ -55,7 +56,7 @@ export default class CliController {
         // Authentication
         AuthService.init(app)
 
-        const apiRouter = Express.Router();
+        const apiRouter = Express.Router()
 
         AuthRoutes(apiRouter)
         UserRoutes(apiRouter)
@@ -71,7 +72,7 @@ export default class CliController {
 
         BexioService.addExpressHandlers(app)
 
-        app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));
+        app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')))
         app.get('/webapp/*', (req, res) => {
             res.sendFile(path.join(__dirname + '/../../public/index.html'))
         })
@@ -79,10 +80,10 @@ export default class CliController {
             res.redirect('/webapp/')
         })
 
-        app.listen(process.env.PORT || config.get('port'), () => {
+        const server = app.listen(process.env.PORT || config.get('port'), () => {
             console.log('Listening on port: ' + (process.env.PORT || config.get('port')))
         })
 
-        return app
+        return { app, server }
     }
 }
