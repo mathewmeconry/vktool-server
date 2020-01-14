@@ -7,7 +7,14 @@ import Contact from '../entities/Contact'
 
 export default class LogoffController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
-        const options: FindManyOptions<Logoff> = {}
+        const options: FindManyOptions<Logoff> = {
+            join: {
+                alias: 'logoff',
+                leftJoinAndSelect: {
+                    contact: 'logoff.contact',
+                }
+            }
+        }
         if (!AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_READ)) {
             options.where = {
                 contact: (req.user.bexioContact || { id: - 1 }).id
