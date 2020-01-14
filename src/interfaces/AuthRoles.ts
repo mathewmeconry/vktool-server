@@ -69,7 +69,8 @@ export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.PAYOUTS_SEND,
         AuthRoles.LOGOFFS_CREATE,
         AuthRoles.LOGOFFS_EDIT,
-        AuthRoles.LOGOFFS_READ
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ],
     // FHR
     9: [
@@ -118,7 +119,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.PAYOUTS_READ,
         AuthRoles.LOGOFFS_CREATE,
         AuthRoles.LOGOFFS_EDIT,
-        AuthRoles.LOGOFFS_READ
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ],
     // Leiter Stv.
     29: [
@@ -147,7 +149,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.PAYOUTS_SEND,
         AuthRoles.LOGOFFS_CREATE,
         AuthRoles.LOGOFFS_EDIT,
-        AuthRoles.LOGOFFS_READ
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ],
     // Leiter
     28: [
@@ -176,6 +179,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.PAYOUTS_SEND,
         AuthRoles.LOGOFFS_CREATE,
         AuthRoles.LOGOFFS_EDIT,
-        AuthRoles.LOGOFFS_READ
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ]
 }
