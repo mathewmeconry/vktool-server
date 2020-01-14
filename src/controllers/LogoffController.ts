@@ -1,5 +1,5 @@
 import * as Express from 'express'
-import { getManager, FindManyOptions } from "typeorm"
+import { getManager, FindManyOptions, IsNull } from "typeorm"
 import Logoff from "../entities/Logoff"
 import { AuthRoles } from "../interfaces/AuthRoles"
 import AuthService from "../services/AuthService"
@@ -12,11 +12,16 @@ export default class LogoffController {
                 alias: 'logoff',
                 leftJoinAndSelect: {
                     contact: 'logoff.contact',
+                    user: 'logoff.createdBy'
                 }
+            },
+            where: {
+                deletedAt: IsNull()
             }
         }
         if (!AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_READ)) {
             options.where = {
+                ...(options.where as object),
                 contact: (req.user.bexioContact || { id: - 1 }).id
             }
         }
@@ -45,9 +50,20 @@ export default class LogoffController {
     }
 
     public static async addBulk(req: Express.Request, res: Express.Response): Promise<void> {
-        const { contact, logoffs } = req.body
-        const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
         const approved = AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)
+        const { contact, logoffs } = req.body
+        const contactObj = await getManager().getRepository(Contact).findOne({ id: contact }, {
+            join: {
+                alias: 'logoff',
+                leftJoinAndSelect: {
+                    contact: 'logoff.contact',
+                    user: 'logoff.createdBy'
+                }
+            },
+            where: {
+                deletedAt: IsNull()
+            }
+        })
 
         if (!contactObj) {
             res.status(500)
@@ -79,7 +95,15 @@ export default class LogoffController {
     }
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
-        const logoff = await getManager().getRepository(Logoff).findOne({ id: req.body.id })
+        const logoff = await getManager().getRepository(Logoff).findOne({ id: req.body.id, deletedAt: IsNull() }, {
+            join: {
+                alias: 'logoff',
+                leftJoinAndSelect: {
+                    contact: 'logoff.contact',
+                    user: 'logoff.createdBy'
+                }
+            }
+        })
         if (!logoff) {
             res.status(500)
             res.send({
@@ -97,7 +121,15 @@ export default class LogoffController {
     public static async delete(req: Express.Request, res: Express.Response): Promise<void> {
         const logoffId = req.params.logoff || req.query.logoff
 
-        const logoff = await getManager().getRepository(Logoff).findOne({ id: logoffId })
+        const logoff = await getManager().getRepository(Logoff).findOne({ id: logoffId, deletedAt: IsNull() }, {
+            join: {
+                alias: 'logoff',
+                leftJoinAndSelect: {
+                    contact: 'logoff.contact',
+                    user: 'logoff.createdBy'
+                }
+            }
+        })
         if (!logoff) {
             res.status(500)
             res.send({
