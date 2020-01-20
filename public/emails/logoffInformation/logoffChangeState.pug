@@ -18,7 +18,8 @@ html
                     p #{logoff.remarks}
                 br
                 br
-                p Du kannst deine Abmeldung #[a(href=`${apiEndpoint}/webapp/draft/logoffs/${logoff.id}`) hier] anschauen.
+                if !logoff.deletedBy
+                    p Du kannst deine Abmeldung #[a(href=`${apiEndpoint}/webapp/draft/logoff/${logoff.id}`) hier] anschauen.
 
             br
             br
