@@ -9,7 +9,10 @@ html
             div(class="greeting")
                 h1 Hallo #{contact.firstname}
             div(class="info")
-                p Deine Abmeldung von #{`00${logoff.from.getDate()}`.slice(-2)}.#{`00${logoff.from.getMonth() + 1}`.slice(-2)}.#{logoff.from.getFullYear()} bis #{`00${logoff.until.getDate()}`.slice(-2)}.#{`00${logoff.until.getMonth() + 1}`.slice(-2)}.#{logoff.until.getFullYear()} wurde #{(logoff.state === 'approved') ? 'Akezeptiert' : 'Abgelehnt'}.
+                - var status = (logoff.state === 'approved') ? 'akzeptiert' : 'abgelehnt'
+                if logoff.deletedBy
+                    - status = 'gelöscht'
+                p Deine Abmeldung von #{`00${logoff.from.getDate()}`.slice(-2)}.#{`00${logoff.from.getMonth() + 1}`.slice(-2)}.#{logoff.from.getFullYear()} bis #{`00${logoff.until.getDate()}`.slice(-2)}.#{`00${logoff.until.getMonth() + 1}`.slice(-2)}.#{logoff.until.getFullYear()} wurde #{status}.
                 if logoff.remarks
                     p Es wurde folgende Bemerkung erfasst:
                     p #{logoff.remarks}

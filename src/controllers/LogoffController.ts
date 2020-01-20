@@ -179,5 +179,6 @@ export default class LogoffController {
         await logoff.save()
 
         res.send(logoff)
+        LogoffService.sendChangeStateMail(logoff.contact, logoff)
     }
 }
