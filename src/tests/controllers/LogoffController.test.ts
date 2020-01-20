@@ -2,13 +2,17 @@ import { expect } from "chai"
 import * as Express from 'express'
 import supertest = require("supertest")
 import TestHelper from "../helpers/TestHelper"
-import Logoff from "../../entities/Logoff"
+import Logoff, { LogoffState } from "../../entities/Logoff"
 
 describe('Logoff Controller', () => {
     let app: Express.Application
     let logoff: Logoff
-    let logoffAddPayload: { contact: number, from: string, until: string }
-    let logoffBulkPayload: { contact: number, logoffs: Array<{ from: string, until: string, remarks?: string }> }
+    let logoff2: Logoff
+
+    let logoffAddPayload: { contact: number, from: string, until: string, state?: LogoffState }
+    let logoffAddDeclinedPayload: { contact: number, from: string, until: string, state?: LogoffState }
+
+    let logoffBulkPayload: { contact: number, logoffs: Array<{ from: string, until: string, state?: LogoffState, remarks?: string }> }
 
     before(() => {
         app = TestHelper.app
@@ -17,6 +21,13 @@ describe('Logoff Controller', () => {
             contact: TestHelper.mockContact.id,
             from: '2020-01-01T09:30:00.000Z',
             until: '2020-01-08T09:30:00.000Z',
+        }
+
+        logoffAddDeclinedPayload = {
+            contact: TestHelper.mockContact.id,
+            from: '2020-01-01T09:30:00.000Z',
+            until: '2020-01-08T09:30:00.000Z',
+            state: LogoffState.DECLINED
         }
 
         logoffBulkPayload = {
@@ -29,7 +40,8 @@ describe('Logoff Controller', () => {
                 {
                     from: '2020-01-10T09:30:00.000Z',
                     until: '2020-01-12T09:30:00.000Z',
-                    remarks: 'There is one'
+                    remarks: 'There is one',
+                    state: LogoffState.DECLINED
                 }
             ]
         }
@@ -48,26 +60,42 @@ describe('Logoff Controller', () => {
                     expect(res.body.from).to.be.eq(logoffAddPayload.from)
                     expect(res.body.until).to.be.eq(logoffAddPayload.until)
                     expect(res.body.remarks).to.be.null
-                    expect(res.body.approved).to.be.eq(true)
+                    expect(res.body.state).to.be.eq(LogoffState.APPROVED)
                     logoff = res.body
                 })
         })
 
-        it('should add an non approved logoff', async () => {
+        it('should add an pending logoff', async () => {
             return supertest(app)
                 .put('/api/logoffs/add?bypass=true')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-                .send(logoffAddPayload)
+                .send(logoffAddDeclinedPayload)
                 .expect(200)
                 .then(res => {
-                    expect(res.body.contact.id).to.be.eq(logoffAddPayload.contact)
-                    expect(res.body.from).to.be.eq(logoffAddPayload.from)
-                    expect(res.body.until).to.be.eq(logoffAddPayload.until)
+                    expect(res.body.contact.id).to.be.eq(logoffAddDeclinedPayload.contact)
+                    expect(res.body.from).to.be.eq(logoffAddDeclinedPayload.from)
+                    expect(res.body.until).to.be.eq(logoffAddDeclinedPayload.until)
                     expect(res.body.remarks).to.be.null
-                    expect(res.body.approved).to.be.eq(false)
-                    logoff = res.body
+                    expect(res.body.state).to.be.eq(LogoffState.PENDING)
+                    logoff2 = res.body
                 })
         })
+
+        it('should add an declined logoff', async () => {
+            return supertest(app)
+                .put('/api/logoffs/add')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .send(logoffAddDeclinedPayload)
+                .expect(200)
+                .then(res => {
+                    expect(res.body.contact.id).to.be.eq(logoffAddDeclinedPayload.contact)
+                    expect(res.body.from).to.be.eq(logoffAddDeclinedPayload.from)
+                    expect(res.body.until).to.be.eq(logoffAddDeclinedPayload.until)
+                    expect(res.body.remarks).to.be.null
+                    expect(res.body.state).to.be.eq(LogoffState.DECLINED)
+                })
+        })
+
 
         it('should return 500 with no contact', async () => {
             return supertest(app)
@@ -106,9 +134,25 @@ describe('Logoff Controller', () => {
                     expect(res.body.length).to.be.eq(logoffBulkPayload.logoffs.length)
                     expect(res.body[0].contact.id).to.be.eq(logoffBulkPayload.contact)
                     expect(res.body[0].remarks).to.be.null
-                    expect(res.body[0].approved).to.be.eq(true)
+                    expect(res.body[0].state).to.be.eq(LogoffState.APPROVED)
                     expect(res.body[1].remarks).to.be.eq('There is one')
-                    expect(res.body[1].approved).to.be.eq(true)
+                    expect(res.body[1].state).to.be.eq(LogoffState.DECLINED)
+                })
+        })
+
+        it('should add some pending logoffs', async () => {
+            return supertest(app)
+                .put('/api/logoffs/add/bulk?bypass=true')
+                .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+                .send(logoffBulkPayload)
+                .expect(200)
+                .then(res => {
+                    expect(res.body.length).to.be.eq(logoffBulkPayload.logoffs.length)
+                    expect(res.body[0].contact.id).to.be.eq(logoffBulkPayload.contact)
+                    expect(res.body[0].remarks).to.be.null
+                    expect(res.body[0].state).to.be.eq(LogoffState.PENDING)
+                    expect(res.body[1].remarks).to.be.eq('There is one')
+                    expect(res.body[1].state).to.be.eq(LogoffState.PENDING)
                 })
         })
 
@@ -151,6 +195,49 @@ describe('Logoff Controller', () => {
         })
     })
 
+    describe('state changes', () => {
+        it('should decline', async () => {
+            return supertest(app)
+                .post('/api/logoffs/decline')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .send({ id: logoff.id})
+                .expect(200)
+                .then(res => {
+                    expect(res.body.id).to.be.eq(logoff.id)
+                    expect(res.body.state).to.be.eq(LogoffState.DECLINED)
+                })
+        })
+
+        it('decline should send 500', async () => {
+            return supertest(app)
+                .post('/api/logoffs/decline')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .send()
+                .expect(500)
+        })
+
+        it('should approve', async () => {
+            return supertest(app)
+                .post('/api/logoffs/approve')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .send({ id: logoff.id})
+                .expect(200)
+                .then(res => {
+                    expect(res.body.id).to.be.eq(logoff.id)
+                    expect(res.body.state).to.be.eq(LogoffState.APPROVED)
+                })
+        })
+
+        it('approve should send 500', async () => {
+            return supertest(app)
+                .post('/api/logoffs/approve')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .send()
+                .expect(500)
+        })
+
+    })
+
     describe('delete', () => {
         it('should softdelete in URL', async () => {
             return supertest(app)
@@ -165,7 +252,7 @@ describe('Logoff Controller', () => {
 
         it('should softdelete in query params', async () => {
             return supertest(app)
-                .delete(`/api/logoffs?logoff=${logoff.id}`)
+                .delete(`/api/logoffs?logoff=${logoff2.id}`)
                 .set('Cookie', TestHelper.authenticatedAdminCookies)
                 .expect(200)
                 .then(res => {

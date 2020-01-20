@@ -1,9 +1,10 @@
 import * as Express from 'express'
 import { getManager, FindManyOptions, IsNull } from "typeorm"
-import Logoff from "../entities/Logoff"
+import Logoff, { LogoffState } from "../entities/Logoff"
 import { AuthRoles } from "../interfaces/AuthRoles"
 import AuthService from "../services/AuthService"
 import Contact from '../entities/Contact'
+import LogoffService from '../services/LogoffService'
 
 export default class LogoffController {
     public static async getAll(req: Express.Request, res: Express.Response): Promise<void> {
@@ -12,7 +13,8 @@ export default class LogoffController {
                 alias: 'logoff',
                 leftJoinAndSelect: {
                     contact: 'logoff.contact',
-                    user: 'logoff.createdBy'
+                    createdBy: 'logoff.createdBy',
+                    changedStateBy: 'logoff.changedStateBy'
                 }
             },
             where: {
@@ -29,11 +31,15 @@ export default class LogoffController {
     }
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {
+        let state = req.body.state
         const { contact, from, until, remarks } = req.body
         const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
         const fromDate = new Date(from)
         const untilDate = new Date(until)
-        const approved = AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)
+
+        if (!state && AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)) state = LogoffState.APPROVED
+        if (!AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)) state = LogoffState.PENDING
+
 
         if (!contactObj || !from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime())) {
             res.status(500)
@@ -43,27 +49,17 @@ export default class LogoffController {
             return
         }
 
-        const logoff = new Logoff(contactObj, fromDate, untilDate, approved, remarks, req.user)
+        const logoff = new Logoff(contactObj, fromDate, untilDate, state, remarks, req.user)
+        if ([LogoffState.APPROVED, LogoffState.DECLINED].indexOf(state) > -1) logoff.changedStateBy = req.user
         await logoff.save()
 
         res.send(logoff)
     }
 
     public static async addBulk(req: Express.Request, res: Express.Response): Promise<void> {
-        const approved = AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)
         const { contact, logoffs } = req.body
-        const contactObj = await getManager().getRepository(Contact).findOne({ id: contact }, {
-            join: {
-                alias: 'logoff',
-                leftJoinAndSelect: {
-                    contact: 'logoff.contact',
-                    user: 'logoff.createdBy'
-                }
-            },
-            where: {
-                deletedAt: IsNull()
-            }
-        })
+        const isAllowedToApprove = AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)
+        const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
 
         if (!contactObj) {
             res.status(500)
@@ -73,8 +69,9 @@ export default class LogoffController {
             return
         }
 
-        for (const dates of logoffs) {
-            const { from, until } = dates
+        for (const logoff of logoffs) {
+            const { from, until } = logoff
+
             if (isNaN((new Date(from)).getTime()) || isNaN((new Date(until)).getTime())) {
                 res.status(500)
                 res.send({
@@ -87,11 +84,19 @@ export default class LogoffController {
         const savePromises = []
         for (const logoff of logoffs) {
             const { from, until, remarks } = logoff
-            const logoffObj = new Logoff(contactObj, new Date(from), new Date(until), approved, remarks, req.user)
+            let state = logoff.state
+
+            if (!state && isAllowedToApprove) state = LogoffState.APPROVED
+            if (!isAllowedToApprove) state = LogoffState.PENDING
+
+            const logoffObj = new Logoff(contactObj, new Date(from), new Date(until), state, remarks, req.user)
+            if ([LogoffState.APPROVED, LogoffState.DECLINED].indexOf(state) > -1) logoffObj.changedStateBy = req.user
+
             savePromises.push(logoffObj.save())
         }
-
-        res.send(await Promise.all(savePromises))
+        const logoffsSaved = await Promise.all(savePromises)
+        res.send(logoffsSaved)
+        LogoffService.sendInformationMail(contact, logoffsSaved)
     }
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
@@ -100,7 +105,8 @@ export default class LogoffController {
                 alias: 'logoff',
                 leftJoinAndSelect: {
                     contact: 'logoff.contact',
-                    user: 'logoff.createdBy'
+                    user: 'logoff.createdBy',
+                    changedStateBy: 'logoff.changedStateBy'
                 }
             }
         })
@@ -112,10 +118,39 @@ export default class LogoffController {
             return
         }
 
-        logoff.approved = true
+        logoff.state = LogoffState.APPROVED
+        logoff.changedStateBy = req.user
         await logoff.save()
 
         res.send(logoff)
+        LogoffService.sendChangeStateMail(logoff.contact, logoff)
+    }
+
+    public static async decline(req: Express.Request, res: Express.Response): Promise<void> {
+        const logoff = await getManager().getRepository(Logoff).findOne({ id: req.body.id, deletedAt: IsNull() }, {
+            join: {
+                alias: 'logoff',
+                leftJoinAndSelect: {
+                    contact: 'logoff.contact',
+                    user: 'logoff.createdBy',
+                    changedStateBy: 'logoff.changedStateBy'
+                }
+            }
+        })
+        if (!logoff) {
+            res.status(500)
+            res.send({
+                message: 'sorry man...'
+            })
+            return
+        }
+
+        logoff.state = LogoffState.DECLINED
+        logoff.changedStateBy = req.user
+        await logoff.save()
+
+        res.send(logoff)
+        LogoffService.sendChangeStateMail(logoff.contact, logoff)
     }
 
     public static async delete(req: Express.Request, res: Express.Response): Promise<void> {
@@ -126,7 +161,8 @@ export default class LogoffController {
                 alias: 'logoff',
                 leftJoinAndSelect: {
                     contact: 'logoff.contact',
-                    user: 'logoff.createdBy'
+                    user: 'logoff.createdBy',
+                    changedStateBy: 'logoff.changedStateBy'
                 }
             }
         })

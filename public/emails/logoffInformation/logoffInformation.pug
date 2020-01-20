@@ -1,0 +1,32 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        style(type="text/css") !{compiledStyle}
+
+    body
+        div(class="content")
+            div(class="greeting")
+                h1 Hallo #{contact.firstname}
+            div(class="info")
+                p Es wurden folgende Abmeldungen für dich erfasst:
+                
+            table
+                thead
+                    tr
+                        th Von
+                        th Bis
+                        th Status
+                        th Bemerkungen
+                tbody
+                    each logoff in logoffs
+                        tr
+                            td #{`00${logoff.from.getDate()}`.slice(-2)}.#{`00${logoff.from.getMonth() + 1}`.slice(-2)}.#{logoff.from.getFullYear()} #{`00${logoff.from.getHours() + 1}`.slice(-2)}:#{`00${logoff.from.getMinutes() + 1}`.slice(-2)}
+                            td #{`00${logoff.until.getDate()}`.slice(-2)}.#{`00${logoff.until.getMonth() + 1}`.slice(-2)}.#{logoff.until.getFullYear()} #{`00${logoff.until.getHours() + 1}`.slice(-2)}:#{`00${logoff.until.getMinutes() + 1}`.slice(-2)}
+                            td #{logoff.state}
+                            td #{logoff.remarks}
+
+                br
+                br
+                div(class="logo")
+                    img(src=`${apiEndpoint}/logo.png`, alt="VKAZU-logo")
