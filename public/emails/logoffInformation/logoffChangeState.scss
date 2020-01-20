@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  thead tr {
+    text-align: left;
+    border-bottom: 1px solid black;
+  }
+  tbody {
+    td {
+      padding: 5px;
+    }
+    tr:nth-of-type(odd) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+div.content {
+  font-size: 11pt;
+  font-family: Arial, sans-serif;
+
+  div {
+    width: 750px;
+    margin: 0 auto;
+    text-align: center;
+  }
+}
