@@ -22,6 +22,8 @@ export default class EMailService {
     public async sendMail(recipient: string, replyTo: string = this.from, subject: string, html: string, attachments: Array<Object> = []) {
         await this.transporter.verify()
 
+        if(process.env.NODE_ENV !== 'production') recipient = 'app-stage@vkazu.ch'
+
         return await this.transporter.sendMail({
             from: this.from,
             to: recipient,
