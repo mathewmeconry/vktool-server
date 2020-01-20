@@ -54,6 +54,7 @@ export default class LogoffController {
         await logoff.save()
 
         res.send(logoff)
+        LogoffService.sendInformationMail(contactObj, [logoff])
     }
 
     public static async addBulk(req: Express.Request, res: Express.Response): Promise<void> {
@@ -96,7 +97,7 @@ export default class LogoffController {
         }
         const logoffsSaved = await Promise.all(savePromises)
         res.send(logoffsSaved)
-        LogoffService.sendInformationMail(contact, logoffsSaved)
+        LogoffService.sendInformationMail(contactObj, logoffsSaved)
     }
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
