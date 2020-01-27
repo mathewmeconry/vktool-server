@@ -1,22 +1,13 @@
-doctype html
-html
-	head
-		meta(charset='utf-8')
-		style(type="text/css") !{compiledStyle}
+extends ../template
 
-	body
-		div(class="content")
-			div(class="greeting")
-				h1 Hallo #{member.firstname}
-			div(class="info")
-				p Anbei senden wir dir die definitve Abrechnung der letzten Einsatzperiode. 
-				p Die Entschädigung wird in den nächsten Tagen auf deinem Konto eintreffen.
+block greeting
+	h1 Hallo #{member.firstname}
 
-				p Bitte prüfe die Abrechnung auf Abweichungen, und melde uns diese innerhalb der nächsten 7 Tage per E-Mail (#[a(href="mailto:info@vkazu.ch") info@vkazu.ch]).
-				p Meldungen nach dieser Frist können wir nicht mehr in der jetztige Entschädiungsperiode berücksichtigen.
-				p Die Auflistung findest du als PDF im Anhang.
-			br
-			br
-			div(class="logo")
-				img(src=`${apiEndpoint}/webapp/logo.png`, alt="VKAZU-logo")
+block info
+	p Anbei senden wir dir die definitve Abrechnung der letzten Einsatzperiode. 
+	p Die Entschädigung wird in den nächsten Tagen auf deinem Konto eintreffen.
+
+	p Bitte prüfe die Abrechnung auf Abweichungen, und melde uns diese innerhalb der nächsten 7 Tage per E-Mail (#[a(href="mailto:info@vkazu.ch") info@vkazu.ch]).
+	p Meldungen nach dieser Frist können wir nicht mehr in der jetztige Entschädiungsperiode berücksichtigen.
+	p Die Auflistung findest du als PDF im Anhang.
 

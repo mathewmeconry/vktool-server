@@ -5,6 +5,7 @@ import pug from 'pug'
 import config = require("config")
 import sass from 'node-sass'
 import EMailService from "./EMailService"
+import moment from 'moment'
 
 export default class LogoffService {
     private static emailService = new EMailService('no-reply@vkazu.ch')
@@ -13,6 +14,8 @@ export default class LogoffService {
         const email = pug.renderFile(path.resolve(__dirname, '../../public/emails/logoffInformation/logoffInformation.pug'), {
             apiEndpoint: config.get('apiEndpoint'),
             compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/emails/logoffInformation/logoffInformation.scss') }).css,
+            moment,
+            sender: 'aufgebot@vkazu.ch',
             contact,
             logoffs
         })
@@ -29,6 +32,8 @@ export default class LogoffService {
         const email = pug.renderFile(path.resolve(__dirname, '../../public/emails/logoffInformation/logoffChangeState.pug'), {
             apiEndpoint: config.get('apiEndpoint'),
             compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/emails/logoffInformation/logoffChangeState.scss') }).css,
+            moment,
+            sender: 'aufgebot@vkazu.ch',
             contact,
             logoff
         })
