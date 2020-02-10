@@ -32,7 +32,7 @@ export default class LogoffController {
 
     public static async add(req: Express.Request, res: Express.Response): Promise<void> {
         let state = req.body.state
-        const { contact, from, until, remarks } = req.body
+        const { contact, from, until, remarks, notify } = req.body
         const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
         const fromDate = new Date(from)
         const untilDate = new Date(until)
@@ -54,11 +54,13 @@ export default class LogoffController {
         await logoff.save()
 
         res.send(logoff)
-        LogoffService.sendInformationMail(contactObj, [logoff])
+        if (notify !== false) {
+            LogoffService.sendInformationMail(contactObj, [logoff])
+        }
     }
 
     public static async addBulk(req: Express.Request, res: Express.Response): Promise<void> {
-        const { contact, logoffs } = req.body
+        const { contact, logoffs, notify } = req.body
         const isAllowedToApprove = AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)
         const contactObj = await getManager().getRepository(Contact).findOne({ id: contact })
 
@@ -97,7 +99,10 @@ export default class LogoffController {
         }
         const logoffsSaved = await Promise.all(savePromises)
         res.send(logoffsSaved)
-        LogoffService.sendInformationMail(contactObj, logoffsSaved)
+
+        if (notify !== false) {
+            LogoffService.sendInformationMail(contactObj, logoffsSaved)
+        }
     }
 
     public static async approve(req: Express.Request, res: Express.Response): Promise<void> {
