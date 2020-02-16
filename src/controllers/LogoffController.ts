@@ -41,7 +41,7 @@ export default class LogoffController {
         if (!AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)) state = LogoffState.PENDING
 
         // @ts-ignore
-        if (!contactObj || !from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime()) || Object.values(LogoffState).indexOf(state) === -1) {
+        if (!contactObj || !from || !until || Number.isNaN(fromDate.getTime()) || Number.isNaN(untilDate.getTime()) || Object.values(LogoffState).indexOf(state) === -1) {
             res.status(500)
             res.send({
                 message: 'sorry man...'
@@ -82,7 +82,7 @@ export default class LogoffController {
             if (!isAllowedToApprove) state = LogoffState.PENDING
             
             // @ts-ignore
-            if (!from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime()) || Object.values(LogoffState).indexOf(state) === -1) {
+            if (!from || !until || Number.isNaN(fromDate.getTime()) || Number.isNaN(untilDate.getTime()) || Object.values(LogoffState).indexOf(state) === -1) {
                 res.status(500)
                 res.send({
                     message: 'sorry man...'
