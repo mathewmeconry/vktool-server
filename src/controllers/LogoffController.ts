@@ -41,7 +41,7 @@ export default class LogoffController {
         if (!AuthService.isAuthorized(req.user.roles, AuthRoles.LOGOFFS_APPROVE)) state = LogoffState.PENDING
 
         // @ts-ignore
-        if (!contactObj || !from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime()) || LogoffState[state] === undefined) {
+        if (!contactObj || !from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime()) || Object.values(LogoffState).indexOf(state) === -1) {
             res.status(500)
             res.send({
                 message: 'sorry man...'
@@ -73,12 +73,16 @@ export default class LogoffController {
         }
 
         for (const logoff of logoffs) {
-            const { from, until, state } = logoff
+            let state = logoff.state
+            const { from, until } = logoff
             const fromDate = new Date(from)
             const untilDate = new Date(until)
+
+            if (!state && isAllowedToApprove) state = LogoffState.APPROVED
+            if (!isAllowedToApprove) state = LogoffState.PENDING
             
             // @ts-ignore
-            if (!from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime()) || LogoffState[state] === undefined) {
+            if (!from || !until || isNaN(fromDate.getTime()) || isNaN(untilDate.getTime()) || Object.values(LogoffState).indexOf(state) === -1) {
                 res.status(500)
                 res.send({
                     message: 'sorry man...'
