@@ -1,0 +1,22 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        style(type="text/css") !{compiledStyle}
+
+    body
+        div(class="content")
+            div(class="greeting")
+                block greeting
+            div(class="info")
+                block info
+
+            br
+            br
+            div(class="signature")
+                img(src=`${apiEndpoint}/webapp/logo.png`, alt="VKAZU-logo", class="logo")
+                p Verkehrskadetten Abteilung Zürcher-Unterland
+                p Telefon: #[a(href="tel:+41445520680") +41 (0)44 552 06 80]
+                p Mail: #[a(href="mailto:" + sender) #{sender}]
+                br
+                p Besuchen Sie uns unter: #[a(href="https://www.vkazu.ch/") www.vkazu.ch]

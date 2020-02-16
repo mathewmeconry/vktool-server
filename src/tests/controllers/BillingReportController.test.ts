@@ -51,6 +51,10 @@ describe('BillingReportController', function () {
         })
     })
 
+    after(() => {
+        TestHelper.billingReport = dbReport
+    })
+
     it('should send me all the open orders with the necessary attributes', function () {
         let before30Days = new Date()
         before30Days.setDate(before30Days.getDate() - 30)

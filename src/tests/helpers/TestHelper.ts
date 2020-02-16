@@ -1,13 +1,15 @@
 import * as Express from 'express'
-import CliController from '../../controllers/CliController';
-import supertest = require('supertest');
-import { getConnectionOptions, createConnection } from 'typeorm';
-import { genOrders, genMockContactGroup, genMockContactType, genMockContact, genMockUser } from './GenMockData';
-import ContactGroup from '../../entities/ContactGroup';
-import ContactType from '../../entities/ContactType';
-import Contact from '../../entities/Contact';
-import Order from '../../entities/Order';
-import User from '../../entities/User';
+import CliController from '../../controllers/CliController'
+import supertest = require('supertest')
+import { createConnection, Connection } from 'typeorm'
+import { genOrders, genMockContactGroup, genMockContactType, genMockContact, genMockUser } from './GenMockData'
+import ContactGroup from '../../entities/ContactGroup'
+import ContactType from '../../entities/ContactType'
+import Contact from '../../entities/Contact'
+import Order from '../../entities/Order'
+import User from '../../entities/User'
+import BillingReport from '../../entities/BillingReport'
+import { Server } from 'http'
 
 before(async function () {
     this.timeout(20000)
@@ -16,6 +18,8 @@ before(async function () {
 
 export default class TestHelper {
     public static app: Express.Application
+    public static server: Server
+    public static dbConnection: Connection
     public static authenticatedAdminCookies: Array<string>
     public static authenticatedNonAdminCookies: Array<string>
 
@@ -27,13 +31,13 @@ export default class TestHelper {
     public static mockContact: Contact
     public static mockContact2: Contact
     public static mockOrder: Order
+    public static billingReport: BillingReport
 
     public static async init() {
-        let app = await CliController.startServer()
+        let { app, server } = await CliController.startServer()
         TestHelper.app = app
-
-        // @ts-ignore
-        await createConnection()
+        TestHelper.server = server
+        TestHelper.dbConnection = await createConnection()
 
         TestHelper.mockUser = await genMockUser()
         TestHelper.mockAdminUser = await genMockUser()

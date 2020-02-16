@@ -27,7 +27,7 @@ describe('AuthService', () => {
     describe('AuthService middleware', () => {
         it('should return 403', async () => {
             return supertest(app)
-                .get('/check/authservice?bypass=false')
+                .get('/api/check/authservice?bypass=false')
                 .set('Cookie', TestHelper.authenticatedNonAdminCookies)
                 .expect(403)
                 .then(res => {
@@ -37,7 +37,7 @@ describe('AuthService', () => {
 
         it('should return 401', async () => {
             return supertest(app)
-                .get('/check/authservice')
+                .get('/api/check/authservice')
                 .expect(401)
                 .then(res => {
                     expect(res.body.error).to.be.equal('Not authorized')
@@ -46,7 +46,7 @@ describe('AuthService', () => {
 
         it('should call next', () => {
             return supertest(app)
-                .get('/check/authservice')
+                .get('/api/check/authservice')
                 .set('Cookie', TestHelper.authenticatedAdminCookies)
                 .expect(200)
         })

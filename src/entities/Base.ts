@@ -1,5 +1,6 @@
 import { PrimaryGeneratedColumn, UpdateDateColumn, getManager, BeforeInsert, BeforeUpdate } from "typeorm";
 import { validate } from "class-validator";
+import escapeHtml from 'escape-html'
 
 export default abstract class Base<T> {
     @PrimaryGeneratedColumn()
@@ -18,6 +19,8 @@ export default abstract class Base<T> {
         for(const key in this) {
             // @ts-ignore
             if(this[key] === undefined && !this.hasOwnProperty(`${key}Id`)) this[key] = null
+            // @ts-ignore
+            if(typeof this[key] === 'string') this[key] = escapeHtml(this[key])
         }
     }
 }

@@ -93,6 +93,7 @@ export default class PayoutService {
                     pug.renderFile(path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.pug'), {
                         apiEndpoint: config.get('apiEndpoint'),
                         compiledStyle: sass.renderSync({ file: path.resolve(__dirname, '../../public/emails/memberPayout/memberPayout.scss') }).css,
+                        sender: 'info@vkazu.ch',
                         member
                     })
                 )

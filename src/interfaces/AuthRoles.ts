@@ -33,6 +33,11 @@ export enum AuthRoles {
     PAYOUTS_CREATE = 'payouts_create',
     PAYOUTS_SEND = 'payouts_send',
 
+    LOGOFFS_READ = 'logoffs_read',
+    LOGOFFS_CREATE = 'logoffs_create',
+    LOGOFFS_EDIT = 'logoffs_edit',
+    LOGOFFS_APPROVE = 'logoffs_approve',
+
     ADMIN = 'admin'
 }
 
@@ -61,7 +66,11 @@ export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.MAILING_LISTS,
         AuthRoles.PAYOUTS_READ,
         AuthRoles.PAYOUTS_CREATE,
-        AuthRoles.PAYOUTS_SEND
+        AuthRoles.PAYOUTS_SEND,
+        AuthRoles.LOGOFFS_CREATE,
+        AuthRoles.LOGOFFS_EDIT,
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ],
     // FHR
     9: [
@@ -93,7 +102,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.MEMBERS_READ,
         AuthRoles.RANKS_READ,
         AuthRoles.BILLINGREPORTS_CREATE,
-        AuthRoles.MAILING_LISTS
+        AuthRoles.MAILING_LISTS,
+        AuthRoles.LOGOFFS_READ
     ],
     // OZF
     15: [
@@ -106,7 +116,11 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.COMPENSATIONS_READ,
         AuthRoles.COMPENSATIONS_CREATE,
         AuthRoles.MAILING_LISTS,
-        AuthRoles.PAYOUTS_READ
+        AuthRoles.PAYOUTS_READ,
+        AuthRoles.LOGOFFS_CREATE,
+        AuthRoles.LOGOFFS_EDIT,
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ],
     // Leiter Stv.
     29: [
@@ -132,7 +146,11 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.MAILING_LISTS,
         AuthRoles.PAYOUTS_READ,
         AuthRoles.PAYOUTS_CREATE,
-        AuthRoles.PAYOUTS_SEND
+        AuthRoles.PAYOUTS_SEND,
+        AuthRoles.LOGOFFS_CREATE,
+        AuthRoles.LOGOFFS_EDIT,
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ],
     // Leiter
     28: [
@@ -158,6 +176,10 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.MAILING_LISTS,
         AuthRoles.PAYOUTS_READ,
         AuthRoles.PAYOUTS_CREATE,
-        AuthRoles.PAYOUTS_SEND
+        AuthRoles.PAYOUTS_SEND,
+        AuthRoles.LOGOFFS_CREATE,
+        AuthRoles.LOGOFFS_EDIT,
+        AuthRoles.LOGOFFS_READ,
+        AuthRoles.LOGOFFS_APPROVE
     ]
 }

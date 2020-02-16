@@ -1,0 +1,22 @@
+extends ../template
+
+block greeting
+    h1 Hallo #{contact.firstname}
+
+block info
+    p Es wurden folgende Abmeldungen für dich erfasst:
+
+    table
+        thead
+            tr
+                th Von
+                th Bis
+                th Status
+                th Bemerkungen
+        tbody
+            each logoff in logoffs
+                tr
+                    td #{moment(logoff.from).format('DD.MM.YYYY HH:mm')}
+                    td #{moment(logoff.until).format('DD.MM.YYYY HH:mm')}
+                    td #{logoff.state}
+                    td #{logoff.remarks}

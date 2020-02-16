@@ -141,6 +141,11 @@
   resolved "https://registry.yarnpkg.com/@types/cookiejar/-/cookiejar-2.1.1.tgz#90b68446364baf9efd8e8349bb36bd3852b75b80"
   integrity sha512-aRnpPa7ysx3aNW60hTiCtLHlQaIFsXFCgQlpakNgDNVFzbtusSY8PwjAQgRWfSk0ekNoBjO51eQRB6upA9uuyw==
 
+"@types/escape-html@^0.0.20":
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/@types/escape-html/-/escape-html-0.0.20.tgz#cae698714dd61ebee5ab3f2aeb9a34ba1011735a"
+  integrity sha512-6dhZJLbA7aOwkYB2GDGdIqJ20wmHnkDzaxV9PJXe7O02I2dSFTERzRB6JrX6cWKaS+VqhhY7cQUMCbO5kloFUw==
+
 "@types/express-serve-static-core@*":
   version "4.17.1"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.1.tgz#82be64a77211b205641e0209096fd3afb62481d3"
@@ -569,10 +574,10 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bexio@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/bexio/-/bexio-0.7.0.tgz#4cb69dca94b0d0735a1514ab6e8f377700bf2a80"
-  integrity sha512-YpohOTd4yF9FVoXyl0zr1jCEUzZ3DuY6v+OCUc+VPU8nHWfUl1NRjAGzknpCTtPyzhMfVhqFyBLexGxpVXH6Gg==
+bexio@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/bexio/-/bexio-0.7.1.tgz#815fc0c026ec91fd39fcbb03f8b6a580f31d18ae"
+  integrity sha512-G7AaunmSB8gdxmvKcfooLqo9qIbT61lrXIYcqXzIsiEUrm2G0gnq1roIQScMvLTaC3MwS6gIqMQloSswO3T9BQ==
   dependencies:
     request "^2.88.0"
     request-promise-native "^1.0.5"
@@ -1162,7 +1167,7 @@ es6-promisify@^5.0.0:
   dependencies:
     es6-promise "^4.0.3"
 
-escape-html@~1.0.3:
+escape-html@^1.0.3, escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
   integrity sha1-Aljq5NPQwJdN4cFpGI7wBR0dGYg=

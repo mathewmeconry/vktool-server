@@ -1,0 +1,17 @@
+extends ../template
+
+block greeting
+    h1 Hallo #{contact.firstname}
+
+block info
+    - var status = (logoff.state === 'approved') ? 'akzeptiert' : 'abgelehnt'
+    if logoff.deletedBy
+        - status = 'gelöscht'
+    p Deine Abmeldung von #{moment(logoff.from).format('DD.MM.YYYY HH:mm')} bis #{moment(logoff.until).format('DD.MM.YYYY HH:mm')} wurde #[b #{status}].
+    if logoff.remarks
+        p Es wurde folgende Bemerkung erfasst:
+        p #{logoff.remarks}
+    br
+    br
+    if !logoff.deletedBy
+        p Du kannst deine Abmeldung #[a(href=`${apiEndpoint}/webapp/draft/logoff/${logoff.id}`) hier] anschauen.

@@ -14,7 +14,15 @@ export default class CompensationController {
         if (AuthService.isAuthorized(req.user.roles, AuthRoles.COMPENSATIONS_READ)) {
             res.send(await CompensationService.getAll())
         } else {
-            res.send(await CompensationService.getByMember(req.user.bexioContact.id))
+            if (req.user.bexioContact) {
+                res.send(await CompensationService.getByMember(req.user.bexioContact.id))
+            } else {
+                res.status(403)
+                res.send({
+                    error: 'Forbidden'
+                })
+                res.end()
+            }
         }
     }
 

@@ -3,9 +3,7 @@ import * as Express from 'express'
 import supertest = require("supertest");
 import { expect } from "chai";
 import CustomCompensation from "../../entities/CustomCompensation";
-import OrderCompensation from "../../entities/OrderCompensation";
-import { getManager } from "typeorm";
-import BillingReport from "../../entities/BillingReport";
+import moment = require("moment");
 
 describe('CompensationController', function () {
     this.timeout(5000)
@@ -39,23 +37,19 @@ describe('CompensationController', function () {
             description: 'Custom Compensation'
         }
 
-        let billingReport =
-            (await getManager().getRepository(BillingReport).findOne()) ||
-            { id: 1, date: '2019-04-20' }
-
         bulk = {
-            billingReportId: billingReport.id,
+            billingReportId: TestHelper.billingReport.id,
             entries: [
                 {
                     id: TestHelper.mockContact.id,
-                    date: billingReport.date as unknown as string,
+                    date: moment(TestHelper.billingReport.date).format('YYYY-MM-DD'),
                     from: '2019-04-19T06:00:00.000Z',
                     until: '2019-04-19T21:00:00.000Z',
                     charge: true
                 },
                 {
                     id: TestHelper.mockContact2.id,
-                    date: billingReport.date as unknown as string,
+                    date: moment(TestHelper.billingReport.date).format('YYYY-MM-DD'),
                     from: '2019-04-19T06:00:00.000Z',
                     until: '2019-04-19T21:00:00.000Z',
                     charge: false
@@ -172,23 +166,10 @@ describe('CompensationController', function () {
     it('should get all compensations', async () => {
         return supertest(app)
             .get('/api/compensations')
-            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
+            .set('Cookie', TestHelper.authenticatedAdminCookies)
             .expect(200)
             .then(res => {
                 expect(res.body.length).to.be.greaterThan(0)
-            })
-    })
-
-    it('should get all for a specific member', async () => {
-        return supertest(app)
-            .get('/api/compensations/' + TestHelper.mockContact.id)
-            .set('Cookie', TestHelper.authenticatedNonAdminCookies)
-            .expect(200)
-            .then(res => {
-                expect(res.body.length).to.be.greaterThan(0)
-                for (let entry of (res.body as Array<OrderCompensation | CustomCompensation>)) {
-                    expect(entry.member.id).to.be.equal(TestHelper.mockContact.id)
-                }
             })
     })
 
