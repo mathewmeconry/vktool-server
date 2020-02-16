@@ -121,6 +121,14 @@ describe('Logoff Controller', () => {
                 .send({ ...logoffAddPayload, until: undefined })
                 .expect(500)
         })
+
+        it('should return 500 with no valid state', async () => {
+            return supertest(app)
+                .put('/api/logoffs/add')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .send({ ...logoffAddPayload, state: 'invalid' })
+                .expect(500)
+        })
     })
 
     describe('add bulk', () => {
@@ -178,6 +186,14 @@ describe('Logoff Controller', () => {
                 .put('/api/logoffs/add')
                 .set('Cookie', TestHelper.authenticatedAdminCookies)
                 .send({ ...logoffBulkPayload, logoffs: [{ from: logoffBulkPayload.logoffs[0].from }] })
+                .expect(500)
+        })
+
+        it('should return 500 with no valid state', async () => {
+            return supertest(app)
+                .put('/api/logoffs/add')
+                .set('Cookie', TestHelper.authenticatedAdminCookies)
+                .send({ ...logoffBulkPayload, logoffs: [{ from: logoffBulkPayload.logoffs[0].from, until: logoffBulkPayload.logoffs[0].until, state: 'invalid' }] })
                 .expect(500)
         })
     })
