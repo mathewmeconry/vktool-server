@@ -82,7 +82,7 @@ export default class Contact extends BexioBase<Contact> {
     }
 
     public getRank(): ContactGroup | null {
-        const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33]
+        const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22]
 
         if (this.contactGroups) {
             return this.contactGroups.find(group => rankGroups.indexOf(group.bexioId) > -1) || null
@@ -92,7 +92,7 @@ export default class Contact extends BexioBase<Contact> {
     }
 
     public getFunctions(): Array<ContactGroup> {
-        const functionGroups = [22, 9, 16, 32, 16]
+        const functionGroups = [9, 16, 32, 16]
 
         if (this.contactGroups) {
             return this.contactGroups.filter(group => functionGroups.indexOf(group.bexioId) > -1)

@@ -21,7 +21,7 @@ export default class LogoffService {
         })
 
         await LogoffService.emailService.sendMail(
-            contact.mail,
+            [contact.mail, contact.mailSecond || '', ...contact.moreMails || []],
             'aufgebot@vkazu.ch',
             'Neue Abmeldungen',
             email
@@ -39,7 +39,7 @@ export default class LogoffService {
         })
 
         await LogoffService.emailService.sendMail(
-            contact.mail,
+            [contact.mail, contact.mailSecond || '', ...contact.moreMails || []],
             'aufgebot@vkazu.ch',
             'Abmeldungstatusänderung',
             email,

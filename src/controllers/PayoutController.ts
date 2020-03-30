@@ -171,7 +171,7 @@ export default class PayoutController {
                 const pdf = await PayoutService.generateMemberPDF(payout, member)
 
                 await PayoutController.emailService.sendMail(
-                    member.mail,
+                    [member.mail, member.mailSecond || '', ...member.moreMails || []],
                     'info@vkazu.ch',
                     'Abrechnung Verkehrskadetten-Entschädigung',
                     email,
