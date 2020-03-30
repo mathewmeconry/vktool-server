@@ -181,5 +181,13 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
         AuthRoles.LOGOFFS_EDIT,
         AuthRoles.LOGOFFS_READ,
         AuthRoles.LOGOFFS_APPROVE
+    ],
+    // CON
+    22: [
+        AuthRoles.MEMBERS_READ,
+        AuthRoles.CONTACTS_READ,
+        AuthRoles.RANKS_READ,
+        AuthRoles.BILLINGREPORTS_CREATE,
+        AuthRoles.MAILING_LISTS
     ]
 }
