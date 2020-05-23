@@ -4,6 +4,6 @@ import UserController from '../controllers/UserController';
 import { AuthRoles } from "../interfaces/AuthRoles";
 
 export default function UserRoutes(app: Express.Router) {
-    app.get('/me', UserController.me)
+    app.get('/me', AuthService.checkAuthorization([AuthRoles.AUTHENTICATED]), UserController.me)
     app.get('/users', AuthService.checkAuthorization([AuthRoles.ADMIN]), UserController.users)
 }

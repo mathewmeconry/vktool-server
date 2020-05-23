@@ -10,7 +10,7 @@ export default function ContactsRoutes(app: Express.Router) {
     app.get('/members', AuthService.checkAuthorization([AuthRoles.MEMBERS_READ, AuthRoles.BILLINGREPORTS_CREATE]), ContactsController.getMembers)
     app.post('/members', AuthService.checkAuthorization([AuthRoles.CONTACTS_EDIT]), ContactsController.postContact)
 
-    app.get('/members/pdf', AuthService.checkAuthorization([AuthRoles.AUTHENTICATED]), ContactsController.getMemberListPdf)
+    app.get('/members/pdf', AuthService.checkAuthorization([AuthRoles.AUTHENTICATED, AuthRoles.MEMBERS_READ]), ContactsController.getMemberListPdf)
 
     app.get('/ranks', AuthService.checkAuthorization([AuthRoles.RANKS_READ]), ContactsController.getRanks)
 }
