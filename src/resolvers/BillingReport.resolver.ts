@@ -9,6 +9,7 @@ import {
     Ctx,
     InputType,
     Field,
+    Authorized,
 } from 'type-graphql'
 import BillingReport, { BillingReportState } from '../entities/BillingReport'
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers'
@@ -16,10 +17,11 @@ import User from '../entities/User'
 import Order from '../entities/Order'
 import OrderCompensation from '../entities/OrderCompensation'
 import Contact from '../entities/Contact'
-import { getConnection, getManager } from 'typeorm'
+import { getManager } from 'typeorm'
 import { ApolloContext } from '../controllers/CliController'
+import { AuthRoles } from '../interfaces/AuthRoles'
 
-const baseResolver = createResolver('BillingReport', BillingReport)
+const baseResolver = createResolver('BillingReport', BillingReport, [AuthRoles.BILLINGREPORTS_READ])
 
 registerEnumType(BillingReportState, {
     name: 'BillingReportState',
@@ -73,12 +75,19 @@ class EditBillingReportInput implements Partial<BillingReport> {
 
 @Resolver((of) => BillingReport)
 export default class BillingReportResolver extends baseResolver {
+    @Authorized([AuthRoles.BILLINGREPORTS_EDIT, AuthRoles.BILLINGREPORTS_CREATE])
     @Mutation((type) => BillingReport)
     public async editBillingReport(
         @Arg('data') data: EditBillingReportInput,
         @Ctx() ctx: ApolloContext
     ): Promise<BillingReport> {
         const br = await resolveEntity<BillingReport>('BillingReport', data.id)
+
+        if (!ctx.user.roles.includes(AuthRoles.BILLINGREPORTS_EDIT)) {
+            if (br.creatorId !== ctx.user.id || br.state !== BillingReportState.PENDING) {
+                throw new Error('Access denied! You don\'t have permission for this action!')
+            }
+        }
 
         if (data.orderId) {
             const order = await resolveEntity<Order>('Order', data.orderId)
@@ -104,6 +113,7 @@ export default class BillingReportResolver extends baseResolver {
         return br.save()
     }
 
+    @Authorized([AuthRoles.BILLINGREPORTS_CREATE])
     @Mutation((type) => BillingReport)
     public async addBillingReport(
         @Arg('data') data: AddBillingReportInput,
@@ -129,6 +139,7 @@ export default class BillingReportResolver extends baseResolver {
         return br.save()
     }
 
+    @Authorized([AuthRoles.BILLINGREPORTS_APPROVE])
     @Mutation((type) => BillingReport)
     public async changeBillingReportState(
         @Arg('id') id: number,

@@ -8,6 +8,7 @@ import {
 	Arg,
 	Ctx,
 	Args,
+    Authorized,
 } from 'type-graphql';
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers';
 import Payout from '../entities/Payout';
@@ -19,13 +20,15 @@ import { getManager } from 'typeorm';
 import Contact from '../entities/Contact';
 import EMailService from '../services/EMailService';
 import { ApolloContext } from '../controllers/CliController';
+import { AuthRoles } from '../interfaces/AuthRoles'
 
-const baseResolver = createResolver('Payout', Payout);
+const baseResolver = createResolver('Payout', Payout, [AuthRoles.PAYOUTS_READ]);
 
 @Resolver((of) => Payout)
 export default class PayoutResolver extends baseResolver {
 	private static emailService = new EMailService('no-reply@vkazu.ch');
 
+    @Authorized([AuthRoles.PAYOUTS_SEND])
 	@Mutation((type) => Boolean)
 	public async transferPayout(
 		@Arg('id') id: number,
@@ -37,6 +40,7 @@ export default class PayoutResolver extends baseResolver {
 		return true;
 	}
 
+    @Authorized([AuthRoles.PAYOUTS_SEND])
 	@Mutation((type) => Boolean)
 	public async send2Bexio(
 		@Arg('id') id: number,
@@ -56,6 +60,7 @@ export default class PayoutResolver extends baseResolver {
 		return true;
 	}
 
+    @Authorized([AuthRoles.PAYOUTS_SEND])
 	@Mutation((type) => Boolean)
 	public async sendMemberEmails(
 		@Arg('id') id: number,
@@ -89,6 +94,7 @@ export default class PayoutResolver extends baseResolver {
 		return true;
 	}
 
+    @Authorized([AuthRoles.PAYOUTS_EDIT])
 	@Mutation((type) => Payout)
 	public async reclaimPayout(@Arg('id') id: number): Promise<Payout> {
 		const payout = await resolveEntity<Payout>('Payout', id);
@@ -108,6 +114,7 @@ export default class PayoutResolver extends baseResolver {
 		return completePayout;
 	}
 
+    @Authorized([AuthRoles.PAYOUTS_CREATE])
 	@Mutation((type) => Payout)
 	public async addPayout(
 		@Arg('until') until: Date,

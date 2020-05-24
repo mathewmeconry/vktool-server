@@ -1,145 +1,162 @@
-import { Resolver, Root, FieldResolver, InputType, Field, Mutation, Arg, Ctx } from 'type-graphql';
-import { createResolver, resolveEntity } from './helpers';
-import Logoff, { LogoffState } from '../entities/Logoff';
-import { registerEnumType } from 'type-graphql';
-import Contact from '../entities/Contact';
-import User from '../entities/User';
-import { ApolloContext } from '../controllers/CliController';
-import LogoffService from '../services/LogoffService';
+import { Resolver, Root, FieldResolver, InputType, Field, Mutation, Arg, Ctx, Authorized, Query } from 'type-graphql'
+import { createResolver, resolveEntity } from './helpers'
+import Logoff, { LogoffState } from '../entities/Logoff'
+import { registerEnumType } from 'type-graphql'
+import Contact from '../entities/Contact'
+import User from '../entities/User'
+import { ApolloContext } from '../controllers/CliController'
+import LogoffService from '../services/LogoffService'
+import { AuthRoles } from '../interfaces/AuthRoles'
+import AuthService from '../services/AuthService'
+import { getManager } from 'typeorm'
 
-const baseResolver = createResolver('Logoff', Logoff);
+const baseResolver = createResolver('Logoff', Logoff, [AuthRoles.LOGOFFS_READ])
 
 registerEnumType(LogoffState, {
-	name: 'LogoffState',
-	description: 'Possible states for logoffs',
-});
+    name: 'LogoffState',
+    description: 'Possible states for logoffs',
+})
 
 @InputType()
 class AddLogoff implements Partial<Logoff> {
-	@Field()
-	public contactId: number;
+    @Field()
+    public contactId: number
 
-	@Field()
-	public from: Date;
+    @Field()
+    public from: Date
 
-	@Field()
-	public until: Date;
+    @Field()
+    public until: Date
 
-	@Field()
-	public state: LogoffState;
+    @Field()
+    public state: LogoffState
 
-	@Field({ nullable: true })
-	public remarks?: string;
+    @Field({ nullable: true })
+    public remarks?: string
 }
 
 @Resolver((of) => Logoff)
 export default class LogoffResolver extends baseResolver {
-	@Mutation((type) => Logoff)
-	public async deleteLogoff(
-		@Arg('id') id: number,
-		@Arg('notify', { defaultValue: true }) notify: boolean = true,
-		@Ctx() ctx: ApolloContext
-	): Promise<Logoff> {
-		const logoff = await resolveEntity<Logoff>('Logoff', id);
-		logoff.deletedAt = new Date();
-		logoff.deletedBy = ctx.user;
+    @Authorized([AuthRoles.AUTHENTICATED, AuthRoles.LOGOFFS_READ])
+    @Query(type => [Logoff])
+    public async getLogoffsByUser(@Arg('id') id: number, @Ctx() ctx: ApolloContext): Promise<Logoff[]> {
+        if (ctx.user.id !== id && !AuthService.isAuthorized(ctx.user.roles, AuthRoles.LOGOFFS_READ)) {
+            throw new Error('Access denied! You don\'t have permission for this action!')
+        }
 
-		if (notify !== false) {
-			LogoffService.sendChangeStateMail(logoff.contact, logoff);
-		}
+        return getManager().getRepository(Logoff).find({ contactId: id })
+    }
 
-		return logoff.save();
-	}
+    @Authorized([AuthRoles.LOGOFFS_EDIT])
+    @Mutation((type) => Logoff)
+    public async deleteLogoff(
+        @Arg('id') id: number,
+        @Arg('notify', { defaultValue: true }) notify: boolean = true,
+        @Ctx() ctx: ApolloContext
+    ): Promise<Logoff> {
+        const logoff = await resolveEntity<Logoff>('Logoff', id)
+        logoff.deletedAt = new Date()
+        logoff.deletedBy = ctx.user
 
-	@Mutation((type) => Logoff)
-	public async changeLogoffState(
-		@Arg('id') id: number,
-		@Arg('state') state: LogoffState,
-		@Arg('notify', { defaultValue: true }) notify: boolean = true,
-		@Ctx() ctx: ApolloContext
-	): Promise<Logoff> {
-		const logoff = await resolveEntity<Logoff>('Logoff', id);
-		logoff.state = state;
-		logoff.changedStateBy = ctx.user;
+        if (notify !== false) {
+            LogoffService.sendChangeStateMail(logoff.contact, logoff)
+        }
 
-		if (notify !== false) {
-			LogoffService.sendChangeStateMail(logoff.contact, logoff);
-		}
-		return logoff.save();
-	}
+        return logoff.save()
+    }
 
-	@Mutation((type) => [Logoff])
-	public async addLogoffs(
-		@Arg('data', (type) => [AddLogoff]) data: AddLogoff[],
-		@Arg('notify', { defaultValue: true }) notify: boolean = true,
-		@Ctx() ctx: ApolloContext
-	): Promise<Logoff[]> {
-		const savePromises: Promise<Logoff>[] = [];
-		for (const add of data) {
-			const contact = await resolveEntity<Contact>('Contact', add.contactId);
-			const logoff = new Logoff(
-				contact,
-				add.from,
-				add.until,
-				add.state,
-				add.remarks || '',
-				ctx.user
-			);
-			savePromises.push(logoff.save());
-		}
+    @Authorized([AuthRoles.LOGOFFS_APPROVE])
+    @Mutation((type) => Logoff)
+    public async changeLogoffState(
+        @Arg('id') id: number,
+        @Arg('state') state: LogoffState,
+        @Arg('notify', { defaultValue: true }) notify: boolean = true,
+        @Ctx() ctx: ApolloContext
+    ): Promise<Logoff> {
+        const logoff = await resolveEntity<Logoff>('Logoff', id)
+        logoff.state = state
+        logoff.changedStateBy = ctx.user
 
-		if (notify !== false) {
-			LogoffService.sendInformationMail(
-				await resolveEntity<Contact>('Contact', data[0].contactId),
-				await Promise.all(savePromises)
-			);
-		}
+        if (notify !== false) {
+            LogoffService.sendChangeStateMail(logoff.contact, logoff)
+        }
+        return logoff.save()
+    }
 
-		return Promise.all(savePromises);
-	}
+    @Authorized([AuthRoles.LOGOFFS_CREATE])
+    @Mutation((type) => [Logoff])
+    public async addLogoffs(
+        @Arg('data', (type) => [AddLogoff]) data: AddLogoff[],
+        @Arg('notify', { defaultValue: true }) notify: boolean = true,
+        @Ctx() ctx: ApolloContext
+    ): Promise<Logoff[]> {
+        const savePromises: Promise<Logoff>[] = []
+        for (const add of data) {
+            const contact = await resolveEntity<Contact>('Contact', add.contactId)
+            const logoff = new Logoff(
+                contact,
+                add.from,
+                add.until,
+                add.state,
+                add.remarks || '',
+                ctx.user
+            )
+            savePromises.push(logoff.save())
+        }
 
-	@Mutation((type) => Logoff)
-	public async addLogoff(
-		@Arg('data') data: AddLogoff,
-		@Arg('notify', { defaultValue: true }) notify: boolean = true,
-		@Ctx() ctx: ApolloContext
-	): Promise<Logoff> {
-		const contact = await resolveEntity<Contact>('Contact', data.contactId);
-		const logoff = new Logoff(
-			contact,
-			data.from,
-			data.until,
-			data.state,
-			data.remarks || '',
-			ctx.user
-		);
+        if (notify !== false) {
+            LogoffService.sendInformationMail(
+                await resolveEntity<Contact>('Contact', data[0].contactId),
+                await Promise.all(savePromises)
+            )
+        }
 
-		if (notify !== false) {
-			LogoffService.sendInformationMail(contact, [logoff]);
-		}
+        return Promise.all(savePromises)
+    }
 
-		return logoff.save();
-	}
+    @Authorized([AuthRoles.LOGOFFS_CREATE])
+    @Mutation((type) => Logoff)
+    public async addLogoff(
+        @Arg('data') data: AddLogoff,
+        @Arg('notify', { defaultValue: true }) notify: boolean = true,
+        @Ctx() ctx: ApolloContext
+    ): Promise<Logoff> {
+        const contact = await resolveEntity<Contact>('Contact', data.contactId)
+        const logoff = new Logoff(
+            contact,
+            data.from,
+            data.until,
+            data.state,
+            data.remarks || '',
+            ctx.user
+        )
 
-	@FieldResolver()
-	public async contact(@Root() object: Logoff): Promise<Contact> {
-		return resolveEntity('User', object.contactId);
-	}
+        if (notify !== false) {
+            LogoffService.sendInformationMail(contact, [logoff])
+        }
 
-	@FieldResolver()
-	public async createdBy(@Root() object: Logoff): Promise<User> {
-		return resolveEntity('User', object.createdById);
-	}
+        return logoff.save()
+    }
 
-	@FieldResolver({ nullable: true })
-	public async changedStateBy(@Root() object: Logoff): Promise<User | null> {
-		if (!object.changedStateById) return null;
-		return resolveEntity('User', object.changedStateById);
-	}
+    @FieldResolver()
+    public async contact(@Root() object: Logoff): Promise<Contact> {
+        return resolveEntity('User', object.contactId)
+    }
 
-	@FieldResolver({ nullable: true })
-	public async deletedBy(@Root() object: Logoff): Promise<User | null> {
-		if (!object.deletedById) return null;
-		return resolveEntity('User', object.deletedById);
-	}
+    @FieldResolver()
+    public async createdBy(@Root() object: Logoff): Promise<User> {
+        return resolveEntity('User', object.createdById)
+    }
+
+    @FieldResolver({ nullable: true })
+    public async changedStateBy(@Root() object: Logoff): Promise<User | null> {
+        if (!object.changedStateById) return null
+        return resolveEntity('User', object.changedStateById)
+    }
+
+    @FieldResolver({ nullable: true })
+    public async deletedBy(@Root() object: Logoff): Promise<User | null> {
+        if (!object.deletedById) return null
+        return resolveEntity('User', object.deletedById)
+    }
 }

@@ -1,14 +1,16 @@
-import { Resolver, Root, FieldResolver, Query } from 'type-graphql';
+import { Resolver, Root, FieldResolver, Query, Authorized } from 'type-graphql';
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers';
 import Contact from '../entities/Contact';
 import Order from '../entities/Order';
 import BillingReport from '../entities/BillingReport';
 import { getManager } from 'typeorm';
+import { AuthRoles } from '../interfaces/AuthRoles'
 
-const baseResolver = createResolver('Order', Order);
+const baseResolver = createResolver('Order', Order, [AuthRoles.ORDERS_READ]);
 
 @Resolver((of) => Order)
 export default class OrderResolver extends baseResolver {
+	@Authorized([AuthRoles.ORDERS_READ])
 	@Query((type) => [Order])
 	public async open(): Promise<Order[]> {
 		let now = new Date();

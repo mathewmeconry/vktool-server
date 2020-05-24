@@ -1,7 +1,7 @@
 import { Entity, Column, OneToOne, JoinColumn, AfterLoad, RelationId } from 'typeorm';
 import Base from './Base';
 import Contact from './Contact';
-import { AuthRolesByRank, AuthRolesByFunction } from '../interfaces/AuthRoles';
+import { AuthRolesByRank, AuthRolesByFunction, AuthRoles } from '../interfaces/AuthRoles';
 import { IsString, IsOptional } from 'class-validator';
 import { ObjectType, Field } from 'type-graphql';
 
@@ -24,9 +24,9 @@ export default class User extends Base<User> {
 	@Column('text')
 	public displayName: string;
 
-	@Field((type) => [String])
+	@Field((type) => [AuthRoles])
 	@Column('simple-array')
-	public roles: Array<string>;
+	public roles: AuthRoles[];
 
 	@Field()
 	@Column({ precision: 6, type: 'timestamp' })

@@ -8,8 +8,10 @@ import {
 	Int,
 	Args,
 	ObjectType,
+	Authorized,
 } from 'type-graphql';
 import { getManager } from 'typeorm';
+import { AuthRoles } from '../interfaces/AuthRoles'
 @ArgsType()
 export class PaginationArgs {
 	@Field((type) => Int, { nullable: true })
@@ -38,12 +40,13 @@ export default function PaginatedResponse<TItem>(TItemClass: ClassType<TItem>) {
 	return PaginatedResponseClass;
 }
 
-export function createResolver<T extends ClassType>(suffix: string, objectTypes: T) {
+export function createResolver<T extends ClassType>(suffix: string, objectTypes: T, getAuthRoles: AuthRoles[]) {
 	@ObjectType(`PaginationResponse${suffix}`)
 	class PaginationResponse extends PaginatedResponse(objectTypes) {}
 
 	@Resolver({ isAbstract: true })
 	abstract class BaseResolver {
+		@Authorized(getAuthRoles)
 		@Query((type) => PaginationResponse, { name: `getAll${suffix}s` })
 		public async getAll(@Args() { cursor, limit }: PaginationArgs): Promise<PaginationResponse> {
 			const qb = getManager().getRepository(objectTypes).createQueryBuilder();
@@ -64,6 +67,7 @@ export function createResolver<T extends ClassType>(suffix: string, objectTypes:
 			};
 		}
 
+		@Authorized(getAuthRoles)
 		@Query((type) => objectTypes, { name: `get${suffix}`, nullable: true })
 		public async get(@Arg('id') id: number): Promise<T | null> {
 			return getManager().getRepository(objectTypes).findOne(id);

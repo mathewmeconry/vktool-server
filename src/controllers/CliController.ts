@@ -73,7 +73,8 @@ export default class CliController {
 		const schema = await buildSchema({
 			resolvers: [path.join(__dirname, '../resolvers/*.resolver.js')],
 			emitSchemaFile: true,
-			validate: false,
+            validate: false,
+            authChecker: AuthService.isAuthorizedGraphQl
 		});
 
 		const apollo = new ApolloServer({
@@ -83,7 +84,7 @@ export default class CliController {
 				return {
 					user: req.user,
 				};
-			},
+            }
 		});
 		apollo.applyMiddleware({ app });
 
