@@ -1,18 +1,29 @@
-import { Resolver, FieldResolver, Root, Args, Arg, registerEnumType, Mutation, Ctx, InputType, Field } from "type-graphql"
-import BillingReport, { BillingReportState } from "../entities/BillingReport"
-import { createResolver, resolveEntity, resolveEntityArray } from "./helpers"
-import User from "../entities/User"
-import Order from "../entities/Order"
-import OrderCompensation from "../entities/OrderCompensation"
-import Contact from "../entities/Contact"
-import { getConnection, getManager } from "typeorm"
-import { ApolloContext } from "../controllers/CliController"
+import {
+    Resolver,
+    FieldResolver,
+    Root,
+    Args,
+    Arg,
+    registerEnumType,
+    Mutation,
+    Ctx,
+    InputType,
+    Field,
+} from 'type-graphql'
+import BillingReport, { BillingReportState } from '../entities/BillingReport'
+import { createResolver, resolveEntity, resolveEntityArray } from './helpers'
+import User from '../entities/User'
+import Order from '../entities/Order'
+import OrderCompensation from '../entities/OrderCompensation'
+import Contact from '../entities/Contact'
+import { getConnection, getManager } from 'typeorm'
+import { ApolloContext } from '../controllers/CliController'
 
 const baseResolver = createResolver('BillingReport', BillingReport)
 
 registerEnumType(BillingReportState, {
     name: 'BillingReportState',
-    description: 'Possilbe states for billingReports'
+    description: 'Possilbe states for billingReports',
 })
 
 @InputType()
@@ -23,10 +34,10 @@ class AddBillingReportInput implements Partial<BillingReport> {
     @Field()
     public date: Date
 
-    @Field(type => [Number])
+    @Field((type) => [Number])
     public elIds: number[]
 
-    @Field(type => [Number])
+    @Field((type) => [Number])
     public driverIds: number[]
 
     @Field()
@@ -47,10 +58,10 @@ class EditBillingReportInput implements Partial<BillingReport> {
     @Field({ nullable: true })
     public date?: Date
 
-    @Field(type => [Number], { nullable: true })
+    @Field((type) => [Number], { nullable: true })
     public elIds?: number[]
 
-    @Field(type => [Number], { nullable: true })
+    @Field((type) => [Number], { nullable: true })
     public driverIds?: number[]
 
     @Field({ nullable: true })
@@ -60,10 +71,13 @@ class EditBillingReportInput implements Partial<BillingReport> {
     public remarks?: string
 }
 
-@Resolver(of => BillingReport)
+@Resolver((of) => BillingReport)
 export default class BillingReportResolver extends baseResolver {
-    @Mutation(type => BillingReport)
-    public async editBillingReport(@Arg('data') data: EditBillingReportInput, @Ctx() ctx: ApolloContext): Promise<BillingReport> {
+    @Mutation((type) => BillingReport)
+    public async editBillingReport(
+        @Arg('data') data: EditBillingReportInput,
+        @Ctx() ctx: ApolloContext
+    ): Promise<BillingReport> {
         const br = await resolveEntity<BillingReport>('BillingReport', data.id)
 
         if (data.orderId) {
@@ -90,26 +104,47 @@ export default class BillingReportResolver extends baseResolver {
         return br.save()
     }
 
-    @Mutation(type => BillingReport)
-    public async addBillingReport(@Arg('data') data: AddBillingReportInput, @Ctx() ctx: ApolloContext): Promise<BillingReport> {
+    @Mutation((type) => BillingReport)
+    public async addBillingReport(
+        @Arg('data') data: AddBillingReportInput,
+        @Ctx() ctx: ApolloContext
+    ): Promise<BillingReport> {
         const order = await resolveEntity<Order>('Order', data.orderId)
         const els = await resolveEntityArray<Contact>('Contact', data.elIds)
         const drivers = await resolveEntityArray<Contact>('Contact', data.driverIds)
 
         // @ts-ignore
-        const br = new BillingReport({ id: 1 }, order, data.date, [], els, drivers, data.food, data.remarks || '', BillingReportState.PENDING)
+        const br = new BillingReport(
+            ctx.user,
+            order,
+            data.date,
+            [],
+            els,
+            drivers,
+            data.food,
+            data.remarks || '',
+            BillingReportState.PENDING
+        )
 
         return br.save()
     }
 
-    @Mutation(type => BillingReport)
-    public async changeBillingReportState(@Arg('id') id: number, @Arg('state') state: BillingReportState, @Ctx() ctx: ApolloContext): Promise<BillingReport> {
+    @Mutation((type) => BillingReport)
+    public async changeBillingReportState(
+        @Arg('id') id: number,
+        @Arg('state') state: BillingReportState,
+        @Ctx() ctx: ApolloContext
+    ): Promise<BillingReport> {
         const br = await getManager()
             .getRepository(BillingReport)
             .createQueryBuilder('billingReport')
             .leftJoinAndSelect('billingReport.creator', 'user')
             .leftJoinAndSelect('billingReport.order', 'order')
-            .leftJoinAndSelect('billingReport.compensations', 'compensations', 'compensations.deletedAt IS NULL')
+            .leftJoinAndSelect(
+                'billingReport.compensations',
+                'compensations',
+                'compensations.deletedAt IS NULL'
+            )
             .leftJoinAndSelect('compensations.member', 'member')
             .leftJoinAndSelect('billingReport.els', 'els')
             .leftJoinAndSelect('billingReport.drivers', 'drivers')
@@ -118,7 +153,8 @@ export default class BillingReportResolver extends baseResolver {
 
         if (!br) throw new Error('BillingReport not found')
 
-        await getManager().createQueryBuilder()
+        await getManager()
+            .createQueryBuilder()
             .update(OrderCompensation)
             .set({ approved: state === BillingReportState.APPROVED, updatedBy: ctx.user })
             .where('billingReport = :id', { id: br.id })

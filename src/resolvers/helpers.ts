@@ -1,78 +1,84 @@
-import { ClassType, Resolver, Query, Arg, ArgsType, Field, Int, Args, ObjectType } from "type-graphql"
-import { getManager } from "typeorm"
+import {
+	ClassType,
+	Resolver,
+	Query,
+	Arg,
+	ArgsType,
+	Field,
+	Int,
+	Args,
+	ObjectType,
+} from 'type-graphql';
+import { getManager } from 'typeorm';
 @ArgsType()
 export class PaginationArgs {
-    @Field(type => Int, { nullable: true })
-    cursor: number
+	@Field((type) => Int, { nullable: true })
+	cursor: number;
 
-    @Field(type => Int, { nullable: true })
-    limit?: number
+	@Field((type) => Int, { nullable: true })
+	limit?: number;
 }
 
-
 export default function PaginatedResponse<TItem>(TItemClass: ClassType<TItem>) {
-    // `isAbstract` decorator option is mandatory to prevent registering in schema
-    @ObjectType({isAbstract: true})
-    abstract class PaginatedResponseClass {
-      @Field(type => [TItemClass])
-      items: TItem[];
-  
-      @Field(type => Int)
-      total: number;
-  
-      @Field(type => Int)
-      cursor: number
+	// `isAbstract` decorator option is mandatory to prevent registering in schema
+	@ObjectType({ isAbstract: true })
+	abstract class PaginatedResponseClass {
+		@Field((type) => [TItemClass])
+		items: TItem[];
 
-      @Field()
-      hasMore: boolean
-    }
-    return PaginatedResponseClass;
-  }
+		@Field((type) => Int)
+		total: number;
+
+		@Field((type) => Int)
+		cursor: number;
+
+		@Field()
+		hasMore: boolean;
+	}
+	return PaginatedResponseClass;
+}
 
 export function createResolver<T extends ClassType>(suffix: string, objectTypes: T) {
+	@ObjectType(`PaginationResponse${suffix}`)
+	class PaginationResponse extends PaginatedResponse(objectTypes) {}
 
-    @ObjectType(`PaginationResponse${suffix}`)
-    class PaginationResponse extends PaginatedResponse(objectTypes) {
+	@Resolver({ isAbstract: true })
+	abstract class BaseResolver {
+		@Query((type) => PaginationResponse, { name: `getAll${suffix}s` })
+		public async getAll(@Args() { cursor, limit }: PaginationArgs): Promise<PaginationResponse> {
+			const qb = getManager().getRepository(objectTypes).createQueryBuilder();
+			qb.skip(cursor);
+			if (limit) qb.take(limit);
 
-    }
+			const count = await getManager().getRepository(objectTypes).count();
 
-    @Resolver({ isAbstract: true })
-    abstract class BaseResolver {
-        @Query(type => PaginationResponse, { name: `getAll${suffix}s` })
-        public async getAll(@Args() { cursor, limit }: PaginationArgs): Promise<PaginationResponse> {
-            const qb = getManager().getRepository(objectTypes).createQueryBuilder()
-            qb.skip(cursor)
-            if (limit) qb.take(limit)
+			let nextCursor = cursor + (limit || 0);
+			if (nextCursor > count) {
+				nextCursor = count;
+			}
+			return {
+				total: count,
+				cursor: nextCursor,
+				hasMore: nextCursor !== count,
+				items: await qb.getMany(),
+			};
+		}
 
-            const count = await getManager().getRepository(objectTypes).count()
+		@Query((type) => objectTypes, { name: `get${suffix}`, nullable: true })
+		public async get(@Arg('id') id: number): Promise<T | null> {
+			return getManager().getRepository(objectTypes).findOne(id);
+		}
+	}
 
-            let nextCursor = cursor + (limit || 0)
-            if(nextCursor > count) {
-                nextCursor = count
-            }
-            return {
-                total: count,
-                cursor: nextCursor,
-                hasMore: nextCursor !== count,
-                items: await qb.getMany()
-            }
-        }
-
-        @Query(type => objectTypes, { name: `get${suffix}`, nullable: true })
-        public async get(@Arg('id') id: number): Promise<T | null> {
-            return getManager().getRepository(objectTypes).findOne(id)
-        }
-    }
-
-    return BaseResolver
+	return BaseResolver;
 }
 
 export async function resolveEntity<T>(entity: string, id: number): Promise<T> {
-    const obj = await getManager().getRepository<T>(entity).findOne(id)
-    if (!obj) throw new Error(`${entity} not found`)
-    return obj
+	const obj = await getManager().getRepository<T>(entity).findOne(id);
+	if (!obj) throw new Error(`${entity} not found`);
+	return obj;
 }
 
 export async function resolveEntityArray<T>(entity: string, ids: number[]): Promise<T[]> {
-    return getManager().getRepository<T>(entity).findByIds(ids)
+	return getManager().getRepository<T>(entity).findByIds(ids);
 }
