@@ -1,0 +1,61 @@
+import OrderCompensation from "../entities/OrderCompensation"
+import { Resolver, FieldResolver, Root, Query, Arg, InputType, Mutation, Ctx, Field } from "type-graphql"
+import { resolveEntity } from "./helpers"
+import BillingReport from "../entities/BillingReport"
+import CompensationResolver from "./Compensation.resolver"
+import { ApolloContext } from "../controllers/CliController"
+import Contact from "../entities/Contact"
+
+@InputType()
+class AddOrderCompensation implements Partial<OrderCompensation> {
+    @Field()
+    public from: Date
+
+    @Field()
+    public until: Date
+
+    @Field()
+    public billingReportId: number
+
+    @Field()
+    public memberId: number
+
+    @Field()
+    public date: Date
+}
+
+@Resolver(of => OrderCompensation)
+export default class OrderCompensationResolver extends CompensationResolver {
+    @Mutation(type => [OrderCompensation])
+    public async addOrderCompensations(@Arg('data', type => [AddOrderCompensation]) data: AddOrderCompensation[], @Ctx() ctx: ApolloContext): Promise<OrderCompensation[]> {
+        const storePromises: Promise<OrderCompensation>[] = []
+        for (const add of data) {
+            const member = await resolveEntity<Contact>('Contact', add.memberId)
+            const bt = await resolveEntity<BillingReport>('BillingReport', add.billingReportId)
+
+            const comp = new OrderCompensation(member, ctx.user, add.date, bt, add.from, add.until)
+            storePromises.push(comp.save())
+        }
+
+        return Promise.all(storePromises)
+    }
+
+    @Mutation(type => OrderCompensation)
+    public async addOrderCompensation(@Arg('data') data: AddOrderCompensation, @Ctx() ctx: ApolloContext): Promise<OrderCompensation> {
+        const member = await resolveEntity<Contact>('Contact', data.memberId)
+        const bt = await resolveEntity<BillingReport>('BillingReport', data.billingReportId)
+
+        const comp = new OrderCompensation(member, ctx.user, data.date, bt, data.from, data.until)
+        return comp.save()
+    }
+
+    @Query(type => OrderCompensation, { nullable: true })
+    public async getOrderCompensation(@Arg('id') id: number): Promise<OrderCompensation | null> {
+        return resolveEntity('OrderCompensation', id)
+    }
+
+    @FieldResolver()
+    public async billingReport(@Root() object: OrderCompensation): Promise<BillingReport> {
+        return resolveEntity('BillingReport', object.billingReportId)
+    }
+}

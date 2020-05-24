@@ -1,20 +1,19 @@
-import { AuthRoles } from "../interfaces/AuthRoles";
+import { AuthRoles } from "../interfaces/AuthRoles"
 import passport from 'passport'
 import * as Express from 'express'
-//@ts-ignore
-import User from '../entities/User';
-import Contact from '../entities/Contact';
+import User from '../entities/User'
+import Contact from '../entities/Contact'
 import config from 'config'
-import { getManager } from "typeorm";
-import { MockStrategy } from "passport-mock-strategy";
+import { getManager } from "typeorm"
+import { MockStrategy } from "passport-mock-strategy"
 import * as jwt from 'jsonwebtoken'
-import mockUser from "passport-mock-strategy/lib/mock-user";
-import AzureAdOAuth2Strategy = require('passport-azure-ad-oauth2')
+import mockUser from "passport-mock-strategy/lib/mock-user"
+import AzureAdOAuth2Strategy from 'passport-azure-ad-oauth2'
 
 export default class AuthService {
     public static init(app: Express.Application) {
-        passport.serializeUser(AuthService.serializeUser);
-        passport.deserializeUser(AuthService.deserializeUser);
+        passport.serializeUser(AuthService.serializeUser)
+        passport.deserializeUser(AuthService.deserializeUser)
 
         AuthService.addAzureStrategy()
 
@@ -30,8 +29,8 @@ export default class AuthService {
                 type: 'mocked'
             }]
         }
-        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-admin', user: Object.assign({}, mockUser, { id: `mock-admin-${Math.round(Math.random() * 10) + 1}` }) }));
-        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-nonadmin', user: Object.assign({}, mockUser, { id: `mock-nonadmin-${Math.round(Math.random() * 10) + 1}`, provider: 'mock-nonadmin' }) }));
+        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-admin', user: Object.assign({}, mockUser, { id: `mock-admin-${Math.round(Math.random() * 10) + 1}` }) }))
+        if (process.env.TESTING) passport.use(new MockStrategy({ name: 'mock-nonadmin', user: Object.assign({}, mockUser, { id: `mock-nonadmin-${Math.round(Math.random() * 10) + 1}`, provider: 'mock-nonadmin' }) }))
 
         app.use(passport.initialize())
         app.use(passport.session())
@@ -80,7 +79,7 @@ export default class AuthService {
     }
 
     public static serializeUser(user: User, done: (err: any, userId?: string) => void): void {
-        done(null, `${user.provider}-${user.id.toString()}`);
+        done(null, `${user.provider}-${user.id.toString()}`)
     }
 
     public static deserializeUser(id: string, done: (err: any, user?: User) => void): void {
@@ -145,7 +144,7 @@ export default class AuthService {
 
                 return done(null, await user.save())
             } else {
-                let userInfo = {};
+                let userInfo = {}
                 getManager().getRepository(Contact).findOne({
                     where: [
                         { mail: azureProfile.upn },

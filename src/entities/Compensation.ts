@@ -1,60 +1,95 @@
-import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager, AfterLoad } from "typeorm";
-import Contact from "./Contact";
-import Payout from "./Payout";
-import User from "./User";
-import Base from "./Base";
-import OrderCompensation from "./OrderCompensation";
-import { IsOptional, IsNumber, IsDate, IsBoolean } from "class-validator";
-import CustomCompensation from "./CustomCompensation";
+import { Column, ManyToOne, Entity, TableInheritance, JoinColumn, getManager, AfterLoad, RelationId, DeleteDateColumn } from "typeorm"
+import Contact from "./Contact"
+import Payout from "./Payout"
+import User from "./User"
+import Base from "./Base"
+import OrderCompensation from "./OrderCompensation"
+import { IsOptional, IsNumber, IsDate, IsBoolean } from "class-validator"
+import CustomCompensation from "./CustomCompensation"
+import { ObjectType, Field } from "type-graphql"
 
+@ObjectType()
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 export default class Compensation<T> extends Base<T> {
-    @ManyToOne(type => Contact, contact => contact.compensations, { eager: true })
+    @Field(type => Contact)
+    @ManyToOne(type => Contact, contact => contact.compensations)
     public member: Contact
 
-    @Column({ nullable: true })
-    public memberId?: number;
+    @RelationId('member')
+    public memberId: number
 
-    @ManyToOne(type => User, { eager: true })
+    @Field(type => User)
+    @ManyToOne(type => User)
     public creator: User
 
+    @RelationId('creator')
+    public creatorId: number
+
+    @Field()
     @Column('decimal', { precision: 10, scale: 2 })
     public amount: number
 
-    @Column('date')
+    @Field()
+    @Column('datetime')
     public date: Date
 
+    @Field()
     @Column('boolean')
     public approved: boolean
 
-    @ManyToOne(type => User, { eager: true, nullable: true })
+    @Field(type => User)
+    @ManyToOne(type => User, { nullable: true })
     @JoinColumn()
     public approvedBy?: User
 
+    @RelationId('approvedBy')
+    public approvedById?: number
+
+    @Field()
     @Column('boolean', { default: false })
     public paied: boolean
 
-    @ManyToOne(type => Payout, payout => payout.compensations, { nullable: true, eager: true })
+    @Field(type => Payout, { nullable: true })
+    @ManyToOne(type => Payout, payout => payout.compensations, { nullable: true })
     public payout?: Payout
 
+
+    @RelationId('payout')
+    public payoutId?: number
+
+    @Field({ nullable: true })
     @Column({ nullable: true })
     public bexioBill?: number
 
+    @Field(type => Compensation)
     @ManyToOne(type => Compensation, { nullable: true })
     @JoinColumn()
-    public transferCompensation?: Compensation<CustomCompensation>;
+    public transferCompensation?: Compensation<CustomCompensation>
 
+
+    @RelationId('transferCompensation')
+    public transferCompensationId?: number
+
+    @Field(type => User)
     @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
 
-    @Column('date', { nullable: true })
+    @RelationId('updatedBy')
+    public updatedById?: number
+
+    @Column('datetime', { nullable: true })
+    @DeleteDateColumn()
     public deletedAt?: Date
 
-    @ManyToOne(type => User, { eager: true })
+    @Field(type => User, { nullable: true })
+    @ManyToOne(type => User)
     @JoinColumn()
-    public deletedBy: User
+    public deletedBy?: User
+
+    @RelationId('deletedBy')
+    public deletedById?: number
 
     constructor(member: Contact, creator: User, amount: number, date: Date, approved: boolean = false, paied: boolean = false, payout?: Payout) {
         super()

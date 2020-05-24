@@ -9,18 +9,19 @@ import AuthService from '../services/AuthService'
 import config from 'config'
 import "reflect-metadata"
 import FileStore from 'session-file-store'
+import { buildSchema } from 'type-graphql'
+import { ApolloServer } from 'apollo-server-express'
 
 // Routes
-import UserRoutes from '../routes/UserRoutes'
 import AuthRoutes from '../routes/AuthRoutes'
 import ContactsRoutes from '../routes/ContactsRoutes'
-import OrdersRoutes from '../routes/OrdersRoutes'
-import CompensationRoutes from '../routes/CompensationRoutes'
-import BillingReportRoutes from '../routes/BillingReportRoutes'
-import CollectionPointsRoutes from '../routes/CollectionPointsRoutes'
 import PayoutRoutes from '../routes/PayoutRoutes'
-import LogoffRoutes from '../routes/LogoffRoutes'
 import { Server } from 'http'
+import User from '../entities/User'
+
+export interface ApolloContext {
+    user: User
+}
 
 export default class CliController {
     public static async startServer(): Promise<{ app: Express.Application; server: Server }> {
@@ -59,18 +60,28 @@ export default class CliController {
         const apiRouter = Express.Router()
 
         AuthRoutes(apiRouter)
-        UserRoutes(apiRouter)
         ContactsRoutes(apiRouter)
-        OrdersRoutes(apiRouter)
-        CompensationRoutes(apiRouter)
-        BillingReportRoutes(apiRouter)
-        CollectionPointsRoutes(apiRouter)
         PayoutRoutes(apiRouter)
-        LogoffRoutes(apiRouter)
 
         app.use('/api', apiRouter)
 
         BexioService.addExpressHandlers(app)
+
+        // setup apollo
+        const schema = await buildSchema({
+            resolvers: [path.join(__dirname, '../resolvers/*.resolver.js')],
+            emitSchemaFile: true,
+            validate: false
+        })
+
+        const apollo = new ApolloServer({
+            schema, playground: process.env.NODE_ENV !== 'production', context: ({ req }): ApolloContext => {
+                return {
+                    user: req.user
+                }
+            }
+        })
+        apollo.applyMiddleware({ app })
 
         app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')))
         app.get('/webapp/*', (req, res) => {

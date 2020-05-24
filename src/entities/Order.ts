@@ -1,39 +1,59 @@
-import { Entity, JoinColumn, ManyToOne, OneToMany, Column, AfterLoad } from "typeorm";
+import { Entity, JoinColumn, ManyToOne, OneToMany, Column, AfterLoad, RelationId } from "typeorm"
 import moment from 'moment'
-import BexioBase from "./BexioBase";
-import Contact from "./Contact";
-import Position from "./Position";
-import BillingReport from "./BillingReport";
-import { IsString, IsNumber, IsOptional, IsDate } from "class-validator";
+import BexioBase from "./BexioBase"
+import Contact from "./Contact"
+import Position from "./Position"
+import BillingReport from "./BillingReport"
+import { IsString, IsNumber, IsOptional, IsDate } from "class-validator"
+import { ObjectType, Field } from "type-graphql"
 
+@ObjectType()
 @Entity()
 export default class Order extends BexioBase<Order> {
+    @Field()
     @Column('text')
     public documentNr: string
 
+    @Field()
     @Column('text')
     public title: string
 
+    @Field()
     @Column('decimal', { precision: 10, scale: 2 })
     public total: number
 
-    @Column('date', { nullable: true })
+    @Field({ nullable: true })
+    @Column('datetime', { nullable: true })
     public validFrom?: Date
 
+    @Field()
     @Column('text')
     public deliveryAddress: string
 
-    @ManyToOne(type => Contact, { eager: true })
+    @Field(type => Contact)
+    @ManyToOne(type => Contact)
     @JoinColumn()
     public contact: Contact
 
-    @OneToMany(type => Position, position => position.order, { eager: true })
+    @RelationId('contact')
+    public contactId: number
+
+    @Field(type => [Position])
+    @OneToMany(type => Position, position => position.order)
     @JoinColumn()
     public positions: Array<Position>
 
+    @RelationId('positions')
+    public positionIds: number[]
+
+    @Field(type => [BillingReport], { nullable: true })
     @OneToMany(type => BillingReport, billingreport => billingreport.order, { nullable: true })
     public billingReports?: Array<BillingReport>
 
+    @RelationId('billingReports')
+    public billingReportIds?: number[]
+
+    @Field(type => [Date])
     public execDates: Array<Date>
 
     @AfterLoad()

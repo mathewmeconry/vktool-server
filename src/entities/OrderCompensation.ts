@@ -1,31 +1,39 @@
-import Compensation from "./Compensation";
-import { ManyToOne, Column, BeforeInsert, ChildEntity, BeforeUpdate } from "typeorm";
-import BillingReport from "./BillingReport";
-import Payout from "./Payout";
-import User from "./User";
-import Contact from "./Contact";
-import { IsNumber, IsDate, IsBoolean } from "class-validator";
+import Compensation from "./Compensation"
+import { ManyToOne, Column, BeforeInsert, ChildEntity, BeforeUpdate, RelationId } from "typeorm"
+import BillingReport from "./BillingReport"
+import Payout from "./Payout"
+import User from "./User"
+import Contact from "./Contact"
+import { IsNumber, IsDate, IsBoolean } from "class-validator"
+import { ObjectType, Field } from "type-graphql"
 
+@ObjectType()
 @ChildEntity()
 export default class OrderCompensation extends Compensation<OrderCompensation> {
+    @Field(type => BillingReport)
     @ManyToOne(type => BillingReport, billingreport => billingreport.compensations)
     public billingReport: BillingReport
 
-    @Column('int')
+    @RelationId('billingReport')
     public billingReportId: number
 
+    @Field()
     @Column('float')
     public dayHours: number = 0
 
+    @Field()
     @Column('float')
     public nightHours: number = 0
 
+    @Field()
     @Column('datetime', { precision: 6 })
     public from: Date
 
+    @Field()
     @Column('datetime', { precision: 6 })
     public until: Date
 
+    @Field()
     @Column('boolean')
     public charge: boolean
 
@@ -39,6 +47,7 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         this.charge = charge
     }
 
+    @Field(type => String)
     get descriptionWithoutTime() {
         if (this.billingReport && this.billingReport.order) {
             if (this.billingReport.order.contact && !this.billingReport.order.contact.hasOwnProperty('firstname')) {
@@ -51,6 +60,7 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
         return ''
     }
 
+    @Field(type => String)
     get description() {
         if (this.from && this.until) {
             return `${this.descriptionWithoutTime} (${`00${this.from.getHours()}`.slice(-2)}:${`00${this.from.getMinutes()}`.slice(-2)} - ${`00${this.until.getHours()}`.slice(-2)}:${`00${this.until.getMinutes()}`.slice(-2)})`

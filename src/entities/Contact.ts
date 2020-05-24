@@ -1,80 +1,132 @@
-import { Entity, Column, OneToMany, JoinColumn, ManyToOne, ManyToMany, OneToOne, JoinTable, AfterLoad, getManager, BeforeUpdate, BeforeInsert, AfterInsert, AfterUpdate } from "typeorm";
-import BexioBase from "./BexioBase";
-import Compensation from "./Compensation";
-import User from "./User";
-import ContactType from "./ContactType";
-import ContactGroup from "./ContactGroup";
-import CollectionPoint from "./CollectionPoint";
-import ContactExtension, { ContactExtensionInterface } from "./ContactExtension";
-import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from "class-validator";
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne, ManyToMany, OneToOne, JoinTable, AfterLoad, getManager, BeforeUpdate, BeforeInsert, AfterInsert, AfterUpdate, RelationId } from "typeorm"
+import BexioBase from "./BexioBase"
+import Compensation from "./Compensation"
+import User from "./User"
+import ContactType from "./ContactType"
+import ContactGroup from "./ContactGroup"
+import CollectionPoint from "./CollectionPoint"
+import ContactExtension, { ContactExtensionInterface } from "./ContactExtension"
+import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from "class-validator"
+import { ObjectType, Field, Int } from "type-graphql"
 
+@ObjectType()
 @Entity()
 export default class Contact extends BexioBase<Contact> {
+    @Field()
     @Column('text')
     public nr: string
 
-    @ManyToOne(type => ContactType, { eager: true })
+    @Field(type => ContactType)
+    @ManyToOne(type => ContactType)
     @JoinColumn()
     public contactType: ContactType
 
+    @RelationId('contactType')
+    public contactTypeId: number
+
+    @Field()
     @Column('text')
     public firstname: string
 
+    @Field()
     @Column('text')
     public lastname: string
 
-    @Column('date')
+    @Field()
+    @Column('datetime')
     public birthday: Date
 
+    @Field()
     @Column('text')
     public address: string
 
+    @Field()
     @Column('text')
     public postcode: string
 
+    @Field()
     @Column('text')
     public city: string
 
+    @Field()
     @Column('text')
     public mail: string
 
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public mailSecond?: string
 
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public phoneFixed?: string
 
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public phoneFixedSecond?: string
 
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public phoneMobile?: string
 
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public remarks?: string
 
-    @ManyToMany(type => ContactGroup, { eager: true })
+    @Field(type => [ContactGroup])
+    @ManyToMany(type => ContactGroup)
     @JoinTable()
     public contactGroups: Array<ContactGroup>
 
+    @RelationId('contactGroups')
+    public contactGroupIds: number[]
+
+    @Field()
     @Column('int')
     public ownerId: number
 
+    @Field(type => [Compensation])
     @OneToMany(type => Compensation, compensation => compensation.member, { nullable: true })
     public compensations: Promise<Array<Compensation<any>>>
 
+    @RelationId('compensations')
+    public compensationIds: number[]
+
+    @Field(type => User, { nullable: true })
     @OneToOne(type => User, user => user.bexioContact, { nullable: true })
     public user?: User
 
+    @RelationId('user')
+    public userId?: number
+
     // custom fields stored in contactExtension entity
+    @Field({ nullable: true })
     public rank?: string
+
+    @Field(type => [String], { nullable: true })
     public functions?: Array<string>
+
+    
+    @Field(type => CollectionPoint, { nullable: true })
     public collectionPoint?: CollectionPoint
+    
+    public collectionPointId?: number
+    
+    @Field({ nullable: true })
     public entryDate?: Date
+
+    @Field({ nullable: true })
     public exitDate?: Date
+
+    @Field({ nullable: true })
     public bankName?: string
+
+    @Field({ nullable: true })
     public iban?: string
+
+    @Field({ nullable: true })
     public accountHolder?: string
+
+    @Field(type => [String], { nullable: true })
     public moreMails?: Array<string>
 
     public isMember(): boolean {

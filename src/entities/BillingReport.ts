@@ -1,60 +1,95 @@
-import { Entity, Column, JoinColumn, OneToMany, ManyToOne, ManyToMany, JoinTable } from 'typeorm'
-import User from './User';
-import Order from './Order';
-import Base from './Base';
-import OrderCompensation from './OrderCompensation';
-import Contact from './Contact';
-import { IsOptional, IsNumber, IsDate, IsArray, IsString, IsBoolean } from 'class-validator';
+import { Entity, Column, JoinColumn, OneToMany, ManyToOne, ManyToMany, JoinTable, RelationId } from 'typeorm'
+import User from './User'
+import Order from './Order'
+import Base from './Base'
+import OrderCompensation from './OrderCompensation'
+import Contact from './Contact'
+import { IsOptional, IsNumber, IsDate, IsArray, IsString, IsBoolean } from 'class-validator'
+import { ObjectType, Field } from 'type-graphql'
 
+export enum BillingReportState {
+    PENDING = 'pending',
+    APPROVED = 'approved',
+    DECLINED = 'declined'
+}
+
+@ObjectType()
 @Entity()
 export default class BillingReport extends Base<BillingReport> {
-    @ManyToOne(type => User, { eager: true })
+
+    @Field(type => User)
+    @ManyToOne(type => User)
     @JoinColumn()
     public creator: User
 
-    @Column("int")
+    @RelationId('creator')
     public creatorId: number
 
-    @ManyToOne(type => Order, { eager: true })
+    @Field(type => Order)
+    @ManyToOne(type => Order)
     @JoinColumn()
     public order: Order
 
-    @Column({ nullable: true })
-    public orderId?: number;
+    @RelationId('order')
+    public orderId: number
 
-    @Column("date")
+    @Field()
+    @Column("datetime")
     public date: Date
 
-    @OneToMany(type => OrderCompensation, compensation => compensation.billingReport, { eager: true })
+    @Field(type => OrderCompensation)
+    @OneToMany(type => OrderCompensation, compensation => compensation.billingReport)
     @JoinColumn()
     public compensations: Array<OrderCompensation>
 
-    @ManyToMany(type => Contact, { eager: true })
+    @RelationId('compensations')
+    public compensationIds: Array<number>
+
+    @Field(type => [Contact])
+    @ManyToMany(type => Contact)
     @JoinTable()
     public els: Array<Contact>
 
-    @ManyToMany(type => Contact, { eager: true })
+    @RelationId('els')
+    public elIds: Array<number>
+
+    @Field(type => [Contact])
+    @ManyToMany(type => Contact)
     @JoinTable()
     public drivers: Array<Contact>
 
-    @ManyToOne(type => User, { nullable: true, eager: true })
+    @RelationId('drivers')
+    public driverIds: Array<number>
+
+    @Field(type => User, { nullable: true })
+    @ManyToOne(type => User, { nullable: true })
     @JoinColumn()
     public approvedBy?: User
 
+    @RelationId('approvedBy')
+    public approvedById?: number
+
+    @Field()
     @Column("boolean")
     public food: boolean
 
+    @Field({ nullable: true })
     @Column("text", { nullable: true })
     public remarks?: string
 
+    @Field()
     @Column("text")
-    public state: 'pending' | 'approved' | 'declined'
+    public state: BillingReportState
 
+    @Field(type => User)
     @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
 
-    constructor(creator: User, order: Order, orderDate: Date, compensations: Array<OrderCompensation>, els: Array<Contact>, drivers: Array<Contact>, food: boolean, remarks: string, state: 'pending' | 'approved' | 'declined', approvedBy?: User) {
+    @RelationId('updatedBy')
+    public updatedById: number
+
+    constructor(creator: User, order: Order, orderDate: Date, compensations: Array<OrderCompensation>, els: Array<Contact>, drivers: Array<Contact>, food: boolean, remarks: string, state: BillingReportState, approvedBy?: User) {
         super()
         this.creator = creator
         this.order = order

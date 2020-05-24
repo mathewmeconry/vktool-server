@@ -1,38 +1,51 @@
-import { Entity, Column, OneToOne, JoinColumn, AfterLoad } from "typeorm";
-import Base from "./Base";
-import Contact from "./Contact";
-import { AuthRolesByRank, AuthRolesByFunction } from "../interfaces/AuthRoles";
-import { IsString, IsOptional } from "class-validator";
+import { Entity, Column, OneToOne, JoinColumn, AfterLoad, RelationId } from "typeorm"
+import Base from "./Base"
+import Contact from "./Contact"
+import { AuthRolesByRank, AuthRolesByFunction } from "../interfaces/AuthRoles"
+import { IsString, IsOptional } from "class-validator"
+import { ObjectType, Field } from "type-graphql"
 
+@ObjectType()
 @Entity()
 export default class User extends Base<User> {
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public outlookId?: string
 
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public accessToken?: string
 
+    @Field({ nullable: true })
     @Column('text', { nullable: true })
     public refreshToken?: string
 
+    @Field()
     @Column('text')
     public displayName: string
 
+    @Field(type => [String])
     @Column('simple-array')
     public roles: Array<string>
 
+    @Field()
     @Column({ precision: 6, type: 'timestamp' })
     public lastLogin: Date
 
-    @OneToOne(type => Contact, contact => contact.user, { nullable: true, eager: true })
+    @Field(type => Contact, { nullable: true })
+    @OneToOne(type => Contact, contact => contact.user, { nullable: true })
     @JoinColumn()
     public bexioContact?: Contact
 
+    @RelationId('bexioContact')
+    public bexioContactId?: number
+
+    @Field()
     public provider: string
 
     public save(): Promise<User> {
         this.enrichPermissions()
-        return super.save();
+        return super.save()
     }
 
     @AfterLoad()

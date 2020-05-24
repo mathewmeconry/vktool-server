@@ -4,9 +4,12 @@ import User from "./User";
 import Payout from "./Payout";
 import { Column, ChildEntity } from "typeorm";
 import { IsString } from "class-validator";
+import { ObjectType, Field } from "type-graphql"
 
+@ObjectType()
 @ChildEntity()
 export default class CustomCompensation extends Compensation<CustomCompensation> {
+    @Field()
     @Column('text')
     public description: string
 

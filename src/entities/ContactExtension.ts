@@ -1,10 +1,10 @@
-import { ManyToOne, Entity, JoinColumn, Column, OneToOne, AfterLoad } from "typeorm";
+import { ManyToOne, Entity, JoinColumn, Column, OneToOne, AfterLoad, RelationId } from "typeorm"
 import { IsOptional, IsDate, IsString, Validate } from 'class-validator'
-import CollectionPoint from "./CollectionPoint";
-import Contact from "./Contact";
-import Base from "./Base";
-import User from "./User";
-import IsIBAN from "../validators/IsIBAN";
+import CollectionPoint from "./CollectionPoint"
+import Contact from "./Contact"
+import Base from "./Base"
+import User from "./User"
+import IsIBAN from "../validators/IsIBAN"
 
 // needs to be kept in sync with class...
 export enum ContactExtensionInterface {
@@ -23,17 +23,20 @@ export default class ContactExtension extends Base<ContactExtension> {
     @JoinColumn()
     public contact: Contact
 
-    @Column('int', { nullable: true })
+    @RelationId('contact')
     public contactId: number
 
-    @ManyToOne(type => CollectionPoint, { nullable: true, eager: true })
+    @ManyToOne(type => CollectionPoint, { nullable: true })
     @JoinColumn()
     public collectionPoint?: CollectionPoint
 
-    @Column('date', { nullable: true })
+    @RelationId('collectionPoint')
+    public collectionPointId?: number
+
+    @Column('datetime', { nullable: true })
     public entryDate?: Date
 
-    @Column('date', { nullable: true })
+    @Column('datetime', { nullable: true })
     public exitDate?: Date
 
     @Column('text', { nullable: true })
@@ -51,6 +54,9 @@ export default class ContactExtension extends Base<ContactExtension> {
     @ManyToOne(type => User)
     @JoinColumn()
     public updatedBy: User
+
+    @RelationId('updatedBy')
+    public updatedById: number
 
     @AfterLoad()
     public parseDates() {

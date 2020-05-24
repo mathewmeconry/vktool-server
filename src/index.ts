@@ -1,5 +1,5 @@
-import { BexioService } from './services/BexioService'
 import "reflect-metadata";
+import { BexioService } from './services/BexioService'
 import { createConnection, getConnectionOptions } from 'typeorm';
 import yargs from 'yargs'
 import CliController from './controllers/CliController';
