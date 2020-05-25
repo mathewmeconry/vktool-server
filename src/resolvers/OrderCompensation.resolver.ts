@@ -10,13 +10,18 @@ import {
 	Ctx,
 	Field,
 	Authorized,
+	ArgsType,
+	Int,
+	Args,
+	ObjectType,
 } from 'type-graphql';
-import { resolveEntity } from './helpers';
+import { resolveEntity, PaginationArgs, PaginatedResponse } from './helpers';
 import BillingReport from '../entities/BillingReport';
 import CompensationResolver from './Compensation.resolver';
 import { ApolloContext } from '../controllers/CliController';
 import Contact from '../entities/Contact';
-import { AuthRoles } from '../interfaces/AuthRoles'
+import { AuthRoles } from '../interfaces/AuthRoles';
+import { getManager } from 'typeorm';
 
 @InputType()
 class AddOrderCompensation implements Partial<OrderCompensation> {
@@ -71,8 +76,14 @@ export default class OrderCompensationResolver extends CompensationResolver {
 
 	@Authorized([AuthRoles.COMPENSATIONS_READ])
 	@Query((type) => OrderCompensation, { nullable: true })
-	public async getOrderCompensation(@Arg('id') id: number): Promise<OrderCompensation | null> {
-		return resolveEntity('OrderCompensation', id);
+	public async getOrderCompensation(
+		@Arg('id', (type) => Int) id: number
+	): Promise<OrderCompensation | null> {
+		try {
+			return await resolveEntity('OrderCompensation', id);
+		} catch (e) {
+			return null;
+		}
 	}
 
 	@FieldResolver()

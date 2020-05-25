@@ -1,24 +1,34 @@
-import CustomCompensation from '../entities/CustomCompensation'
-import { Resolver, Query, Arg, InputType, Field, Mutation, Ctx, Authorized } from 'type-graphql'
-import CompensationResolver from './Compensation.resolver'
-import { resolveEntity } from './helpers'
-import { ApolloContext } from '../controllers/CliController'
-import Contact from '../entities/Contact'
-import { AuthRoles } from '../interfaces/AuthRoles'
+import CustomCompensation from '../entities/CustomCompensation';
+import {
+	Resolver,
+	Query,
+	Arg,
+	InputType,
+	Field,
+	Mutation,
+	Ctx,
+	Authorized,
+	Int,
+} from 'type-graphql';
+import CompensationResolver from './Compensation.resolver';
+import { resolveEntity } from './helpers';
+import { ApolloContext } from '../controllers/CliController';
+import Contact from '../entities/Contact';
+import { AuthRoles } from '../interfaces/AuthRoles';
 
 @InputType()
 class AddCustomCompensation implements Partial<CustomCompensation> {
 	@Field()
-	public description: string
+	public description: string;
 
 	@Field()
-	public memberId: number
+	public memberId: number;
 
 	@Field()
-	public amount: number
+	public amount: number;
 
 	@Field()
-	public date: Date
+	public date: Date;
 }
 
 @Resolver((of) => CustomCompensation)
@@ -29,14 +39,20 @@ export default class CustomCompensationResolver extends CompensationResolver {
 		@Arg('data') data: AddCustomCompensation,
 		@Ctx() ctx: ApolloContext
 	): Promise<CustomCompensation> {
-		const member = await resolveEntity<Contact>('Contact', data.memberId)
-		const comp = new CustomCompensation(member, ctx.user, data.amount, data.date, data.description)
-		return comp.save()
+		const member = await resolveEntity<Contact>('Contact', data.memberId);
+		const comp = new CustomCompensation(member, ctx.user, data.amount, data.date, data.description);
+		return comp.save();
 	}
 
 	@Authorized([AuthRoles.COMPENSATIONS_READ])
 	@Query((type) => CustomCompensation, { nullable: true })
-	public async getCustomCompensation(@Arg('id') id: number): Promise<CustomCompensation | null> {
-		return resolveEntity('CustomCompensation', id)
+	public async getCustomCompensation(
+		@Arg('id', (type) => Int) id: number
+	): Promise<CustomCompensation | null> {
+		try {
+			return await resolveEntity('CustomCompensation', id);
+		} catch (e) {
+			return null;
+		}
 	}
 }

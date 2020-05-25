@@ -8,6 +8,7 @@ import IsIBAN from '../validators/IsIBAN'
 
 // needs to be kept in sync with class...
 export enum ContactExtensionInterface {
+    collectionPointId,
     collectionPoint,
     entryDate,
     exitDate,

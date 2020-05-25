@@ -1,10 +1,13 @@
 import { createResolver, resolveEntity } from './helpers';
 import CollectionPoint from '../entities/CollectionPoint';
-import { Resolver, InputType, Field, Mutation, Arg, Ctx, Authorized } from 'type-graphql';
+import { Resolver, InputType, Field, Mutation, Arg, Ctx, Authorized, Query } from 'type-graphql';
 import { ApolloContext } from '../controllers/CliController';
-import { AuthRoles } from '../interfaces/AuthRoles'
+import { AuthRoles } from '../interfaces/AuthRoles';
+import { getManager } from 'typeorm';
 
-const baseResolver = createResolver('CollectionPoint', CollectionPoint, [AuthRoles.COLLECTIONPOINT_READ]);
+const baseResolver = createResolver('CollectionPoint', CollectionPoint, [
+	AuthRoles.COLLECTIONPOINT_READ,
+]);
 
 @InputType()
 class AddCollectionPoint implements Partial<CollectionPoint> {
@@ -60,5 +63,11 @@ export default class CollectionPointResolver extends baseResolver {
 			cp[key] = data[key];
 		}
 		return cp.save();
+	}
+
+	@Authorized([AuthRoles.MEMBERS_EDIT, AuthRoles.COLLECTIONPOINT_READ])
+	@Query((type) => [CollectionPoint])
+	public async getCollectionPoints(): Promise<CollectionPoint[]> {
+		return getManager().getRepository(CollectionPoint).find();
 	}
 }

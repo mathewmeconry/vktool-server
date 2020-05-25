@@ -77,7 +77,7 @@ export default class OrderCompensation extends Compensation<OrderCompensation> {
 	}
 
 	@Field((type) => String)
-	get description() {
+	get description(): string {
 		if (this.from && this.until) {
 			return `${this.descriptionWithoutTime} (${`00${this.from.getHours()}`.slice(
 				-2

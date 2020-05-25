@@ -1,4 +1,5 @@
-import PaginatedResponse, {
+import {
+	PaginatedResponse,
 	createResolver,
 	resolveEntity,
 	resolveEntityArray,
@@ -69,12 +70,13 @@ export default class ContactResolver extends baseResolver {
 
 	@Authorized([AuthRoles.MEMBERS_READ])
 	@Query((type) => PaginationResponse)
-	public async getMembers(@Args() { cursor, limit }: PaginationArgs): Promise<PaginationResponse> {
+	public async getMembers(@Args() { cursor, limit, sortBy, sortDirection }: PaginationArgs<Contact>): Promise<PaginationResponse> {
 		const qb = getManager().getRepository(Contact).createQueryBuilder('contact')
 		qb.leftJoinAndSelect('contact.contactGroups', 'contactGroup')
 		qb.where('contactGroup.bexioId = :bexioId', { bexioId: 7 })
 		qb.skip(cursor)
 		if (limit) qb.take(limit)
+		if (sortBy) qb.orderBy(`contact.${sortBy}`, sortDirection)
 
 		const count = await getManager()
 			.getRepository(Contact)
@@ -93,6 +95,16 @@ export default class ContactResolver extends baseResolver {
 			hasMore: nextCursor !== count,
 			items: await qb.getMany(),
 		}
+	}
+
+	@Authorized([AuthRoles.MEMBERS_READ])
+	@Query(type => [Contact])
+	public async getMembersAll(): Promise<Contact[]> {
+		const qb = getManager().getRepository(Contact).createQueryBuilder('contact')
+		qb.leftJoinAndSelect('contact.contactGroups', 'contactGroup')
+		qb.where('contactGroup.bexioId = :bexioId', { bexioId: 7 })
+
+		return qb.getMany()
 	}
 
 	@FieldResolver()

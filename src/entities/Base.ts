@@ -7,12 +7,12 @@ import {
 } from 'typeorm';
 import { validate } from 'class-validator';
 import escapeHtml from 'escape-html';
-import { ObjectType, Field } from 'type-graphql';
+import { ObjectType, Field, Int } from 'type-graphql';
 import User from './User';
 
 @ObjectType({ isAbstract: true })
 export default abstract class Base<T> {
-	@Field()
+	@Field(type => Int)
 	@PrimaryGeneratedColumn()
 	public id: number;
 

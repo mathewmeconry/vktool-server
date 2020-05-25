@@ -10,6 +10,7 @@ import {
     InputType,
     Field,
     Authorized,
+    Int,
 } from 'type-graphql'
 import BillingReport, { BillingReportState } from '../entities/BillingReport'
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers'
@@ -142,8 +143,8 @@ export default class BillingReportResolver extends baseResolver {
     @Authorized([AuthRoles.BILLINGREPORTS_APPROVE])
     @Mutation((type) => BillingReport)
     public async changeBillingReportState(
-        @Arg('id') id: number,
-        @Arg('state') state: BillingReportState,
+        @Arg('id', type => Int) id: number,
+        @Arg('state', type => BillingReportState) state: BillingReportState,
         @Ctx() ctx: ApolloContext
     ): Promise<BillingReport> {
         const br = await getManager()

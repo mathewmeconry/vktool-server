@@ -21,7 +21,6 @@ export default class ContactService {
 				])
 				.leftJoinAndSelect('contact.contactGroups', 'contactGroups')
 				.getMany();
-			contacts.forEach((contact) => contact.restrictData());
 		}
 
 		return contacts.filter((contact) =>

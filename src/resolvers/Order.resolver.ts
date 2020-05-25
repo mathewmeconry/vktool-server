@@ -12,7 +12,7 @@ const baseResolver = createResolver('Order', Order, [AuthRoles.ORDERS_READ]);
 export default class OrderResolver extends baseResolver {
 	@Authorized([AuthRoles.ORDERS_READ])
 	@Query((type) => [Order])
-	public async open(): Promise<Order[]> {
+	public async getOpenOrders(): Promise<Order[]> {
 		let now = new Date();
 		let before30Days = new Date();
 		before30Days.setDate(before30Days.getDate() - 30);
@@ -36,7 +36,7 @@ export default class OrderResolver extends baseResolver {
 
 	@FieldResolver()
 	public async contact(@Root() object: Order): Promise<Contact> {
-		return resolveEntity('User', object.contactId);
+		return resolveEntity('Contact', object.contactId);
 	}
 
 	@FieldResolver()

@@ -14,197 +14,197 @@ import {
 	AfterInsert,
 	AfterUpdate,
 	RelationId,
-} from 'typeorm'
-import BexioBase from './BexioBase'
-import Compensation from './Compensation'
-import User from './User'
-import ContactType from './ContactType'
-import ContactGroup from './ContactGroup'
-import CollectionPoint from './CollectionPoint'
-import ContactExtension, { ContactExtensionInterface } from './ContactExtension'
-import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from 'class-validator'
-import { ObjectType, Field, Int, Authorized } from 'type-graphql'
-import { AuthRoles } from '../interfaces/AuthRoles'
+} from 'typeorm';
+import BexioBase from './BexioBase';
+import Compensation from './Compensation';
+import User from './User';
+import ContactType from './ContactType';
+import ContactGroup from './ContactGroup';
+import CollectionPoint from './CollectionPoint';
+import ContactExtension, { ContactExtensionInterface } from './ContactExtension';
+import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from 'class-validator';
+import { ObjectType, Field, Int, Authorized } from 'type-graphql';
+import { AuthRoles } from '../interfaces/AuthRoles';
 
 @ObjectType()
 @Entity()
 export default class Contact extends BexioBase<Contact> {
 	@Field()
 	@Column('text')
-	public nr: string
+	public nr: string;
 
 	@Field((type) => ContactType)
 	@ManyToOne((type) => ContactType)
 	@JoinColumn()
-	public contactType: ContactType
+	public contactType: ContactType;
 
 	@RelationId('contactType')
-	public contactTypeId: number
+	public contactTypeId: number;
 
 	@Field()
 	@Column('text')
-	public firstname: string
+	public firstname: string;
 
 	@Field()
 	@Column('text')
-	public lastname: string
+	public lastname: string;
 
 	@Field()
 	@Column('datetime')
-	public birthday: Date
+	public birthday: Date;
 
 	@Field()
 	@Column('text')
-	public address: string
+	public address: string;
 
 	@Field()
 	@Column('text')
-	public postcode: string
+	public postcode: string;
 
 	@Field()
 	@Column('text')
-	public city: string
+	public city: string;
 
 	@Field()
 	@Column('text')
-	public mail: string
+	public mail: string;
 
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public mailSecond?: string
+	public mailSecond?: string;
 
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public phoneFixed?: string
+	public phoneFixed?: string;
 
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public phoneFixedSecond?: string
+	public phoneFixedSecond?: string;
 
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public phoneMobile?: string
+	public phoneMobile?: string;
 
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public remarks?: string
+	public remarks?: string;
 
 	@Field((type) => [ContactGroup])
 	@ManyToMany((type) => ContactGroup)
 	@JoinTable()
-	public contactGroups: Array<ContactGroup>
+	public contactGroups: Array<ContactGroup>;
 
 	@RelationId('contactGroups')
-	public contactGroupIds: number[]
+	public contactGroupIds: number[];
 
 	@Field()
 	@Column('int')
-	public ownerId: number
+	public ownerId: number;
 
 	@Authorized([AuthRoles.COMPENSATIONS_READ])
 	@Field((type) => [Compensation])
 	@OneToMany((type) => Compensation, (compensation) => compensation.member, { nullable: true })
-	public compensations: Promise<Array<Compensation<any>>>
+	public compensations: Promise<Array<Compensation<any>>>;
 
 	@RelationId('compensations')
-	public compensationIds: number[]
+	public compensationIds: number[];
 
 	@Authorized([AuthRoles.ADMIN])
 	@Field((type) => User, { nullable: true })
 	@OneToOne((type) => User, (user) => user.bexioContact, { nullable: true })
-	public user?: User
+	public user?: User;
 
 	@RelationId('user')
-	public userId?: number
+	public userId?: number;
 
 	// custom fields stored in contactExtension entity
 	@Field({ nullable: true })
-	public rank?: string
+	public rank?: string;
 
 	@Field((type) => [String], { nullable: true })
-	public functions?: Array<string>
+	public functions?: Array<string>;
 
 	@Field((type) => CollectionPoint, { nullable: true })
-	public collectionPoint?: CollectionPoint
+	public collectionPoint?: CollectionPoint;
 
-	public collectionPointId?: number
-
-	@Authorized([AuthRoles.CONTACTS_READ])
-	@Field({ nullable: true })
-	public entryDate?: Date
+	public collectionPointId?: number;
 
 	@Authorized([AuthRoles.CONTACTS_READ])
 	@Field({ nullable: true })
-	public exitDate?: Date
+	public entryDate?: Date;
 
 	@Authorized([AuthRoles.CONTACTS_READ])
 	@Field({ nullable: true })
-	public bankName?: string
+	public exitDate?: Date;
 
 	@Authorized([AuthRoles.CONTACTS_READ])
 	@Field({ nullable: true })
-	public iban?: string
+	public bankName?: string;
 
 	@Authorized([AuthRoles.CONTACTS_READ])
 	@Field({ nullable: true })
-	public accountHolder?: string
+	public iban?: string;
+
+	@Authorized([AuthRoles.CONTACTS_READ])
+	@Field({ nullable: true })
+	public accountHolder?: string;
 
 	@Field((type) => [String], { nullable: true })
-	public moreMails?: Array<string>
+	public moreMails?: Array<string>;
 
 	public isMember(): boolean {
-		return this.contactGroups.find((group) => group.bexioId === 7) ? true : false
+		return this.contactGroups.find((group) => group.bexioId === 7) ? true : false;
 	}
 
 	public getRank(): ContactGroup | null {
-		const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22]
+		const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22];
 
 		if (this.contactGroups) {
-			return this.contactGroups.find((group) => rankGroups.indexOf(group.bexioId) > -1) || null
+			return this.contactGroups.find((group) => rankGroups.indexOf(group.bexioId) > -1) || null;
 		}
 
-		return null
+		return null;
 	}
 
 	public getFunctions(): Array<ContactGroup> {
-		const functionGroups = [9, 16, 32, 16]
+		const functionGroups = [9, 16, 32, 16];
 
 		if (this.contactGroups) {
-			return this.contactGroups.filter((group) => functionGroups.indexOf(group.bexioId) > -1)
+			return this.contactGroups.filter((group) => functionGroups.indexOf(group.bexioId) > -1);
 		}
 
-		return []
+		return [];
 	}
 
 	public async save(): Promise<Contact> {
-		await super.save()
-		await this.storeOverride()
-		return this
+		await super.save();
+		await this.storeOverride();
+		return this;
 	}
 
 	@AfterLoad()
 	private async loadOverride(): Promise<boolean> {
 		let override = await getManager()
 			.getRepository(ContactExtension)
-			.findOne({ contactId: this.id })
-		if (override) {
-			for (let i in ContactExtensionInterface) {
+			.findOne({ where: { contact: this.id } });
+		if (override && override.contactId === this.id) {
+			for (let i of Object.keys(ContactExtensionInterface)) {
 				if (override.hasOwnProperty(i)) {
 					//@ts-ignore
-					this[i] = override[i]
+					this[i] = override[i];
 				}
 			}
 		}
 
-		this.rank = (this.getRank() || { name: '' }).name
-		this.functions = this.getFunctions().map((func) => func.name)
+		this.rank = (this.getRank() || { name: '' }).name;
+		this.functions = this.getFunctions().map((func) => func.name);
 
-		return true
+		return true;
 	}
 
 	@AfterLoad()
 	private ajustDates(): void {
-		this.birthday = new Date(this.birthday)
+		this.birthday = new Date(this.birthday);
 	}
 
 	@AfterInsert()
@@ -212,28 +212,20 @@ export default class Contact extends BexioBase<Contact> {
 	public async storeOverride(): Promise<boolean> {
 		let override = await getManager()
 			.getRepository(ContactExtension)
-			.findOne({ contactId: this.id })
-		if (!override || Object.keys(override).length < 1) override = new ContactExtension()
+			.findOne({ where: { contact: this.id } });
+		if (!override || Object.keys(override).length < 1 || override.contactId !== this.id)
+			override = new ContactExtension();
 
-		override.contact = this
+		override.contact = this;
 
 		for (let i in ContactExtensionInterface) {
 			if (this.hasOwnProperty(i)) {
 				//@ts-ignore
-				override[i] = this[i]
+				override[i] = this[i];
 			}
 		}
 
-		override.save()
-		return true
-	}
-
-	// used to remove some senitive data
-	public restrictData(): void {
-		delete this.entryDate
-		delete this.exitDate
-		delete this.bankName
-		delete this.iban
-		delete this.accountHolder
+		override.save();
+		return true;
 	}
 }

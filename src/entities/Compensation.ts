@@ -71,7 +71,7 @@ export default class Compensation<T> extends Base<T> {
 	@Column({ nullable: true })
 	public bexioBill?: number;
 
-	@Field((type) => Compensation)
+	@Field((type) => Compensation, { nullable: true })
 	@ManyToOne((type) => Compensation, { nullable: true })
 	@JoinColumn()
 	public transferCompensation?: Compensation<CustomCompensation>;
@@ -98,6 +98,9 @@ export default class Compensation<T> extends Base<T> {
 
 	@RelationId('deletedBy')
 	public deletedById?: number;
+
+	@Field()
+	public description: string
 
 	constructor(
 		member: Contact,

@@ -73,8 +73,8 @@ export default class CliController {
 		const schema = await buildSchema({
 			resolvers: [path.join(__dirname, '../resolvers/*.resolver.js')],
 			emitSchemaFile: true,
-            validate: false,
-            authChecker: AuthService.isAuthorizedGraphQl
+			validate: false,
+			authChecker: AuthService.isAuthorizedGraphQl,
 		});
 
 		const apollo = new ApolloServer({
@@ -84,9 +84,17 @@ export default class CliController {
 				return {
 					user: req.user,
 				};
-            }
+			},
 		});
-		apollo.applyMiddleware({ app });
+		apollo.applyMiddleware({
+			app,
+			cors: {
+				allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+				credentials: true,
+				origin: config.get('clientHost'),
+				exposedHeaders: 'GET, POST, PUT, DELETE',
+			},
+		});
 
 		app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));
 		app.get('/webapp/*', (req, res) => {
