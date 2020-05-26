@@ -130,7 +130,7 @@ export namespace BexioService {
 		app.get('/bexio/callback', async (req, res) => {
 			if (fakeloginInProgress) return;
 
-			await bexioAPI.generateAccessToken(req.query);
+			await bexioAPI.generateAccessToken(req.query as any);
 			console.log('Got callback');
 			res.send('Done');
 		});
