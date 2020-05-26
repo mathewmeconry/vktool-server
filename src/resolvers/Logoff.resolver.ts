@@ -10,6 +10,8 @@ import {
 	Authorized,
 	Query,
 	Int,
+	ForbiddenError,
+	Info,
 } from 'type-graphql';
 import { createResolver, resolveEntity } from './helpers';
 import Logoff, { LogoffState } from '../entities/Logoff';
@@ -56,7 +58,7 @@ export default class LogoffResolver extends baseResolver {
 		@Ctx() ctx: ApolloContext
 	): Promise<Logoff[]> {
 		if (ctx.user.id !== id && !AuthService.isAuthorized(ctx.user.roles, AuthRoles.LOGOFFS_READ)) {
-			throw new Error("Access denied! You don't have permission for this action!");
+			throw new ForbiddenError();
 		}
 
 		return getManager()

@@ -12,6 +12,7 @@ import {
 	Query,
 	registerEnumType,
 	Int,
+	ForbiddenError,
 } from 'type-graphql';
 import { createResolver, resolveEntity } from './helpers';
 import Compensation from '../entities/Compensation';
@@ -42,7 +43,7 @@ export default class CompensationResolver extends baseResolver {
 			ctx.user.id !== id &&
 			!AuthService.isAuthorized(ctx.user.roles, AuthRoles.COMPENSATIONS_READ)
 		) {
-			throw new Error("Access denied! You don't have permission for this action!");
+			throw new ForbiddenError();
 		}
 
 		const filter: { member: number; approved: boolean; payout?: number } = {

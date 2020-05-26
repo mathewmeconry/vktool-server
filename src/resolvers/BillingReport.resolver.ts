@@ -11,6 +11,7 @@ import {
     Field,
     Authorized,
     Int,
+    ForbiddenError,
 } from 'type-graphql'
 import BillingReport, { BillingReportState } from '../entities/BillingReport'
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers'
@@ -86,7 +87,7 @@ export default class BillingReportResolver extends baseResolver {
 
         if (!ctx.user.roles.includes(AuthRoles.BILLINGREPORTS_EDIT)) {
             if (br.creatorId !== ctx.user.id || br.state !== BillingReportState.PENDING) {
-                throw new Error('Access denied! You don\'t have permission for this action!')
+                throw new ForbiddenError()
             }
         }
 
