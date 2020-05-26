@@ -60,7 +60,8 @@ export function PaginatedResponse<TItem>(TItemClass: ClassType<TItem>) {
 export function createResolver<T extends ClassType>(
 	suffix: string,
 	objectTypes: T,
-	getAuthRoles: AuthRoles[]
+	getAuthRoles: AuthRoles[],
+	relations: string[] = []
 ) {
 	@ObjectType(`PaginationResponse${suffix}`)
 	class PaginationResponse extends PaginatedResponse(objectTypes) {}
@@ -73,6 +74,10 @@ export function createResolver<T extends ClassType>(
 			@Args() { cursor, limit, sortBy, sortDirection }: PaginationArgs<T>
 		): Promise<PaginationResponse> {
 			const qb = getManager().getRepository(objectTypes).createQueryBuilder();
+			for (const relation of relations) {
+				qb.leftJoinAndSelect(`${objectTypes.prototype.constructor.name}.${relation}`, relation);
+			}
+
 			qb.skip(cursor);
 			if (limit) qb.take(limit);
 			if (sortBy) qb.orderBy(sortBy as string, sortDirection);
@@ -94,7 +99,7 @@ export function createResolver<T extends ClassType>(
 		@Authorized(getAuthRoles)
 		@Query((type) => objectTypes, { name: `get${suffix}`, nullable: true })
 		public async get(@Arg('id', (type) => Int) id: number): Promise<T | null> {
-			return getManager().getRepository(objectTypes).findOne(id);
+			return getManager().getRepository(objectTypes).findOne(id, { relations });
 		}
 	}
 
@@ -107,7 +112,7 @@ export async function resolveEntity<T>(entity: string, id: number): Promise<T> {
 		.createQueryBuilder()
 		.where('id = :id', { id })
 		.getOne();
-	if (!obj) throw new Error(`${entity} not found`);
+	if (!obj) throw new Error(`${entity} with id ${id} not found`);
 	return obj;
 }
 

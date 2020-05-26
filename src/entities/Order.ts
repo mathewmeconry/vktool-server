@@ -30,13 +30,13 @@ export default class Order extends BexioBase<Order> {
 	@Column('text')
 	public deliveryAddress: string;
 
-	@Field((type) => Contact)
-	@ManyToOne((type) => Contact)
+	@Field((type) => Contact, { nullable: true })
+	@ManyToOne((type) => Contact, { nullable: true })
 	@JoinColumn()
-	public contact: Contact;
+	public contact?: Contact;
 
 	@RelationId('contact')
-	public contactId: number;
+	public contactId?: number;
 
 	@Field((type) => [Position])
 	@OneToMany((type) => Position, (position) => position.order)

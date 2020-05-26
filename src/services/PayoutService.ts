@@ -15,6 +15,7 @@ import { BillsStatic } from 'bexio';
 import CustomCompensation from '../entities/CustomCompensation';
 import User from '../entities/User';
 import PdfService from './PdfService';
+import ContactExtension from '../entities/ContactExtension';
 const sepaXML = require('sepa-xml');
 
 export default class PayoutService {
@@ -189,6 +190,9 @@ export default class PayoutService {
 			for (const memberId in byMember) {
 				const memberCompensations = byMember[memberId];
 				const member = memberCompensations[0].member;
+				const extension = await getManager()
+					.getRepository(ContactExtension)
+					.findOne({ where: { contact: member.id } });
 				const amount = memberCompensations
 					.map((element) => element.amount)
 					.reduce((prev, curr) => prev + curr);
@@ -198,7 +202,7 @@ export default class PayoutService {
 						id: `${payout.id}-${memberId}`,
 						amount: amount.toFixed(2),
 						name: `${member.lastname} ${member.firstname}`,
-						iban: member.iban ? member.iban.replace(/ /g, '') : '',
+						iban: extension?.iban ? extension?.iban.replace(/ /g, '') : '',
 						description: `Entschädigungsperiode ${
 							payout.from > new Date('1970-01-01') ? moment(payout.from).format('DD.MM.YYYY') : ''
 						} bis ${moment(payout.until).format('DD.MM.YYYY')}`,

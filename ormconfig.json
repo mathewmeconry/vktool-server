@@ -19,6 +19,5 @@
         "entitiesDir": "dist/entities",
         "migrationsDir": "dist/migrations",
         "subscribersDir": "dist/subscribers"
-    },
-    "logging": true
+    }
 }

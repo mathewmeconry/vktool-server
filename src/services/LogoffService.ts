@@ -6,6 +6,8 @@ import config = require('config');
 import sass from 'node-sass';
 import EMailService from './EMailService';
 import moment from 'moment';
+import ContactExtension from '../entities/ContactExtension';
+import { getManager } from 'typeorm';
 
 export default class LogoffService {
 	private static emailService = new EMailService('no-reply@vkazu.ch');
@@ -27,9 +29,12 @@ export default class LogoffService {
 				logoffs,
 			}
 		);
+		const extension = await getManager()
+			.getRepository(ContactExtension)
+			.findOne({ where: { contact: contact.id } });
 
 		await LogoffService.emailService.sendMail(
-			[contact.mail, contact.mailSecond || '', ...(contact.moreMails || [])],
+			[contact.mail, contact.mailSecond || '', ...(extension?.moreMails || [])],
 			'aufgebot@vkazu.ch',
 			'Neue Abmeldungen',
 			email
@@ -53,9 +58,12 @@ export default class LogoffService {
 				logoff,
 			}
 		);
+		const extension = await getManager()
+			.getRepository(ContactExtension)
+			.findOne({ where: { contact: contact.id } });
 
 		await LogoffService.emailService.sendMail(
-			[contact.mail, contact.mailSecond || '', ...(contact.moreMails || [])],
+			[contact.mail, contact.mailSecond || '', ...(extension?.moreMails || [])],
 			'aufgebot@vkazu.ch',
 			'Abmeldungstatusänderung',
 			email

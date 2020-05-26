@@ -124,34 +124,6 @@ export default class Contact extends BexioBase<Contact> {
 	@Field((type) => [String], { nullable: true })
 	public functions?: Array<string>;
 
-	@Field((type) => CollectionPoint, { nullable: true })
-	public collectionPoint?: CollectionPoint;
-
-	public collectionPointId?: number;
-
-	@Authorized([AuthRoles.CONTACTS_READ])
-	@Field({ nullable: true })
-	public entryDate?: Date;
-
-	@Authorized([AuthRoles.CONTACTS_READ])
-	@Field({ nullable: true })
-	public exitDate?: Date;
-
-	@Authorized([AuthRoles.CONTACTS_READ])
-	@Field({ nullable: true })
-	public bankName?: string;
-
-	@Authorized([AuthRoles.CONTACTS_READ])
-	@Field({ nullable: true })
-	public iban?: string;
-
-	@Authorized([AuthRoles.CONTACTS_READ])
-	@Field({ nullable: true })
-	public accountHolder?: string;
-
-	@Field((type) => [String], { nullable: true })
-	public moreMails?: Array<string>;
-
 	public isMember(): boolean {
 		return this.contactGroups.find((group) => group.bexioId === 7) ? true : false;
 	}
@@ -178,24 +150,11 @@ export default class Contact extends BexioBase<Contact> {
 
 	public async save(): Promise<Contact> {
 		await super.save();
-		await this.storeOverride();
 		return this;
 	}
 
 	@AfterLoad()
 	private async loadOverride(): Promise<boolean> {
-		let override = await getManager()
-			.getRepository(ContactExtension)
-			.findOne({ where: { contact: this.id } });
-		if (override && override.contactId === this.id) {
-			for (let i of Object.keys(ContactExtensionInterface)) {
-				if (override.hasOwnProperty(i)) {
-					//@ts-ignore
-					this[i] = override[i];
-				}
-			}
-		}
-
 		this.rank = (this.getRank() || { name: '' }).name;
 		this.functions = this.getFunctions().map((func) => func.name);
 
@@ -205,27 +164,5 @@ export default class Contact extends BexioBase<Contact> {
 	@AfterLoad()
 	private ajustDates(): void {
 		this.birthday = new Date(this.birthday);
-	}
-
-	@AfterInsert()
-	@AfterUpdate()
-	public async storeOverride(): Promise<boolean> {
-		let override = await getManager()
-			.getRepository(ContactExtension)
-			.findOne({ where: { contact: this.id } });
-		if (!override || Object.keys(override).length < 1 || override.contactId !== this.id)
-			override = new ContactExtension();
-
-		override.contact = this;
-
-		for (let i in ContactExtensionInterface) {
-			if (this.hasOwnProperty(i)) {
-				//@ts-ignore
-				override[i] = this[i];
-			}
-		}
-
-		override.save();
-		return true;
 	}
 }
