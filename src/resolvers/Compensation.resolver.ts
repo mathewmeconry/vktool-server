@@ -84,8 +84,10 @@ export default class CompensationResolver extends baseResolver {
 		@Arg('id', (type) => Int) id: number,
 		@Ctx() ctx: ApolloContext
 	): Promise<Compensation<any>> {
-		let comp = await resolveEntity<CustomCompensation>('CustomCompensation', id);
-		if (!comp) {
+		let comp: Compensation<any>;
+		try {
+			comp = await resolveEntity<CustomCompensation>('CustomCompensation', id);
+		} catch (e) {
 			comp = await resolveEntity<OrderCompensation>('OrderCompensation', id);
 		}
 

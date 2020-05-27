@@ -22,6 +22,7 @@ import Contact from '../entities/Contact'
 import { getManager } from 'typeorm'
 import { ApolloContext } from '../controllers/CliController'
 import { AuthRoles } from '../interfaces/AuthRoles'
+import AuthService from '../services/AuthService'
 
 const baseResolver = createResolver('BillingReport', BillingReport, [AuthRoles.BILLINGREPORTS_READ])
 
@@ -85,7 +86,7 @@ export default class BillingReportResolver extends baseResolver {
     ): Promise<BillingReport> {
         const br = await resolveEntity<BillingReport>('BillingReport', data.id)
 
-        if (!ctx.user.roles.includes(AuthRoles.BILLINGREPORTS_EDIT)) {
+        if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.BILLINGREPORTS_EDIT)) {
             if (br.creatorId !== ctx.user.id || br.state !== BillingReportState.PENDING) {
                 throw new ForbiddenError()
             }
