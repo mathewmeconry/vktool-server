@@ -24,7 +24,7 @@ import { ApolloContext } from '../controllers/CliController';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import ContactExtension from '../entities/ContactExtension';
 
-const baseResolver = createResolver('Payout', Payout, [AuthRoles.PAYOUTS_READ]);
+const baseResolver = createResolver('Payout', Payout, [AuthRoles.PAYOUTS_READ], ['compensations']);
 
 @Resolver((of) => Payout)
 export default class PayoutResolver extends baseResolver {

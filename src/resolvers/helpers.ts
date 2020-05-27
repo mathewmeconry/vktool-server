@@ -117,6 +117,9 @@ export async function resolveEntity<T>(entity: string, id: number): Promise<T> {
 }
 
 export async function resolveEntityArray<T>(entity: string, ids: number[]): Promise<T[]> {
+	if (ids.length == 0) {
+		return [];
+	}
 	return getManager()
 		.getRepository<T>(entity)
 		.createQueryBuilder()

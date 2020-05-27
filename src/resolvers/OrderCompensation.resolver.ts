@@ -16,7 +16,7 @@ import {
 	ObjectType,
 } from 'type-graphql';
 import { resolveEntity, PaginationArgs, PaginatedResponse } from './helpers';
-import BillingReport from '../entities/BillingReport';
+import BillingReport, { BillingReportState } from '../entities/BillingReport';
 import CompensationResolver from './Compensation.resolver';
 import { ApolloContext } from '../controllers/CliController';
 import Contact from '../entities/Contact';
@@ -55,6 +55,12 @@ export default class OrderCompensationResolver extends CompensationResolver {
 			const bt = await resolveEntity<BillingReport>('BillingReport', add.billingReportId);
 
 			const comp = new OrderCompensation(member, ctx.user, add.date, bt, add.from, add.until);
+
+			if (bt.state === BillingReportState.APPROVED) {
+				comp.approved = true;
+				comp.approvedBy = ctx.user;
+			}
+
 			storePromises.push(comp.save());
 		}
 
