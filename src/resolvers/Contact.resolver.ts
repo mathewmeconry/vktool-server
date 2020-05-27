@@ -66,7 +66,14 @@ export default class ContactResolver extends baseResolver {
 	@Authorized([AuthRoles.CONTACTS_EDIT, AuthRoles.MEMBERS_EDIT])
 	@Mutation((type) => ContactExtension)
 	public async editContact(@Arg('data') data: EditContact): Promise<ContactExtension> {
-		const contact = await resolveEntity<ContactExtension>('ContactExtension', data.id);
+		let contact: ContactExtension | undefined;
+		contact = await getManager()
+			.getRepository(ContactExtension)
+			.findOne({ where: { contact: data.id } });
+
+		if (!contact) {
+			contact = new ContactExtension();
+		}
 		if (data.collectionPointId) {
 			const collectionPoint = await resolveEntity<CollectionPoint>(
 				'CollectionPoint',
@@ -76,8 +83,10 @@ export default class ContactResolver extends baseResolver {
 		}
 
 		for (const key of Object.keys(data)) {
-			// @ts-ignore
-			contact[key] = data[key];
+			if (key !== 'id') {
+				// @ts-ignore
+				contact[key] = data[key];
+			}
 		}
 
 		return contact.save();
@@ -158,32 +167,32 @@ export default class ContactResolver extends baseResolver {
 
 	@FieldResolver((type) => Date, { nullable: true })
 	public async entryDate(@Root() object: Contact): Promise<Date | undefined> {
-		return (await this.loadExtension(object.id))?.entryDate
+		return (await this.loadExtension(object.id))?.entryDate;
 	}
 
 	@FieldResolver((type) => Date, { nullable: true })
 	public async exitDate(@Root() object: Contact): Promise<Date | undefined> {
-		return (await this.loadExtension(object.id))?.exitDate
+		return (await this.loadExtension(object.id))?.exitDate;
 	}
 
 	@FieldResolver((type) => String, { nullable: true })
 	public async bankName(@Root() object: Contact): Promise<string | undefined> {
-		return (await this.loadExtension(object.id))?.bankName
+		return (await this.loadExtension(object.id))?.bankName;
 	}
 
 	@FieldResolver((type) => String, { nullable: true })
 	public async iban(@Root() object: Contact): Promise<string | undefined> {
-		return (await this.loadExtension(object.id))?.iban
+		return (await this.loadExtension(object.id))?.iban;
 	}
 
 	@FieldResolver((type) => String, { nullable: true })
 	public async accountHolder(@Root() object: Contact): Promise<string | undefined> {
-		return (await this.loadExtension(object.id))?.accountHolder
+		return (await this.loadExtension(object.id))?.accountHolder;
 	}
 
 	@FieldResolver((type) => [String], { nullable: true })
 	public async moreMails(@Root() object: Contact): Promise<string[] | undefined> {
-		return (await this.loadExtension(object.id))?.moreMails
+		return (await this.loadExtension(object.id))?.moreMails;
 	}
 
 	private async loadExtension(contactId: number): Promise<ContactExtension | undefined> {
