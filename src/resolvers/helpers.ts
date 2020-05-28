@@ -40,6 +40,9 @@ export class PaginationArgs<T> {
 
 	@Field({ nullable: true })
 	sortDirection?: PaginationSortDirections;
+
+	@Field({ nullable: true })
+	searchString?: string;
 }
 
 export function PaginatedResponse<TItem>(TItemClass: ClassType<TItem>) {
@@ -65,7 +68,8 @@ export function createResolver<T extends ClassType>(
 	suffix: string,
 	objectTypes: T,
 	getAuthRoles: AuthRoles[],
-	relations: string[] = []
+	relations: string[] = [],
+	searchFields: string[] = []
 ) {
 	@ObjectType(`PaginationResponse${suffix}`)
 	class PaginationResponse extends PaginatedResponse(objectTypes) {}
@@ -75,7 +79,7 @@ export function createResolver<T extends ClassType>(
 		//@Authorized(getAuthRoles)
 		@Query((type) => PaginationResponse, { name: `getAll${suffix}s` })
 		public async getAll(
-			@Args() { cursor, limit, sortBy, sortDirection }: PaginationArgs<T>
+			@Args() { cursor, limit, sortBy, sortDirection, searchString }: PaginationArgs<T>
 		): Promise<PaginationResponse> {
 			const qb = getManager()
 				.getRepository(objectTypes)
@@ -85,6 +89,16 @@ export function createResolver<T extends ClassType>(
 					qb.leftJoinAndSelect(relation, relation.split('.').slice(-1)[0]);
 				} else {
 					qb.leftJoinAndSelect(`${objectTypes.prototype.constructor.name}.${relation}`, relation);
+				}
+			}
+
+			if (searchString) {
+				for(const searchField of searchFields) {
+					if(searchFields.indexOf(searchField) === 0) {
+						qb.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+					} else {
+						qb.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+					}
 				}
 			}
 

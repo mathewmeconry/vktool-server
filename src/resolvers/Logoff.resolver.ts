@@ -24,7 +24,13 @@ import { AuthRoles } from '../interfaces/AuthRoles';
 import AuthService from '../services/AuthService';
 import { getManager } from 'typeorm';
 
-const baseResolver = createResolver('Logoff', Logoff, [AuthRoles.LOGOFFS_READ], ['contact']);
+const baseResolver = createResolver(
+	'Logoff',
+	Logoff,
+	[AuthRoles.LOGOFFS_READ],
+	['contact'],
+	['contact.firstname', 'contact.lastname', 'state']
+);
 
 registerEnumType(LogoffState, {
 	name: 'LogoffState',

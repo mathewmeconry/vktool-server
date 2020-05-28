@@ -2,13 +2,14 @@ import Compensation from './Compensation';
 import Contact from './Contact';
 import User from './User';
 import Payout from './Payout';
-import { Column, ChildEntity } from 'typeorm';
+import { Column, ChildEntity, Index } from 'typeorm';
 import { IsString } from 'class-validator';
 import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
 @ChildEntity()
 export default class CustomCompensation extends Compensation<CustomCompensation> {
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public description: string;

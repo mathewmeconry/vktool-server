@@ -1,13 +1,16 @@
 import { createResolver, resolveEntity } from './helpers';
 import CollectionPoint from '../entities/CollectionPoint';
-import { Resolver, InputType, Field, Mutation, Arg, Ctx, Authorized, Query } from 'type-graphql';
-import { ApolloContext } from '../controllers/CliController';
+import { Resolver, InputType, Field, Mutation, Arg, Authorized, Query } from 'type-graphql';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import { getManager } from 'typeorm';
 
-const baseResolver = createResolver('CollectionPoint', CollectionPoint, [
-	AuthRoles.COLLECTIONPOINT_READ,
-]);
+const baseResolver = createResolver(
+	'CollectionPoint',
+	CollectionPoint,
+	[AuthRoles.COLLECTIONPOINT_READ],
+	[],
+	['name', 'address', 'postcode', 'city']
+);
 
 @InputType()
 class AddCollectionPoint implements Partial<CollectionPoint> {

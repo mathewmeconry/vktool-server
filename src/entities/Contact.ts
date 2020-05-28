@@ -14,6 +14,7 @@ import {
 	AfterInsert,
 	AfterUpdate,
 	RelationId,
+	Index,
 } from 'typeorm';
 import BexioBase from './BexioBase';
 import Compensation from './Compensation';
@@ -41,10 +42,12 @@ export default class Contact extends BexioBase<Contact> {
 	@RelationId('contactType')
 	public contactTypeId: number;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public firstname: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public lastname: string;
@@ -53,34 +56,42 @@ export default class Contact extends BexioBase<Contact> {
 	@Column('datetime')
 	public birthday: Date;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public address: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public postcode: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public city: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public mail: string;
 
+	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
 	public mailSecond?: string;
 
+	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
 	public phoneFixed?: string;
 
+	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
 	public phoneFixedSecond?: string;
 
+	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
 	public phoneMobile?: string;

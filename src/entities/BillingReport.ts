@@ -7,6 +7,7 @@ import {
 	ManyToMany,
 	JoinTable,
 	RelationId,
+	Index,
 } from 'typeorm';
 import User from './User';
 import Order from './Order';
@@ -85,6 +86,7 @@ export default class BillingReport extends Base<BillingReport> {
 	@Column('text', { nullable: true })
 	public remarks?: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public state: BillingReportState;

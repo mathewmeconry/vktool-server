@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, JoinColumn, AfterLoad, RelationId } from 'typeorm';
+import { Entity, Column, OneToOne, JoinColumn, AfterLoad, RelationId, Index } from 'typeorm';
 import Base from './Base';
 import Contact from './Contact';
 import { AuthRolesByRank, AuthRolesByFunction, AuthRoles } from '../interfaces/AuthRoles';
@@ -20,6 +20,7 @@ export default class User extends Base<User> {
 	@Column('text', { nullable: true })
 	public refreshToken?: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public displayName: string;
@@ -64,6 +65,6 @@ export default class User extends Base<User> {
 		this.roles = this.roles.filter((element, index, arr) => arr.indexOf(element) === index);
 		// filters out old permissions
 		// @ts-ignore
-		this.roles = this.roles.filter((element) => AuthRoles[element.toUpperCase()] !== undefined)
+		this.roles = this.roles.filter((element) => AuthRoles[element.toUpperCase()] !== undefined);
 	}
 }

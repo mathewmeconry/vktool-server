@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, OneToMany, Column, AfterLoad, RelationId } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, OneToMany, Column, AfterLoad, RelationId, Index } from 'typeorm';
 import moment from 'moment';
 import BexioBase from './BexioBase';
 import Contact from './Contact';
@@ -10,10 +10,12 @@ import { ObjectType, Field } from 'type-graphql';
 @ObjectType()
 @Entity()
 export default class Order extends BexioBase<Order> {
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public documentNr: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public title: string;
@@ -26,6 +28,7 @@ export default class Order extends BexioBase<Order> {
 	@Column('datetime', { nullable: true })
 	public validFrom?: Date;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public deliveryAddress: string;

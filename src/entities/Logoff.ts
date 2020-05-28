@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, Column, ManyToOne, RelationId, DeleteDateColumn } from 'typeorm';
+import { Entity, JoinColumn, Column, ManyToOne, RelationId, DeleteDateColumn, Index } from 'typeorm';
 import Contact from './Contact';
 import Base from './Base';
 import User from './User';
@@ -29,6 +29,7 @@ export default class Logoff extends Base<Logoff> {
 	@Column('datetime', { precision: 6 })
 	public until: Date;
 
+	@Index({ fulltext: true })
 	@Field((type) => LogoffState)
 	@Column('text')
 	public state: LogoffState;

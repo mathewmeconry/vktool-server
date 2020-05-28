@@ -11,7 +11,8 @@ const baseResolver = createResolver(
 	'Order',
 	Order,
 	[AuthRoles.ORDERS_READ],
-	['positions', 'contact']
+	['positions', 'contact'],
+	['documentNr', 'title', 'contact.firstname', 'contact.lastname']
 );
 
 @Resolver((of) => Order)

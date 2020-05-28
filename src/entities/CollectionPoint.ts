@@ -1,23 +1,27 @@
 import Base from './Base';
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
 import { IsString } from 'class-validator';
 import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
 @Entity()
 export default class CollectionPoint extends Base<CollectionPoint> {
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public name: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public address: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public postcode: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
 	public city: string;

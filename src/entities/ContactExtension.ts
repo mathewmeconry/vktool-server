@@ -1,4 +1,13 @@
-import { ManyToOne, Entity, JoinColumn, Column, OneToOne, AfterLoad, RelationId } from 'typeorm';
+import {
+	ManyToOne,
+	Entity,
+	JoinColumn,
+	Column,
+	OneToOne,
+	AfterLoad,
+	RelationId,
+	Index,
+} from 'typeorm';
 import { IsOptional, IsDate, IsString, Validate } from 'class-validator';
 import CollectionPoint from './CollectionPoint';
 import Contact from './Contact';
@@ -49,6 +58,7 @@ export default class ContactExtension extends Base<ContactExtension> {
 	@Column('text', { nullable: true })
 	public bankName?: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column('text', { nullable: true })
 	public iban?: string;
@@ -57,6 +67,7 @@ export default class ContactExtension extends Base<ContactExtension> {
 	@Column('text', { nullable: true })
 	public accountHolder?: string;
 
+	@Index({ fulltext: true })
 	@Field((type) => [String])
 	@Column('simple-array', { nullable: true })
 	public moreMails?: Array<string>;
@@ -65,7 +76,7 @@ export default class ContactExtension extends Base<ContactExtension> {
 	@JoinColumn()
 	public updatedBy: User;
 
-    @Field()
+	@Field()
 	@RelationId('updatedBy')
 	public updatedById: number;
 

@@ -29,7 +29,8 @@ const baseResolver = createResolver(
 	'Compensation',
 	Compensation,
 	[AuthRoles.COMPENSATIONS_READ],
-	['billingReport', 'billingReport.order', 'creator', 'member']
+	['billingReport', 'billingReport.order', 'creator', 'member'],
+	['member.firstname', 'member.lastname', 'description', 'creator.displayName']
 );
 
 @Resolver((of) => Compensation)
@@ -144,7 +145,6 @@ export default class CompensationResolver extends baseResolver {
 
 	@FieldResolver()
 	public async description(@Root() object: Compensation<any>): Promise<string> {
-		return object.description
+		return object.description;
 	}
-
 }

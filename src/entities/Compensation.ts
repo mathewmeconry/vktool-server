@@ -8,6 +8,7 @@ import {
 	AfterLoad,
 	RelationId,
 	DeleteDateColumn,
+	Index,
 } from 'typeorm';
 import Contact from './Contact';
 import Payout from './Payout';

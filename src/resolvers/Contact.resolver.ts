@@ -25,7 +25,7 @@ import OrderCompensation from '../entities/OrderCompensation';
 import CustomCompensation from '../entities/CustomCompensation';
 import User from '../entities/User';
 import CollectionPoint from '../entities/CollectionPoint';
-import { getManager, FindManyOptions } from 'typeorm';
+import { getManager, FindManyOptions, Brackets } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import ContactExtension from '../entities/ContactExtension';
 
@@ -68,6 +68,23 @@ class PaginationResponse extends PaginatedResponse(Contact) {}
 
 @Resolver((of) => Contact)
 export default class ContactResolver extends baseResolver {
+	private searchFields = [
+		'lastname',
+		'firstname',
+		'Contact.address',
+		'Contact.postcode',
+		'Contact.city',
+		'collectionPoint.address',
+		'collectionPoint.postcode',
+		'collectionPoint.city',
+		'phoneFixed',
+		'phoneFixedSecond',
+		'phoneMobile',
+		'mail',
+		'mailSecond',
+		'contactExtension.moreMails',
+	];
+
 	@Authorized([AuthRoles.CONTACTS_EDIT, AuthRoles.MEMBERS_EDIT])
 	@Mutation((type) => ContactExtension)
 	public async editContact(@Arg('data') data: EditContact): Promise<ContactExtension> {
@@ -100,13 +117,33 @@ export default class ContactResolver extends baseResolver {
 	@Authorized([AuthRoles.MEMBERS_READ])
 	@Query((type) => PaginationResponse)
 	public async getMembers(
-		@Args() { cursor, limit, sortBy, sortDirection }: PaginationArgs<Contact>
+		@Args() { cursor, limit, sortBy, sortDirection, searchString }: PaginationArgs<Contact>
 	): Promise<PaginationResponse> {
 		const qb = getManager()
 			.getRepository(Contact)
 			.createQueryBuilder('Contact')
+			.leftJoinAndSelect(
+				ContactExtension,
+				'contactExtension',
+				'contactExtension.contactId = Contact.id'
+			)
+			.leftJoinAndSelect('contactExtension.collectionPoint', 'collectionPoint')
 			.leftJoin('Contact.contactGroups', 'contactGroup')
 			.where('contactGroup.bexioId = :bexioId', { bexioId: 7 });
+
+		if (searchString) {
+			qb.andWhere(
+				new Brackets((sub) => {
+					for (const searchField of this.searchFields) {
+						if (this.searchFields.indexOf(searchField) === 0) {
+							sub.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+						} else {
+							sub.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+						}
+					}
+				})
+			);
+		}
 
 		const count = await qb.getCount();
 
