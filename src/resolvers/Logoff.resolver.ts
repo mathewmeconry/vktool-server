@@ -24,7 +24,7 @@ import { AuthRoles } from '../interfaces/AuthRoles';
 import AuthService from '../services/AuthService';
 import { getManager } from 'typeorm';
 
-const baseResolver = createResolver('Logoff', Logoff, [AuthRoles.LOGOFFS_READ]);
+const baseResolver = createResolver('Logoff', Logoff, [AuthRoles.LOGOFFS_READ], ['contact']);
 
 registerEnumType(LogoffState, {
 	name: 'LogoffState',
@@ -99,7 +99,7 @@ export default class LogoffResolver extends baseResolver {
 			.getRepository(Logoff)
 			.findOne({ where: { id }, relations: ['contact'] });
 		if (!logoff) throw new Error('Logoff not found');
-		logoff.state = state;
+		logoff.state = state.toLowerCase() as LogoffState;
 		logoff.changedStateBy = ctx.user;
 
 		if (notify !== false) {
@@ -122,7 +122,7 @@ export default class LogoffResolver extends baseResolver {
 				contact,
 				add.from,
 				add.until,
-				add.state,
+				add.state.toLowerCase() as LogoffState,
 				add.remarks || '',
 				ctx.user
 			);

@@ -86,7 +86,7 @@ export default class OrderCompensationResolver extends CompensationResolver {
 		@Arg('id', (type) => Int) id: number
 	): Promise<OrderCompensation | null> {
 		try {
-			return await resolveEntity('OrderCompensation', id);
+			return await resolveEntity('OrderCompensation', id, ['billingReport', 'billingReport.order']);
 		} catch (e) {
 			return null;
 		}

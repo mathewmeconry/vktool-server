@@ -49,18 +49,21 @@ export default class User extends Base<User> {
 	}
 
 	@AfterLoad()
-	public enrichPermissions(): void {
+	public async enrichPermissions(): Promise<void> {
 		if (this.bexioContact && typeof this.bexioContact.getRank === 'function') {
-			const rank = this.bexioContact.getRank() || { bexioId: -1 };
+			const rank = (await this.bexioContact.getRank()) || { bexioId: -1 };
 			this.roles = this.roles.concat(AuthRolesByRank[rank.bexioId] || []);
 		}
 
 		if (this.bexioContact && typeof this.bexioContact.getFunctions === 'function') {
-			for (let func of this.bexioContact.getFunctions()) {
+			for (let func of await this.bexioContact.getFunctions()) {
 				this.roles = this.roles.concat(AuthRolesByFunction[func.bexioId]);
 			}
 		}
 
 		this.roles = this.roles.filter((element, index, arr) => arr.indexOf(element) === index);
+		// filters out old permissions
+		// @ts-ignore
+		this.roles = this.roles.filter((element) => AuthRoles[element.toUpperCase()] !== undefined)
 	}
 }

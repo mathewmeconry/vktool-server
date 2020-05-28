@@ -23,6 +23,10 @@ registerEnumType(PaginatedResponse, {
 	name: 'Sortdirections',
 });
 
+registerEnumType(AuthRoles, {
+	name: 'Authroles',
+});
+
 @ArgsType()
 export class PaginationArgs<T> {
 	@Field((type) => Int, { nullable: true })
@@ -73,26 +77,41 @@ export function createResolver<T extends ClassType>(
 		public async getAll(
 			@Args() { cursor, limit, sortBy, sortDirection }: PaginationArgs<T>
 		): Promise<PaginationResponse> {
-			const qb = getManager().getRepository(objectTypes).createQueryBuilder();
+			const qb = getManager()
+				.getRepository(objectTypes)
+				.createQueryBuilder(objectTypes.prototype.constructor.name);
 			for (const relation of relations) {
-				qb.leftJoinAndSelect(`${objectTypes.prototype.constructor.name}.${relation}`, relation);
+				if (relation.indexOf('.') > -1) {
+					qb.leftJoinAndSelect(relation, relation.split('.').slice(-1)[0]);
+				} else {
+					qb.leftJoinAndSelect(`${objectTypes.prototype.constructor.name}.${relation}`, relation);
+				}
 			}
+
+			const count = await qb.getCount();
 
 			qb.skip(cursor);
 			if (limit) qb.take(limit);
-			if (sortBy) qb.orderBy(sortBy as string, sortDirection);
-
-			const count = await getManager().getRepository(objectTypes).count();
+			if (sortBy) {
+				if (sortBy.toString().indexOf('.') < 0 && relations.length > 0) {
+					qb.orderBy(`${objectTypes.prototype.constructor.name}.${sortBy}`, sortDirection);
+				} else if (sortBy.toString().indexOf('.') > 0) {
+					qb.orderBy(sortBy.toString(), sortDirection);
+				} else {
+					qb.orderBy(`\`${sortBy}\``, sortDirection);
+				}
+			}
 
 			let nextCursor = cursor + (limit || 0);
 			if (nextCursor > count) {
 				nextCursor = count;
 			}
+			const items = await qb.getMany();
 			return {
 				total: count,
 				cursor: nextCursor,
 				hasMore: nextCursor !== count,
-				items: await qb.getMany(),
+				items,
 			};
 		}
 
@@ -106,12 +125,22 @@ export function createResolver<T extends ClassType>(
 	return BaseResolver;
 }
 
-export async function resolveEntity<T>(entity: string, id: number): Promise<T> {
-	const obj = await getManager()
-		.getRepository<T>(entity)
-		.createQueryBuilder()
-		.where('id = :id', { id })
-		.getOne();
+export async function resolveEntity<T>(
+	entity: string,
+	id: number,
+	relations: string[] = []
+): Promise<T> {
+	const qb = getManager().getRepository<T>(entity).createQueryBuilder(entity);
+
+	for (const relation of relations) {
+		if (relation.indexOf('.') > -1) {
+			qb.leftJoinAndSelect(relation, relation.split('.').slice(-1)[0]);
+		} else {
+			qb.leftJoinAndSelect(`${entity}.${relation}`, relation);
+		}
+	}
+
+	const obj = await qb.where(`${entity}.id = :id`, { id }).getOne();
 	if (!obj) throw new Error(`${entity} with id ${id} not found`);
 	return obj;
 }

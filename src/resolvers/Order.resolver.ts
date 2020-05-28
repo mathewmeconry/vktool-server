@@ -7,7 +7,12 @@ import { getManager } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import moment from 'moment';
 
-const baseResolver = createResolver('Order', Order, [AuthRoles.ORDERS_READ], ['positions']);
+const baseResolver = createResolver(
+	'Order',
+	Order,
+	[AuthRoles.ORDERS_READ],
+	['positions', 'contact']
+);
 
 @Resolver((of) => Order)
 export default class OrderResolver extends baseResolver {
@@ -27,7 +32,8 @@ export default class OrderResolver extends baseResolver {
 			.where('order.validFrom <= :greather', { greather: now.toISOString() })
 			.andWhere('order.validFrom >= :lower', {
 				lower: moment(new Date()).startOf('year').subtract(1, 'year').toISOString(),
-			});
+			})
+			.orderBy('order.title', 'ASC');
 		let orders = await query.getMany();
 
 		orders = orders.filter((order) =>

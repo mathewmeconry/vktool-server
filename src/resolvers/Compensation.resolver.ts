@@ -25,11 +25,13 @@ import { AuthRoles } from '../interfaces/AuthRoles';
 import AuthService from '../services/AuthService';
 import { getManager } from 'typeorm';
 
-const baseResolver = createResolver('Compensation', Compensation, [AuthRoles.COMPENSATIONS_READ]);
+const baseResolver = createResolver(
+	'Compensation',
+	Compensation,
+	[AuthRoles.COMPENSATIONS_READ],
+	['billingReport', 'billingReport.order', 'creator', 'member']
+);
 
-registerEnumType(AuthRoles, {
-	name: 'Authroles',
-});
 @Resolver((of) => Compensation)
 export default class CompensationResolver extends baseResolver {
 	@Authorized([AuthRoles.AUTHENTICATED, AuthRoles.COMPENSATIONS_READ])
@@ -55,7 +57,9 @@ export default class CompensationResolver extends baseResolver {
 		}
 
 		const customs = await getManager().getRepository(CustomCompensation).find({ where: filter });
-		const orders = await getManager().getRepository(OrderCompensation).find({ where: filter });
+		const orders = await getManager()
+			.getRepository(OrderCompensation)
+			.find({ where: filter, relations: ['billingReport', 'billingReport.order'] });
 		return customs.concat(orders);
 	}
 
@@ -123,7 +127,7 @@ export default class CompensationResolver extends baseResolver {
 		@Root() object: Compensation<any>
 	): Promise<Compensation<CustomCompensation> | null> {
 		if (!object.transferCompensationId) return null;
-		return resolveEntity('transferCompensation', object.transferCompensationId);
+		return resolveEntity('CustomCompensation', object.transferCompensationId);
 	}
 
 	@FieldResolver({ nullable: true })
@@ -137,4 +141,10 @@ export default class CompensationResolver extends baseResolver {
 		if (!object.deletedById) return null;
 		return resolveEntity('User', object.deletedById);
 	}
+
+	@FieldResolver()
+	public async description(@Root() object: Compensation<any>): Promise<string> {
+		return object.description
+	}
+
 }

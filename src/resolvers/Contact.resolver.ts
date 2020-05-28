@@ -25,11 +25,16 @@ import OrderCompensation from '../entities/OrderCompensation';
 import CustomCompensation from '../entities/CustomCompensation';
 import User from '../entities/User';
 import CollectionPoint from '../entities/CollectionPoint';
-import { getManager } from 'typeorm';
+import { getManager, FindManyOptions } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import ContactExtension from '../entities/ContactExtension';
 
-const baseResolver = createResolver('Contact', Contact, [AuthRoles.CONTACTS_READ]);
+const baseResolver = createResolver(
+	'Contact',
+	Contact,
+	[AuthRoles.CONTACTS_READ],
+	['contactGroups']
+);
 
 @InputType()
 class EditContact implements Partial<Contact> {
@@ -97,19 +102,19 @@ export default class ContactResolver extends baseResolver {
 	public async getMembers(
 		@Args() { cursor, limit, sortBy, sortDirection }: PaginationArgs<Contact>
 	): Promise<PaginationResponse> {
-		const qb = getManager().getRepository(Contact).createQueryBuilder('contact');
-		qb.leftJoinAndSelect('contact.contactGroups', 'contactGroup');
-		qb.where('contactGroup.bexioId = :bexioId', { bexioId: 7 });
+		const qb = getManager()
+			.getRepository(Contact)
+			.createQueryBuilder('Contact')
+			.leftJoin('Contact.contactGroups', 'contactGroup')
+			.where('contactGroup.bexioId = :bexioId', { bexioId: 7 });
+
+		const count = await qb.getCount();
+
 		qb.skip(cursor);
 		if (limit) qb.take(limit);
-		if (sortBy) qb.orderBy(`contact.${sortBy}`, sortDirection);
-
-		const count = await getManager()
-			.getRepository(Contact)
-			.createQueryBuilder('contact')
-			.leftJoinAndSelect('contact.contactGroups', 'contactGroup')
-			.where('contactGroup.bexioId = :bexioId', { bexioId: 7 })
-			.getCount();
+		if (sortBy) {
+			qb.orderBy(`Contact.${sortBy}`, sortDirection);
+		}
 
 		let nextCursor = cursor + (limit || 0);
 		if (nextCursor > count) {
@@ -126,9 +131,12 @@ export default class ContactResolver extends baseResolver {
 	@Authorized([AuthRoles.MEMBERS_READ])
 	@Query((type) => [Contact])
 	public async getMembersAll(): Promise<Contact[]> {
-		const qb = getManager().getRepository(Contact).createQueryBuilder('contact');
-		qb.leftJoinAndSelect('contact.contactGroups', 'contactGroup');
-		qb.where('contactGroup.bexioId = :bexioId', { bexioId: 7 });
+		const qb = getManager()
+			.getRepository(Contact)
+			.createQueryBuilder('contact')
+			.leftJoin('contact.contactGroups', 'contactGroup')
+			.where('contactGroup.bexioId = :bexioId', { bexioId: 7 })
+			.orderBy('contact.firstname', 'ASC');
 
 		return qb.getMany();
 	}
@@ -158,6 +166,17 @@ export default class ContactResolver extends baseResolver {
 		return resolveEntity('User', object.userId);
 	}
 
+	@FieldResolver({ nullable: true })
+	public async rank(@Root() object: Contact): Promise<string | undefined> {
+		return (await object.getRank())?.name;
+	}
+
+	@FieldResolver((type) => [String], { nullable: true })
+	public async functions(@Root() object: Contact): Promise<string[] | undefined> {
+		return (await object.getFunctions())?.map((g) => g.name);
+	}
+
+	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => CollectionPoint, { nullable: true })
 	public async collectionPoint(@Root() object: Contact): Promise<CollectionPoint | null> {
 		const extension = await this.loadExtension(object.id);
@@ -165,31 +184,37 @@ export default class ContactResolver extends baseResolver {
 		return resolveEntity('CollectionPoint', extension.collectionPointId);
 	}
 
+	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => Date, { nullable: true })
 	public async entryDate(@Root() object: Contact): Promise<Date | undefined> {
 		return (await this.loadExtension(object.id))?.entryDate;
 	}
 
+	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => Date, { nullable: true })
 	public async exitDate(@Root() object: Contact): Promise<Date | undefined> {
 		return (await this.loadExtension(object.id))?.exitDate;
 	}
 
+	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => String, { nullable: true })
 	public async bankName(@Root() object: Contact): Promise<string | undefined> {
 		return (await this.loadExtension(object.id))?.bankName;
 	}
 
+	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => String, { nullable: true })
 	public async iban(@Root() object: Contact): Promise<string | undefined> {
 		return (await this.loadExtension(object.id))?.iban;
 	}
 
+	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => String, { nullable: true })
 	public async accountHolder(@Root() object: Contact): Promise<string | undefined> {
 		return (await this.loadExtension(object.id))?.accountHolder;
 	}
 
+	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => [String], { nullable: true })
 	public async moreMails(@Root() object: Contact): Promise<string[] | undefined> {
 		return (await this.loadExtension(object.id))?.moreMails;

@@ -128,21 +128,40 @@ export default class Contact extends BexioBase<Contact> {
 		return this.contactGroups.find((group) => group.bexioId === 7) ? true : false;
 	}
 
-	public getRank(): ContactGroup | null {
+	public async getRank(): Promise<ContactGroup | null> {
 		const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22];
 
-		if (this.contactGroups) {
-			return this.contactGroups.find((group) => rankGroups.indexOf(group.bexioId) > -1) || null;
+		let groups = this.contactGroups;
+		if (!groups) {
+			groups = await getManager()
+				.getRepository<ContactGroup>(ContactGroup)
+				.createQueryBuilder()
+				.where('id IN (:ids)', { ids: this.contactGroupIds })
+				.getMany();
+		}
+
+		if (groups) {
+			return groups.find((group) => rankGroups.indexOf(group.bexioId) > -1) || null;
 		}
 
 		return null;
 	}
 
-	public getFunctions(): Array<ContactGroup> {
+	public async getFunctions(): Promise<Array<ContactGroup>> {
 		const functionGroups = [9, 16, 32, 16];
 
-		if (this.contactGroups) {
-			return this.contactGroups.filter((group) => functionGroups.indexOf(group.bexioId) > -1);
+		let groups = this.contactGroups;
+		if (!groups) {
+			groups = await getManager()
+				.getRepository<ContactGroup>(ContactGroup)
+				.createQueryBuilder()
+				.where('id IN (:ids)', { ids: this.contactGroupIds })
+				.getMany();
+		}
+
+
+		if (groups) {
+			return groups.filter((group) => functionGroups.indexOf(group.bexioId) > -1);
 		}
 
 		return [];
@@ -154,14 +173,12 @@ export default class Contact extends BexioBase<Contact> {
 	}
 
 	@AfterLoad()
-	private async loadOverride(): Promise<boolean> {
-		this.rank = (this.getRank() || { name: '' }).name;
-		this.functions = this.getFunctions().map((func) => func.name);
+	public async loadOverride(): Promise<boolean> {
+		this.ajustDates();
 
 		return true;
 	}
 
-	@AfterLoad()
 	private ajustDates(): void {
 		this.birthday = new Date(this.birthday);
 	}

@@ -24,7 +24,7 @@ import { ApolloContext } from '../controllers/CliController'
 import { AuthRoles } from '../interfaces/AuthRoles'
 import AuthService from '../services/AuthService'
 
-const baseResolver = createResolver('BillingReport', BillingReport, [AuthRoles.BILLINGREPORTS_READ])
+const baseResolver = createResolver('BillingReport', BillingReport, [AuthRoles.BILLINGREPORTS_READ], ['order', 'creator'])
 
 registerEnumType(BillingReportState, {
     name: 'BillingReportState',
@@ -152,16 +152,6 @@ export default class BillingReportResolver extends baseResolver {
         const br = await getManager()
             .getRepository(BillingReport)
             .createQueryBuilder('billingReport')
-            .leftJoinAndSelect('billingReport.creator', 'user')
-            .leftJoinAndSelect('billingReport.order', 'order')
-            .leftJoinAndSelect(
-                'billingReport.compensations',
-                'compensations',
-                'compensations.deletedAt IS NULL'
-            )
-            .leftJoinAndSelect('compensations.member', 'member')
-            .leftJoinAndSelect('billingReport.els', 'els')
-            .leftJoinAndSelect('billingReport.drivers', 'drivers')
             .where('billingReport.id = :id', { id })
             .getOne()
 
