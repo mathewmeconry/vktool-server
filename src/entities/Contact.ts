@@ -135,8 +135,24 @@ export default class Contact extends BexioBase<Contact> {
 	@Field((type) => [String], { nullable: true })
 	public functions?: Array<string>;
 
+	@OneToOne((type) => ContactExtension, (contactExtension) => contactExtension.contact, {
+		nullable: true,
+	})
+	public extension?: ContactExtension;
+
 	public isMember(): boolean {
 		return this.contactGroups.find((group) => group.bexioId === 7) ? true : false;
+	}
+
+	public async setRank(): Promise<void> {
+		const rank = await this.getRank();
+		if (rank) {
+			this.rank = rank.name;
+		}
+	}
+
+	public async setFunctions(): Promise<void> {
+		this.functions = (await this.getFunctions()).map((f) => f.name);
 	}
 
 	public async getRank(): Promise<ContactGroup | null> {
@@ -169,7 +185,6 @@ export default class Contact extends BexioBase<Contact> {
 				.where('id IN (:ids)', { ids: this.contactGroupIds })
 				.getMany();
 		}
-
 
 		if (groups) {
 			return groups.filter((group) => functionGroups.indexOf(group.bexioId) > -1);

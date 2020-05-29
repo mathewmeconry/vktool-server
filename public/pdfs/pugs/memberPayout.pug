@@ -14,11 +14,12 @@ block content
     div(class="header")
         div(class="bankingInformation")
             p(class="bold") Bankinformationen
-            p #{member.bankName}
-            p #{member.iban}
-            p #{member.accountHolder}
+            p #{member.extension.bankName}
+            p #{member.extension.iban}
+            p #{member.extension.accountHolder}
         div(class="address")
-            p(class="bold") #{member.firstname} #{member.lastname}
+            p(class="bold") Kontaktangaben
+            p #{member.firstname} #{member.lastname}
             p #{member.address}
             p #{member.postcode} #{member.city}
         

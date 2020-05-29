@@ -5,6 +5,7 @@ import PayoutService from '../services/PayoutService';
 import Contact from '../entities/Contact';
 import EMailService from '../services/EMailService';
 import moment from 'moment';
+import ContactExtension from '../entities/ContactExtension';
 
 export default class PayoutController {
 	private static emailService = new EMailService('no-reply@vkazu.ch');
@@ -24,7 +25,20 @@ export default class PayoutController {
 			return;
 		}
 
-		const member = await getManager().getRepository(Contact).findOneOrFail(memberId);
+		const member = await getManager()
+			.getRepository(Contact)
+			.createQueryBuilder('Contact')
+			.leftJoinAndSelect('Contact.extension', 'extension')
+			.where('Contact.id = :id', { id: memberId })
+			.getOne();
+		if (!member) {
+			res.status(400);
+			res.send({
+				message: `member with id ${memberId} not found`,
+			});
+			return;
+		}
+
 		res.contentType('application/pdf');
 		res.setHeader(
 			'Content-Disposition',

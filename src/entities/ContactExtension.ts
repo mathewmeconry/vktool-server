@@ -30,7 +30,7 @@ export enum ContactExtensionInterface {
 @ObjectType()
 @Entity()
 export default class ContactExtension extends Base<ContactExtension> {
-	@OneToOne((type) => Contact)
+	@OneToOne((type) => Contact, (contact) => contact.extension)
 	@JoinColumn()
 	public contact: Contact;
 

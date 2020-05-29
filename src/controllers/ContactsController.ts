@@ -1,6 +1,4 @@
 import * as Express from 'express'
-import { AuthRoles } from '../interfaces/AuthRoles'
-import AuthService from '../services/AuthService'
 import ContactService from '../services/ContactService'
 import moment from 'moment'
 import PdfService from '../services/PdfService'
@@ -10,9 +8,7 @@ export default class ContactsController {
         let members = await ContactService.getActiveMembers(
             false
         )
-        members = members.sort((a, b) =>
-            `${a.lastname} ${a.firstname}` < `${b.lastname} ${b.firstname}` ? -1 : 1
-        )
+
         res.contentType('application/pdf')
         res.setHeader(
             'Content-Disposition',

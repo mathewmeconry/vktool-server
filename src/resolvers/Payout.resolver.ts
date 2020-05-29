@@ -75,7 +75,7 @@ export default class PayoutResolver extends baseResolver {
 		}
 
 		for (const memberId of toSendIds) {
-			const member = await resolveEntity<Contact>('Contact', memberId);
+			const member = await resolveEntity<Contact>('Contact', memberId, ['extension']);
 			const email = await PayoutService.generateMemberMail(payout, member);
 			const pdf = await PayoutService.generateMemberPDF(payout, member);
 			const extension = await getManager()
