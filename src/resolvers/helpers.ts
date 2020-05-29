@@ -74,7 +74,7 @@ export class PaginationArgs<T> {
 	@Field({ nullable: true })
 	searchString?: string;
 
-	@Field(type => Int, { nullable: true })
+	@Field((type) => Int, { nullable: true })
 	filter?: number;
 }
 
@@ -127,21 +127,21 @@ export function createResolver<T extends ClassType>(
 			}
 
 			if (searchString) {
-				for (const searchField of searchFields) {
-					qb.where(
-						new Brackets((sub) => {
+				qb.where(
+					new Brackets((sub) => {
+						for (const searchField of searchFields) {
 							if (searchFields.indexOf(searchField) === 0) {
 								sub.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
 							} else {
 								sub.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
 							}
-						})
-					);
-				}
+						}
+					})
+				);
 			}
 
 			if (filter !== undefined) {
-				const realFilter = filters.find((f) => (f.id === filter));
+				const realFilter = filters.find((f) => f.id === filter);
 				if (realFilter) {
 					if (searchString) {
 						qb.andWhere(`${realFilter.field} ${realFilter.operator} :value`, {
