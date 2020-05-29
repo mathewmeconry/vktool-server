@@ -4,7 +4,7 @@ block greeting
     h1 Hallo #{contact.firstname}
 
 block info
-    - var status = (logoff.state === 'approved') ? 'akzeptiert' : 'abgelehnt'
+    - var status = (logoff.state.toLowerCase() === 'approved') ? 'akzeptiert' : 'abgelehnt'
     if logoff.deletedBy
         - status = 'gelöscht'
     p Deine Abmeldung von #{moment(logoff.from).format('DD.MM.YYYY HH:mm')} bis #{moment(logoff.until).format('DD.MM.YYYY HH:mm')} wurde #[b #{status}].

@@ -25,8 +25,8 @@ block content
                     td(id="rank") #{member.rank}
                     td(id="functions") #{member.functions.join(',')}
                     td #{`${member.address}, ${member.postcode} ${member.city}`}
-                    if member.collectionPoint
-                        td #{`${member.collectionPoint.address}, ${member.collectionPoint.postcode} ${member.collectionPoint.city}`}
+                    if member.extension.collectionPoint
+                        td #{`${member.extension.collectionPoint.address}, ${member.extension.collectionPoint.postcode} ${member.extension.collectionPoint.city}`}
                     else
                         td
                     td(class="nowrap phone") #{member.phoneFixed}

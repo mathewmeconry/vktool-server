@@ -15,8 +15,11 @@ block info
                 th Bemerkungen
         tbody
             each logoff in logoffs
+                - var status = (logoff.state.toLowerCase() === 'approved') ? 'akzeptiert' : 'abgelehnt'
+                if logoff.state.toLowerCase() === 'pending'
+                    - status = 'hängig'
                 tr
                     td #{moment(logoff.from).format('DD.MM.YYYY HH:mm')}
                     td #{moment(logoff.until).format('DD.MM.YYYY HH:mm')}
-                    td #{logoff.state}
+                    td #{status}
                     td #{logoff.remarks}

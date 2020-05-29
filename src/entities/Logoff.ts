@@ -1,53 +1,86 @@
-import { Entity, JoinColumn, Column, ManyToOne } from "typeorm"
-import Contact from "./Contact"
-import Base from "./Base"
-import User from "./User"
+import { Entity, JoinColumn, Column, ManyToOne, RelationId, DeleteDateColumn, Index } from 'typeorm';
+import Contact from './Contact';
+import Base from './Base';
+import User from './User';
+import { ObjectType, Field } from 'type-graphql';
 
 export enum LogoffState {
-    APPROVED = 'approved',
-    PENDING = 'pending',
-    DECLINED = 'declined'
+	APPROVED = 'approved',
+	PENDING = 'pending',
+	DECLINED = 'declined',
 }
+
+@ObjectType()
 @Entity()
 export default class Logoff extends Base<Logoff> {
-    @ManyToOne(type => Contact)
-    @JoinColumn()
-    public contact: Contact
+	@Field((type) => Contact)
+	@ManyToOne((type) => Contact)
+	@JoinColumn()
+	public contact: Contact;
 
-    @Column('datetime', { precision: 6 })
-    public from: Date
+	@RelationId('contact')
+	public contactId: number;
 
-    @Column('datetime', { precision: 6 })
-    public until: Date
+	@Field()
+	@Column('datetime', { precision: 6 })
+	public from: Date;
 
-    @Column("text")
-    public state: LogoffState
+	@Field()
+	@Column('datetime', { precision: 6 })
+	public until: Date;
 
-    @Column('text', { nullable: true })
-    public remarks?: string
+	@Index({ fulltext: true })
+	@Field((type) => LogoffState)
+	@Column('text')
+	public state: LogoffState;
 
-    @ManyToOne(type => User)
-    @JoinColumn()
-    public createdBy: User
+	@Field({ nullable: true })
+	@Column('text', { nullable: true })
+	public remarks?: string;
 
-    @ManyToOne(type => User, { nullable: true })
-    @JoinColumn()
-    public changedStateBy: User
+	@Field((type) => User)
+	@ManyToOne((type) => User)
+	@JoinColumn()
+	public createdBy: User;
 
-    @Column('date', { nullable: true })
-    public deletedAt?: Date
+	@RelationId('createdBy')
+	public createdById: number;
 
-    @ManyToOne(type => User, { eager: true })
-    @JoinColumn()
-    public deletedBy: User
+	@Field((type) => User, { nullable: true })
+	@ManyToOne((type) => User, { nullable: true })
+	@JoinColumn()
+	public changedStateBy: User;
 
-    constructor(contact: Contact, from: Date, until: Date, state: LogoffState, remarks: string, createdBy: User) {
-        super()
-        this.contact = contact
-        this.from = from
-        this.until = until
-        this.state = state
-        this.remarks = remarks || undefined
-        this.createdBy = createdBy
-    }
+	@RelationId('changedStateBy')
+	public changedStateById?: number;
+
+	@Field({ nullable: true })
+	@Column('datetime', { nullable: true })
+	@DeleteDateColumn()
+	public deletedAt?: Date;
+
+	@Field((type) => User, { nullable: true })
+	@ManyToOne((type) => User)
+	@JoinColumn()
+	public deletedBy?: User;
+
+	@RelationId('deletedBy')
+	public deletedById?: number;
+
+	constructor(
+		contact: Contact,
+		from: Date,
+		until: Date,
+		state: LogoffState,
+		remarks: string,
+		createdBy: User
+	) {
+		super();
+		this.contact = contact;
+		this.from = from;
+		this.until = until;
+		this.state = state;
+		this.remarks = remarks || undefined;
+		this.createdBy = createdBy;
+	}
 }

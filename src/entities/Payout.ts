@@ -1,39 +1,63 @@
-import Base from "./Base";
-import { Entity, Column, OneToMany, JoinColumn, ManyToOne, getManager, Not, LessThan, AfterLoad } from "typeorm";
-import Compensation from "./Compensation";
-import User from "./User";
-import { IsDate } from "class-validator";
+import Base from './Base';
+import {
+	Entity,
+	Column,
+	OneToMany,
+	JoinColumn,
+	ManyToOne,
+	getManager,
+	Not,
+	LessThan,
+	AfterLoad,
+	RelationId,
+} from 'typeorm';
+import Compensation from './Compensation';
+import User from './User';
+import { IsDate } from 'class-validator';
+import { ObjectType, Field } from 'type-graphql';
 
+@ObjectType()
 @Entity()
 export default class Payout extends Base<Payout> {
-    @OneToMany(type => Compensation, compensation => compensation.payout)
-    @JoinColumn()
-    public compensations: Array<Compensation<any>>
+	@Field((type) => [Compensation])
+	@OneToMany((type) => Compensation, (compensation) => compensation.payout)
+	@JoinColumn()
+	public compensations: Array<Compensation<any>>;
 
-    @ManyToOne(type => User)
-    @JoinColumn()
-    public updatedBy: User
+	@RelationId('compensations')
+	public compensationIds: number[];
 
-    @Column('date')
-    public until: Date
+	@Field((type) => User)
+	@ManyToOne((type) => User)
+	@JoinColumn()
+	public updatedBy: User;
 
-    @Column('date')
-    public from: Date
+	@RelationId('updatedBy')
+	public updatedById: number;
 
-    public total: number = 0
+	@Field()
+	@Column('datetime')
+	public until: Date;
 
-    constructor(until: Date, from = new Date('1970-01-01')) {
-        super()
-        this.until = until
-        this.from = (isNaN(from.getTime())) ? new Date('1970-01-01') : from
-    }
+	@Field()
+	@Column('datetime')
+	public from: Date;
 
-    @AfterLoad()
-    private calculateTotal() {
-        if (this.compensations && this.compensations.length > 0) {
-            for (let compensation of this.compensations) {
-                this.total = this.total + parseFloat(compensation.amount.toString())
-            }
-        }
-    }
+	@Field()
+	public total: number = 0;
+
+	constructor(until: Date, from = new Date('1970-01-01')) {
+		super();
+		this.until = until;
+		this.from = isNaN(from.getTime()) ? new Date('1970-01-01') : from;
+	}
+
+	@AfterLoad()
+	private calculateTotal() {
+		if (this.compensations && this.compensations.length > 0) {
+			for (let compensation of this.compensations) {
+				this.total = this.total + parseFloat(compensation.amount.toString());
+			}
+		}
+	}
 }

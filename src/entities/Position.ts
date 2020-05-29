@@ -1,31 +1,44 @@
-import { Entity, Column, ManyToOne } from "typeorm";
-import BexioBase from "./BexioBase";
-import Order from "./Order";
-import { IsNumber, IsString, IsOptional } from "class-validator";
+import { Entity, Column, ManyToOne, RelationId } from 'typeorm';
+import BexioBase from './BexioBase';
+import Order from './Order';
+import { IsNumber, IsString, IsOptional } from 'class-validator';
+import { ObjectType, Field } from 'type-graphql';
 
+@ObjectType()
 @Entity()
 export default class Position extends BexioBase<Position> {
-    @Column('int')
-    public orderBexioId: number
+	@Field()
+	@Column('int')
+	public orderBexioId: number;
 
-    @ManyToOne(type => Order, order => order.positions)
-    public order: Order
+	@Field((type) => Order)
+	@ManyToOne((type) => Order, (order) => order.positions)
+	public order: Order;
 
-    @Column('text')
-    public positionType: string
+	@RelationId('order')
+	public orderId: number;
 
-    @Column('text', { nullable: true })
-    public text?: string
+	@Field()
+	@Column('text')
+	public positionType: string;
 
-    @Column('text', { nullable: true })
-    public pos?: string
+	@Field({ nullable: true })
+	@Column('text', { nullable: true })
+	public text?: string;
 
-    @Column('text', { nullable: true })
-    public internalPos?: number
+	@Field({ nullable: true })
+	@Column('text', { nullable: true })
+	public pos?: string;
 
-    @Column('int', { nullable: true })
-    public articleId?: number
+	@Field({ nullable: true })
+	@Column('text', { nullable: true })
+	public internalPos?: number;
 
-    @Column('decimal', { nullable: true, precision: 10, scale: 2 })
-    public positionTotal?: number
+	@Field({ nullable: true })
+	@Column('int', { nullable: true })
+	public articleId?: number;
+
+	@Field({ nullable: true })
+	@Column('decimal', { nullable: true, precision: 10, scale: 2 })
+	public positionTotal?: number;
 }
