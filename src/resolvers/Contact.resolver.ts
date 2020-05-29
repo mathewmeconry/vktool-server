@@ -4,6 +4,8 @@ import {
 	resolveEntity,
 	resolveEntityArray,
 	PaginationArgs,
+	PaginationFilterOperator,
+	PaginationFilter,
 } from './helpers';
 import Contact from '../entities/Contact';
 import {
@@ -25,15 +27,19 @@ import OrderCompensation from '../entities/OrderCompensation';
 import CustomCompensation from '../entities/CustomCompensation';
 import User from '../entities/User';
 import CollectionPoint from '../entities/CollectionPoint';
-import { getManager, FindManyOptions, Brackets } from 'typeorm';
+import { getManager, Brackets, In } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import ContactExtension from '../entities/ContactExtension';
+
+let filters: PaginationFilter[] = [];
 
 const baseResolver = createResolver(
 	'Contact',
 	Contact,
 	[AuthRoles.CONTACTS_READ],
-	['contactGroups']
+	['contactGroups'],
+	[],
+	filters
 );
 
 @InputType()
@@ -85,6 +91,24 @@ export default class ContactResolver extends baseResolver {
 		'contactExtension.moreMails',
 	];
 
+	constructor() {
+		super();
+		getManager()
+			.getRepository(ContactGroup)
+			.find({ bexioId: In([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22, 16, 9]) })
+			.then((results) => {
+				for (const result of results) {
+					filters.push({
+						id: result.id,
+						field: 'contactGroup.id',
+						operator: PaginationFilterOperator['='],
+						value: result.id,
+						displayName: result.name,
+					});
+				}
+			});
+	}
+
 	@Authorized([AuthRoles.CONTACTS_EDIT, AuthRoles.MEMBERS_EDIT])
 	@Mutation((type) => ContactExtension)
 	public async editContact(@Arg('data') data: EditContact): Promise<ContactExtension> {
@@ -117,7 +141,7 @@ export default class ContactResolver extends baseResolver {
 	@Authorized([AuthRoles.MEMBERS_READ])
 	@Query((type) => PaginationResponse)
 	public async getMembers(
-		@Args() { cursor, limit, sortBy, sortDirection, searchString }: PaginationArgs<Contact>
+		@Args() { cursor, limit, sortBy, sortDirection, searchString, filter }: PaginationArgs<Contact>
 	): Promise<PaginationResponse> {
 		const qb = getManager()
 			.getRepository(Contact)
@@ -143,6 +167,21 @@ export default class ContactResolver extends baseResolver {
 					}
 				})
 			);
+		}
+
+		if (filter !== undefined) {
+			const realFilter = filters.find((f) => f.id === filter);
+			if (realFilter) {
+				if (searchString) {
+					qb.andWhere(`${realFilter.field} ${realFilter.operator} :value`, {
+						value: realFilter.value,
+					});
+				} else {
+					qb.where(`${realFilter.field} ${realFilter.operator} :value`, {
+						value: realFilter.value,
+					});
+				}
+			}
 		}
 
 		const count = await qb.getCount();

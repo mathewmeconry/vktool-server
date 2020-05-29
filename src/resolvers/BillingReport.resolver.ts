@@ -14,7 +14,7 @@ import {
 	ForbiddenError,
 } from 'type-graphql';
 import BillingReport, { BillingReportState } from '../entities/BillingReport';
-import { createResolver, resolveEntity, resolveEntityArray } from './helpers';
+import { createResolver, resolveEntity, resolveEntityArray, PaginationFilterOperator } from './helpers';
 import User from '../entities/User';
 import Order from '../entities/Order';
 import OrderCompensation from '../entities/OrderCompensation';
@@ -29,7 +29,23 @@ const baseResolver = createResolver(
 	BillingReport,
 	[AuthRoles.BILLINGREPORTS_READ],
 	['order', 'creator'],
-	['state', 'creator.displayName', 'order.documentNr', 'order.title']
+	['state', 'creator.displayName', 'order.documentNr', 'order.title'],
+	[
+		{
+			id: 0,
+			field: 'BillingReport.state',
+			displayName: 'Offen',
+			operator: PaginationFilterOperator['='],
+			value: BillingReportState.PENDING,
+		},
+		{
+			id: 1,
+			field: 'BillingReport.state',
+			displayName: 'Genehmigt',
+			operator: PaginationFilterOperator['='],
+			value: BillingReportState.APPROVED,
+		}
+	]
 );
 
 registerEnumType(BillingReportState, {

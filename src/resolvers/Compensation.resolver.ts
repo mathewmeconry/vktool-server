@@ -14,7 +14,7 @@ import {
 	Int,
 	ForbiddenError,
 } from 'type-graphql';
-import { createResolver, resolveEntity } from './helpers';
+import { createResolver, resolveEntity, PaginationFilterOperator } from './helpers';
 import Compensation from '../entities/Compensation';
 import Contact from '../entities/Contact';
 import User from '../entities/User';
@@ -30,7 +30,23 @@ const baseResolver = createResolver(
 	Compensation,
 	[AuthRoles.COMPENSATIONS_READ],
 	['billingReport', 'billingReport.order', 'creator', 'member'],
-	['member.firstname', 'member.lastname', 'description', 'creator.displayName']
+	['member.firstname', 'member.lastname', 'description', 'creator.displayName'],
+	[
+		{
+			id: 0,
+			field: 'Compensation.approved',
+			displayName: 'Offen',
+			operator: PaginationFilterOperator['='],
+			value: 'NULL',
+		},
+		{
+			id: 1,
+			field: 'Compensation.approved',
+			displayName: 'Genehmigt',
+			operator: PaginationFilterOperator['='],
+			value: 1,
+		}
+	]
 );
 
 @Resolver((of) => Compensation)

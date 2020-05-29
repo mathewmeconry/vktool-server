@@ -13,7 +13,7 @@ import {
 	ForbiddenError,
 	Info,
 } from 'type-graphql';
-import { createResolver, resolveEntity } from './helpers';
+import { createResolver, resolveEntity, PaginationFilterOperator } from './helpers';
 import Logoff, { LogoffState } from '../entities/Logoff';
 import { registerEnumType } from 'type-graphql';
 import Contact from '../entities/Contact';
@@ -29,7 +29,30 @@ const baseResolver = createResolver(
 	Logoff,
 	[AuthRoles.LOGOFFS_READ],
 	['contact'],
-	['contact.firstname', 'contact.lastname', 'state']
+	['contact.firstname', 'contact.lastname', 'state'],
+	[
+		{
+			id: 0,
+			field: 'Logoff.state',
+			displayName: 'Offen',
+			operator: PaginationFilterOperator['='],
+			value: LogoffState.PENDING,
+		},
+		{
+			id: 1,
+			field: 'Logoff.state',
+			displayName: 'Genehmigt',
+			operator: PaginationFilterOperator['='],
+			value: LogoffState.APPROVED,
+		},
+		{
+			id: 2,
+			field: 'Logoff.state',
+			displayName: 'Abgelehnt',
+			operator: PaginationFilterOperator['='],
+			value: LogoffState.DECLINED,
+		},
+	]
 );
 
 registerEnumType(LogoffState, {

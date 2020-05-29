@@ -11,12 +11,20 @@ import {
 	Authorized,
 	registerEnumType,
 } from 'type-graphql';
-import { getManager } from 'typeorm';
+import { getManager, Brackets } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 
 enum PaginationSortDirections {
 	ASC = 'ASC',
 	DESC = 'DESC',
+}
+
+export enum PaginationFilterOperator {
+	'=' = '=',
+	'>=' = '>=',
+	'=>' = '=>',
+	'<' = '<',
+	'>' = '>',
 }
 
 registerEnumType(PaginatedResponse, {
@@ -26,6 +34,28 @@ registerEnumType(PaginatedResponse, {
 registerEnumType(AuthRoles, {
 	name: 'Authroles',
 });
+
+registerEnumType(PaginationFilterOperator, {
+	name: 'PaginationFilterOperator',
+});
+
+@ObjectType()
+export class PaginationFilter {
+	@Field((type) => Int)
+	id: number;
+
+	@Field()
+	field: string;
+
+	@Field()
+	operator: PaginationFilterOperator;
+
+	@Field((type) => String || Number || Boolean)
+	value: string | number | boolean;
+
+	@Field()
+	displayName: string;
+}
 
 @ArgsType()
 export class PaginationArgs<T> {
@@ -43,6 +73,9 @@ export class PaginationArgs<T> {
 
 	@Field({ nullable: true })
 	searchString?: string;
+
+	@Field(type => Int, { nullable: true })
+	filter?: number;
 }
 
 export function PaginatedResponse<TItem>(TItemClass: ClassType<TItem>) {
@@ -69,7 +102,8 @@ export function createResolver<T extends ClassType>(
 	objectTypes: T,
 	getAuthRoles: AuthRoles[],
 	relations: string[] = [],
-	searchFields: string[] = []
+	searchFields: string[] = [],
+	filters: PaginationFilter[] = []
 ) {
 	@ObjectType(`PaginationResponse${suffix}`)
 	class PaginationResponse extends PaginatedResponse(objectTypes) {}
@@ -79,7 +113,7 @@ export function createResolver<T extends ClassType>(
 		//@Authorized(getAuthRoles)
 		@Query((type) => PaginationResponse, { name: `getAll${suffix}s` })
 		public async getAll(
-			@Args() { cursor, limit, sortBy, sortDirection, searchString }: PaginationArgs<T>
+			@Args() { cursor, limit, sortBy, sortDirection, searchString, filter }: PaginationArgs<T>
 		): Promise<PaginationResponse> {
 			const qb = getManager()
 				.getRepository(objectTypes)
@@ -93,11 +127,30 @@ export function createResolver<T extends ClassType>(
 			}
 
 			if (searchString) {
-				for(const searchField of searchFields) {
-					if(searchFields.indexOf(searchField) === 0) {
-						qb.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+				for (const searchField of searchFields) {
+					qb.where(
+						new Brackets((sub) => {
+							if (searchFields.indexOf(searchField) === 0) {
+								sub.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+							} else {
+								sub.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+							}
+						})
+					);
+				}
+			}
+
+			if (filter !== undefined) {
+				const realFilter = filters.find((f) => (f.id === filter));
+				if (realFilter) {
+					if (searchString) {
+						qb.andWhere(`${realFilter.field} ${realFilter.operator} :value`, {
+							value: realFilter.value,
+						});
 					} else {
-						qb.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+						qb.where(`${realFilter.field} ${realFilter.operator} :value`, {
+							value: realFilter.value,
+						});
 					}
 				}
 			}
@@ -133,6 +186,12 @@ export function createResolver<T extends ClassType>(
 		@Query((type) => objectTypes, { name: `get${suffix}`, nullable: true })
 		public async get(@Arg('id', (type) => Int) id: number): Promise<T | null> {
 			return getManager().getRepository(objectTypes).findOne(id, { relations });
+		}
+
+		@Authorized(getAuthRoles)
+		@Query((type) => [PaginationFilter], { name: `get${suffix}Filters`, nullable: true })
+		public getFilters(): PaginationFilter[] {
+			return filters;
 		}
 	}
 
