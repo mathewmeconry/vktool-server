@@ -152,8 +152,17 @@ export default class ContactResolver extends baseResolver {
 				'contactExtension.contactId = Contact.id'
 			)
 			.leftJoinAndSelect('contactExtension.collectionPoint', 'collectionPoint')
-			.leftJoin('Contact.contactGroups', 'contactGroup')
+			.leftJoinAndMapMany('contactGroups', 'Contact.contactGroups', 'contactGroup')
 			.where('contactGroup.bexioId = :bexioId', { bexioId: 7 });
+
+		if (filter !== undefined) {
+			const realFilter = filters.find((f) => f.id === filter);
+			if (realFilter) {
+				qb.where(`${realFilter.field} ${realFilter.operator} :value`, {
+					value: realFilter.value,
+				});
+			}
+		}
 
 		if (searchString) {
 			qb.andWhere(
@@ -167,21 +176,6 @@ export default class ContactResolver extends baseResolver {
 					}
 				})
 			);
-		}
-
-		if (filter !== undefined) {
-			const realFilter = filters.find((f) => f.id === filter);
-			if (realFilter) {
-				if (searchString) {
-					qb.andWhere(`${realFilter.field} ${realFilter.operator} :value`, {
-						value: realFilter.value,
-					});
-				} else {
-					qb.where(`${realFilter.field} ${realFilter.operator} :value`, {
-						value: realFilter.value,
-					});
-				}
-			}
 		}
 
 		const count = await qb.getCount();
