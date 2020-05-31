@@ -1,23 +1,23 @@
-import { AuthRoles } from '../interfaces/AuthRoles'
-import passport from 'passport'
-import * as Express from 'express'
-import User from '../entities/User'
-import Contact from '../entities/Contact'
-import config from 'config'
-import { getManager } from 'typeorm'
-import { MockStrategy } from 'passport-mock-strategy'
-import * as jwt from 'jsonwebtoken'
-import mockUser from 'passport-mock-strategy/lib/mock-user'
-import AzureAdOAuth2Strategy from 'passport-azure-ad-oauth2'
-import { ApolloContext } from '../controllers/CliController'
-import { ResolverData } from 'type-graphql'
+import { AuthRoles } from '../interfaces/AuthRoles';
+import passport from 'passport';
+import * as Express from 'express';
+import User from '../entities/User';
+import Contact from '../entities/Contact';
+import config from 'config';
+import { getManager } from 'typeorm';
+import { MockStrategy } from 'passport-mock-strategy';
+import * as jwt from 'jsonwebtoken';
+import mockUser from 'passport-mock-strategy/lib/mock-user';
+import AzureAdOAuth2Strategy from 'passport-azure-ad-oauth2';
+import { ApolloContext } from '../controllers/CliController';
+import { ResolverData } from 'type-graphql';
 
 export default class AuthService {
 	public static init(app: Express.Application) {
-		passport.serializeUser(AuthService.serializeUser)
-		passport.deserializeUser(AuthService.deserializeUser)
+		passport.serializeUser(AuthService.serializeUser);
+		passport.deserializeUser(AuthService.deserializeUser);
 
-		AuthService.addAzureStrategy()
+		AuthService.addAzureStrategy();
 
 		let mockUser: mockUser.User = {
 			id: 'mock-1',
@@ -33,7 +33,7 @@ export default class AuthService {
 					type: 'mocked',
 				},
 			],
-		}
+		};
 		if (process.env.TESTING)
 			passport.use(
 				new MockStrategy({
@@ -42,7 +42,7 @@ export default class AuthService {
 						id: `mock-admin-${Math.round(Math.random() * 10) + 1}`,
 					}),
 				})
-			)
+			);
 		if (process.env.TESTING)
 			passport.use(
 				new MockStrategy({
@@ -52,10 +52,10 @@ export default class AuthService {
 						provider: 'mock-nonadmin',
 					}),
 				})
-			)
+			);
 
-		app.use(passport.initialize())
-		app.use(passport.session())
+		app.use(passport.initialize());
+		app.use(passport.session());
 	}
 
 	public static checkAuthorization(
@@ -64,91 +64,105 @@ export default class AuthService {
 		return function (req, res, next) {
 			if (req.isAuthenticated()) {
 				if (req.user.provider === 'mock' && req.query.bypass !== 'false') {
-					next()
-					return
+					next();
+					return;
 				}
 
 				for (let role of roles) {
 					if (AuthService.isAuthorized(req.user.roles, role)) {
-						next()
-						return
+						next();
+						return;
 					}
 				}
 
-				res.status(403)
+				res.status(403);
 				res.send({
 					error: 'Forbidden',
-				})
-				res.end()
+				});
+				res.end();
 			} else {
-				res.status(401)
+				res.status(401);
 				res.send({
 					error: 'Not authorized',
-				})
-				res.end()
+				});
+				res.end();
 			}
-		}
+		};
 	}
 
 	public static isAuthorized(roles: Array<AuthRoles>, role: AuthRoles): boolean {
 		if (roles.indexOf(role) > -1 || roles.indexOf(AuthRoles.ADMIN) > -1) {
-			return true
+			return true;
 		}
 
-		return false
+		return false;
 	}
 
 	public static isAuthenticated(req: Express.Request, res: Express.Response): boolean {
-		return req.isAuthenticated()
+		return req.isAuthenticated();
 	}
 
-	public static isAuthorizedGraphQl({ root, args, context, info }: ResolverData<ApolloContext>,
-		roles: string[]): boolean {
+	public static isAuthorizedGraphQl(
+		{ root, args, context, info }: ResolverData<ApolloContext>,
+		roles: string[]
+	): boolean {
 		if (!context.user) {
-			return false
+			return false;
 		}
 		for (const role of roles) {
 			if (AuthService.isAuthorized(context.user.roles as AuthRoles[], role as AuthRoles)) {
-				return true
+				return true;
 			}
 		}
-		return false
+
+		if(['getBillingReportFilters'].includes(info.fieldName) && AuthService.isAuthorized(context.user.roles as AuthRoles[], AuthRoles.BILLINGREPORTS_CREATE)) {
+			return true
+		}
+		return false;
 	}
 
 	public static serializeUser(user: User, done: (err: any, userId?: string) => void): void {
-		done(null, `${user.provider}-${user.id.toString()}`)
+		done(null, `${user.provider}-${user.id.toString()}`);
 	}
 
 	public static deserializeUser(id: string, done: (err: any, user?: User) => void): void {
-		const splittedId = id.split('-')
+		const splittedId = id.split('-');
 		if (splittedId[0] === 'mock') {
-			let user = new User()
-			user.id = parseInt(splittedId[splittedId.length - 1])
-			user.displayName = 'Mock User'
-			user.roles = splittedId[1] === 'admin' ? [AuthRoles.ADMIN] : [AuthRoles.AUTHENTICATED]
-			user.provider = 'mock'
-			user.lastLogin = new Date()
-			done(null, user)
-			return
+			let user = new User();
+			user.id = parseInt(splittedId[splittedId.length - 1]);
+			user.displayName = 'Mock User';
+			user.roles = splittedId[1] === 'admin' ? [AuthRoles.ADMIN] : [AuthRoles.AUTHENTICATED];
+			user.provider = 'mock';
+			user.lastLogin = new Date();
+			done(null, user);
+			return;
 		}
 
 		getManager()
 			.getRepository(User)
-			.find({ id: parseInt(id.split('-')[1]) })
+			.findOneOrFail({
+				where: { id: parseInt(id.split('-')[1]) },
+				relations: ['bexioContact', 'bexioContact.contactGroups'],
+			})
 			.then((user) => {
-				if (user && user.length === 1) {
-					done(null, user[0])
+				if (user) {
+					done(null, user);
 				} else {
-					done('no User found')
+					done('no User found');
 				}
 			})
 			.catch((err) => {
-				done(err)
-			})
+				done(err);
+			});
 	}
 
 	private static async findUserByOutlookId(outlookId: string): Promise<User | undefined> {
-		return getManager().getRepository(User).findOne({ outlookId: outlookId })
+		return getManager()
+			.getRepository(User)
+			.findOne({
+				where: { outlookId: outlookId },
+				relations: ['bexioContact', 'bexioContact.contactGroups'],
+			});
 	}
 
 	private static addAzureStrategy() {
@@ -169,22 +183,22 @@ export default class AuthService {
 					done: (err: Error | null, user?: User) => void
 				) => {
 					const azureProfile = jwt.decode(params.id_token) as {
-						oid: string
-						tid: string
-						upn: string
-						unique_name: string
-						name: string
-						family_name: string
-						given_name: string
-					}
-					const outlookMultitendandId = `${azureProfile.oid}@${azureProfile.tid}`
+						oid: string;
+						tid: string;
+						upn: string;
+						unique_name: string;
+						name: string;
+						family_name: string;
+						given_name: string;
+					};
+					const outlookMultitendandId = `${azureProfile.oid}@${azureProfile.tid}`;
 
-					let user = await AuthService.findUserByOutlookId(outlookMultitendandId)
+					let user = await AuthService.findUserByOutlookId(outlookMultitendandId);
 					if (user) {
-						user.accessToken = accessToken
-						user.refreshToken = refreshToken
-						user.displayName = azureProfile.name
-						user.lastLogin = new Date()
+						user.accessToken = accessToken;
+						user.refreshToken = refreshToken;
+						user.displayName = azureProfile.name;
+						user.lastLogin = new Date();
 
 						try {
 							const contact = await getManager()
@@ -194,15 +208,16 @@ export default class AuthService {
 										{ mail: azureProfile.upn },
 										{ firstname: azureProfile.given_name, lastname: azureProfile.family_name },
 									],
-								})
-							user.bexioContact = contact || undefined
+									relations: ['contactGroups'],
+								});
+							user.bexioContact = contact || undefined;
 						} catch (e) {
-							return done(e)
+							return done(e);
 						}
 
-						return done(null, await user.save())
+						return done(null, await user.save());
 					} else {
-						let userInfo = {}
+						let userInfo = {};
 						getManager()
 							.getRepository(Contact)
 							.findOne({
@@ -210,6 +225,7 @@ export default class AuthService {
 									{ mail: azureProfile.upn },
 									{ firstname: azureProfile.given_name, lastname: azureProfile.family_name },
 								],
+								relations: ['contactGroups'],
 							})
 							.then((contact) => {
 								userInfo = {
@@ -220,7 +236,7 @@ export default class AuthService {
 									roles: [AuthRoles.AUTHENTICATED],
 									bexioContact: contact || undefined,
 									provider: 'azure',
-								}
+								};
 							})
 							.catch(() => {
 								userInfo = {
@@ -230,30 +246,30 @@ export default class AuthService {
 									displayName: azureProfile.name,
 									roles: [AuthRoles.AUTHENTICATED],
 									provider: 'azure',
-								}
+								};
 							})
 							.then(async () => {
 								//@ts-ignore
-								if (refreshToken) userInfo.refreshToken = refreshToken
+								if (refreshToken) userInfo.refreshToken = refreshToken;
 
 								//@ts-ignore
-								user = await AuthService.findUserByOutlookId(outlookMultitendandId)
-								if (!user) user = new User()
-								user = Object.assign(user, userInfo)
-								user.lastLogin = new Date()
+								user = await AuthService.findUserByOutlookId(outlookMultitendandId);
+								if (!user) user = new User();
+								user = Object.assign(user, userInfo);
+								user.lastLogin = new Date();
 
 								user
 									.save()
 									.then((user) => {
-										return done(null, user)
+										return done(null, user);
 									})
 									.catch((err: Error) => {
-										return done(err)
-									})
-							})
+										return done(err);
+									});
+							});
 					}
 				}
 			)
-		)
+		);
 	}
 }

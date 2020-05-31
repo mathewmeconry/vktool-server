@@ -17,7 +17,7 @@ const baseResolver = createResolver(
 
 @Resolver((of) => Order)
 export default class OrderResolver extends baseResolver {
-	@Authorized([AuthRoles.ORDERS_READ])
+	@Authorized([AuthRoles.BILLINGREPORTS_CREATE])
 	@Query((type) => [Order])
 	public async getOpenOrders(): Promise<Order[]> {
 		let now = new Date();

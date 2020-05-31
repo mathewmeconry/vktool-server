@@ -11,7 +11,7 @@ import {
 	Authorized,
 	registerEnumType,
 } from 'type-graphql';
-import { getManager, Brackets } from 'typeorm';
+import { getManager, Brackets, SelectQueryBuilder } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 
 enum PaginationSortDirections {
@@ -110,11 +110,50 @@ export function createResolver<T extends ClassType>(
 
 	@Resolver({ isAbstract: true })
 	abstract class BaseResolver {
-		//@Authorized(getAuthRoles)
+		@Authorized(getAuthRoles)
 		@Query((type) => PaginationResponse, { name: `getAll${suffix}s` })
 		public async getAll(
 			@Args() { cursor, limit, sortBy, sortDirection, searchString, filter }: PaginationArgs<T>
 		): Promise<PaginationResponse> {
+			const qb = this.getListQB({ cursor, limit, sortBy, sortDirection, searchString, filter });
+			const count = await qb.getCount();
+
+			qb.skip(cursor);
+			if (limit) qb.take(limit);
+
+			let nextCursor = cursor + (limit || 0);
+			if (nextCursor > count) {
+				nextCursor = count;
+			}
+			const items = await qb.getMany();
+			return {
+				total: count,
+				cursor: nextCursor,
+				hasMore: nextCursor !== count,
+				items,
+			};
+		}
+
+		@Authorized(getAuthRoles)
+		@Query((type) => objectTypes, { name: `get${suffix}`, nullable: true })
+		public async get(@Arg('id', (type) => Int) id: number): Promise<T | null> {
+			return getManager().getRepository(objectTypes).findOne(id, { relations });
+		}
+
+		@Authorized(getAuthRoles)
+		@Query((type) => [PaginationFilter], { name: `get${suffix}Filters`, nullable: true })
+		public getFilters(): PaginationFilter[] {
+			return filters;
+		}
+
+		protected getListQB<T>({
+			cursor,
+			limit,
+			sortBy,
+			sortDirection,
+			searchString,
+			filter,
+		}: PaginationArgs<T>): SelectQueryBuilder<T> {
 			const qb = getManager()
 				.getRepository(objectTypes)
 				.createQueryBuilder(objectTypes.prototype.constructor.name);
@@ -155,10 +194,6 @@ export function createResolver<T extends ClassType>(
 				}
 			}
 
-			const count = await qb.getCount();
-
-			qb.skip(cursor);
-			if (limit) qb.take(limit);
 			if (sortBy) {
 				if (sortBy.toString().indexOf('.') < 0 && relations.length > 0) {
 					qb.orderBy(`${objectTypes.prototype.constructor.name}.${sortBy}`, sortDirection);
@@ -168,30 +203,7 @@ export function createResolver<T extends ClassType>(
 					qb.orderBy(`\`${sortBy}\``, sortDirection);
 				}
 			}
-
-			let nextCursor = cursor + (limit || 0);
-			if (nextCursor > count) {
-				nextCursor = count;
-			}
-			const items = await qb.getMany();
-			return {
-				total: count,
-				cursor: nextCursor,
-				hasMore: nextCursor !== count,
-				items,
-			};
-		}
-
-		@Authorized(getAuthRoles)
-		@Query((type) => objectTypes, { name: `get${suffix}`, nullable: true })
-		public async get(@Arg('id', (type) => Int) id: number): Promise<T | null> {
-			return getManager().getRepository(objectTypes).findOne(id, { relations });
-		}
-
-		@Authorized(getAuthRoles)
-		@Query((type) => [PaginationFilter], { name: `get${suffix}Filters`, nullable: true })
-		public getFilters(): PaginationFilter[] {
-			return filters;
+			return qb;
 		}
 	}
 
