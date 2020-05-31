@@ -12,9 +12,18 @@ import {
 	Authorized,
 	Int,
 	ForbiddenError,
+	Query,
+	ObjectType,
 } from 'type-graphql';
 import BillingReport, { BillingReportState } from '../entities/BillingReport';
-import { createResolver, resolveEntity, resolveEntityArray, PaginationFilterOperator } from './helpers';
+import {
+	createResolver,
+	resolveEntity,
+	resolveEntityArray,
+	PaginationFilterOperator,
+	PaginationArgs,
+	PaginatedResponse,
+} from './helpers';
 import User from '../entities/User';
 import Order from '../entities/Order';
 import OrderCompensation from '../entities/OrderCompensation';
@@ -24,11 +33,12 @@ import { ApolloContext } from '../controllers/CliController';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import AuthService from '../services/AuthService';
 
+const relations = ['order', 'creator', 'compensations'];
 const baseResolver = createResolver(
 	'BillingReport',
 	BillingReport,
 	[AuthRoles.BILLINGREPORTS_READ],
-	['order', 'creator'],
+	relations,
 	['state', 'creator.displayName', 'order.documentNr', 'order.title'],
 	[
 		{
@@ -44,7 +54,7 @@ const baseResolver = createResolver(
 			displayName: 'Genehmigt',
 			operator: PaginationFilterOperator['='],
 			value: BillingReportState.APPROVED,
-		}
+		},
 	]
 );
 
@@ -98,8 +108,66 @@ class EditBillingReportInput implements Partial<BillingReport> {
 	public remarks?: string;
 }
 
+@ObjectType(`PaginationResponseBillingReportClone`)
+class PaginationResponse extends PaginatedResponse(BillingReport) {}
+
 @Resolver((of) => BillingReport)
 export default class BillingReportResolver extends baseResolver {
+	@Authorized([AuthRoles.BILLINGREPORTS_CREATE, AuthRoles.BILLINGREPORTS_READ])
+	@Query((type) => PaginationResponse, { name: `getAllBillingReports` })
+	public async getAllBillingReports(
+		@Args()
+		{ cursor, limit, sortBy, sortDirection, searchString, filter }: PaginationArgs<BillingReport>,
+		@Ctx() ctx: ApolloContext
+	): Promise<PaginationResponse> {
+		const qb = this.getListQB<BillingReport>({
+			cursor,
+			limit,
+			sortBy,
+			sortDirection,
+			searchString,
+			filter,
+		});
+		if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.BILLINGREPORTS_READ)) {
+			qb.andWhere('creator.id = :userid', { userid: ctx.user.id });
+		}
+
+		const count = await qb.getCount();
+
+		qb.skip(cursor);
+		if (limit) qb.take(limit);
+
+		let nextCursor = cursor + (limit || 0);
+		if (nextCursor > count) {
+			nextCursor = count;
+		}
+		const items = await qb.getMany();
+		return {
+			total: count,
+			cursor: nextCursor,
+			hasMore: nextCursor !== count,
+			items,
+		};
+	}
+
+	@Authorized([AuthRoles.BILLINGREPORTS_CREATE, AuthRoles.BILLINGREPORTS_READ])
+	@Query((type) => BillingReport, { name: `getBillingReport`, nullable: true })
+	public async getBillingReport(
+		@Arg('id', (type) => Int) id: number,
+		@Ctx() ctx: ApolloContext
+	): Promise<BillingReport | undefined> {
+		const result = await getManager()
+			.getRepository(BillingReport)
+			.findOne({ where: { id }, relations });
+		if (
+			!AuthService.isAuthorized(ctx.user.roles, AuthRoles.BILLINGREPORTS_READ) &&
+			result?.creator.id !== ctx.user.id
+		) {
+			return undefined;
+		}
+		return result;
+	}
+
 	@Authorized([AuthRoles.BILLINGREPORTS_EDIT, AuthRoles.BILLINGREPORTS_CREATE])
 	@Mutation((type) => BillingReport)
 	public async editBillingReport(

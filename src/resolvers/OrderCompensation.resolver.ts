@@ -43,7 +43,7 @@ class AddOrderCompensation implements Partial<OrderCompensation> {
 
 @Resolver((of) => OrderCompensation)
 export default class OrderCompensationResolver extends CompensationResolver {
-	@Authorized([AuthRoles.COMPENSATIONS_CREATE])
+	@Authorized([AuthRoles.BILLINGREPORTS_CREATE])
 	@Mutation((type) => [OrderCompensation])
 	public async addOrderCompensations(
 		@Arg('data', (type) => [AddOrderCompensation]) data: AddOrderCompensation[],
@@ -67,7 +67,7 @@ export default class OrderCompensationResolver extends CompensationResolver {
 		return Promise.all(storePromises);
 	}
 
-	@Authorized([AuthRoles.COMPENSATIONS_CREATE])
+	@Authorized([AuthRoles.BILLINGREPORTS_CREATE])
 	@Mutation((type) => OrderCompensation)
 	public async addOrderCompensation(
 		@Arg('data') data: AddOrderCompensation,
