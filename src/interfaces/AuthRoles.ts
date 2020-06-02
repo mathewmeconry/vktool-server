@@ -23,7 +23,7 @@ export enum AuthRoles {
 	BILLINGREPORTS_READ = 'billingreports_read',
 	BILLINGREPORTS_CREATE = 'billingreports_create',
 	BILLINGREPORTS_EDIT = 'billingreports_edit',
-	BILLINGREPORTS_APPROVE = 'billingrepors_approve',
+	BILLINGREPORTS_APPROVE = 'billingreports_approve',
 
 	COLLECTIONPOINT_READ = 'collectionpoint_read',
 	COLLECTIONPOINT_CREATE = 'collectionpoint_readcreate',
