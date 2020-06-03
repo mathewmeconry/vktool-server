@@ -10,8 +10,9 @@ import {
 	ObjectType,
 	Authorized,
 	registerEnumType,
+	InputType,
 } from 'type-graphql';
-import { getManager, Brackets } from 'typeorm';
+import { getManager, Brackets, SelectQueryBuilder } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 
 enum PaginationSortDirections {
@@ -22,7 +23,7 @@ enum PaginationSortDirections {
 export enum PaginationFilterOperator {
 	'=' = '=',
 	'>=' = '>=',
-	'=>' = '=>',
+	'<=' = '<=',
 	'<' = '<',
 	'>' = '>',
 }
@@ -57,6 +58,18 @@ export class PaginationFilter {
 	displayName: string;
 }
 
+@InputType()
+export class InputPaginationFilter {
+	@Field()
+	field: string;
+
+	@Field()
+	operator: PaginationFilterOperator;
+
+	@Field((type) => String || Number || Boolean)
+	value: string | number | boolean;
+}
+
 @ArgsType()
 export class PaginationArgs<T> {
 	@Field((type) => Int, { nullable: true })
@@ -76,6 +89,9 @@ export class PaginationArgs<T> {
 
 	@Field((type) => Int, { nullable: true })
 	filter?: number;
+
+	@Field((type) => [InputPaginationFilter], { nullable: true })
+	customFilter?: InputPaginationFilter[];
 }
 
 export function PaginatedResponse<TItem>(TItemClass: ClassType<TItem>) {
@@ -113,9 +129,18 @@ export function createResolver<T extends ClassType>(
 		//@Authorized(getAuthRoles)
 		@Query((type) => PaginationResponse, { name: `getAll${suffix}s` })
 		public async getAll(
-			@Args() { cursor, limit, sortBy, sortDirection, searchString, filter }: PaginationArgs<T>
+			@Args()
+			{
+				cursor,
+				limit,
+				sortBy,
+				sortDirection,
+				searchString,
+				filter,
+				customFilter,
+			}: PaginationArgs<T>
 		): Promise<PaginationResponse> {
-			const qb = getManager()
+			let qb = getManager()
 				.getRepository(objectTypes)
 				.createQueryBuilder(objectTypes.prototype.constructor.name);
 			for (const relation of relations) {
@@ -127,32 +152,15 @@ export function createResolver<T extends ClassType>(
 			}
 
 			if (searchString) {
-				qb.where(
-					new Brackets((sub) => {
-						for (const searchField of searchFields) {
-							if (searchFields.indexOf(searchField) === 0) {
-								sub.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
-							} else {
-								sub.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
-							}
-						}
-					})
-				);
+				qb.where(this.getSearchString(searchString, searchFields));
 			}
 
-			if (filter !== undefined) {
-				const realFilter = filters.find((f) => f.id === filter);
-				if (realFilter) {
-					if (searchString) {
-						qb.andWhere(`${realFilter.field} ${realFilter.operator} :value`, {
-							value: realFilter.value,
-						});
-					} else {
-						qb.where(`${realFilter.field} ${realFilter.operator} :value`, {
-							value: realFilter.value,
-						});
-					}
-				}
+			if (filter !== undefined && (!customFilter || customFilter.length === 0)) {
+				qb = this.applyFilters(filter, qb, !!searchString);
+			}
+
+			if (customFilter && customFilter.length > 0) {
+				qb = this.applyFilters(customFilter, qb, !!searchString);
 			}
 
 			const count = await qb.getCount();
@@ -192,6 +200,62 @@ export function createResolver<T extends ClassType>(
 		@Query((type) => [PaginationFilter], { name: `get${suffix}Filters`, nullable: true })
 		public getFilters(): PaginationFilter[] {
 			return filters;
+		}
+
+		protected applyFilters<T>(
+			filter: number | InputPaginationFilter[],
+			qb: SelectQueryBuilder<T>,
+			searchString?: boolean
+		): SelectQueryBuilder<T> {
+			if (filter instanceof Array) {
+				const brackets = new Brackets((qb) => {
+					for (const index in filter) {
+						const f = filter[index];
+						const paramName = Math.random().toString(32)
+						if (parseInt(index) === 0) {
+							qb.where(`${f.field} ${f.operator} :${paramName}`, {
+								[paramName]: f.value,
+							});
+						} else {
+							qb.andWhere(`${f.field} ${f.operator} :${paramName}`, {
+								[paramName]: f.value,
+							});
+						}
+					}
+				});
+
+				if (searchString) {
+					qb.andWhere(brackets);
+				} else {
+					qb.where(brackets);
+				}
+			} else {
+				const realFilter = filters.find((rf) => rf.id === filter);
+				if (realFilter) {
+					if (searchString) {
+						qb.andWhere(`${realFilter.field} ${realFilter.operator} :value`, {
+							value: realFilter.value,
+						});
+					} else {
+						qb.where(`${realFilter.field} ${realFilter.operator} :value`, {
+							value: realFilter.value,
+						});
+					}
+				}
+			}
+			return qb;
+		}
+
+		protected getSearchString<T>(searchString: string, searchFields: string[]): Brackets {
+			return new Brackets((sub) => {
+				for (const searchField of searchFields) {
+					if (searchFields.indexOf(searchField) === 0) {
+						sub.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+					} else {
+						sub.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+					}
+				}
+			});
 		}
 	}
 

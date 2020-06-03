@@ -143,7 +143,7 @@ export default class ContactResolver extends baseResolver {
 	public async getMembers(
 		@Args() { cursor, limit, sortBy, sortDirection, searchString, filter }: PaginationArgs<Contact>
 	): Promise<PaginationResponse> {
-		const qb = getManager()
+		let qb = getManager()
 			.getRepository(Contact)
 			.createQueryBuilder('Contact')
 			.leftJoinAndSelect(
@@ -156,26 +156,11 @@ export default class ContactResolver extends baseResolver {
 			.where('contactGroup.bexioId = :bexioId', { bexioId: 7 });
 
 		if (filter !== undefined) {
-			const realFilter = filters.find((f) => f.id === filter);
-			if (realFilter) {
-				qb.where(`${realFilter.field} ${realFilter.operator} :value`, {
-					value: realFilter.value,
-				});
-			}
+			qb = this.applyFilters<Contact>(filter, qb, !!searchString);
 		}
 
 		if (searchString) {
-			qb.andWhere(
-				new Brackets((sub) => {
-					for (const searchField of this.searchFields) {
-						if (this.searchFields.indexOf(searchField) === 0) {
-							sub.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
-						} else {
-							sub.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
-						}
-					}
-				})
-			);
+			qb.andWhere(this.getSearchString<Contact>(searchString, this.searchFields));
 		}
 
 		const count = await qb.getCount();
