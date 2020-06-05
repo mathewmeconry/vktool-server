@@ -51,7 +51,7 @@ const baseResolver = createResolver(
 			displayName: 'Abgelehnt',
 			operator: PaginationFilterOperator['='],
 			value: LogoffState.DECLINED,
-		},
+		}
 	]
 );
 
