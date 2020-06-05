@@ -140,7 +140,18 @@ export function createResolver<T extends ClassType>(
 				customFilter,
 			}: PaginationArgs<T>
 		): Promise<PaginationResponse> {
-			const qb = this.getListQB({ cursor, limit, sortBy, sortDirection, searchString, filter });
+			let qb = this.getListQB({ cursor, limit, sortBy, sortDirection, searchString, filter });
+			if (searchString) {
+				qb.where(this.getSearchString(searchString, searchFields));
+			}
+
+			if (filter !== undefined && (!customFilter || customFilter.length === 0)) {
+				qb = this.applyFilters(filter, qb, !!searchString);
+			}
+
+			if (customFilter && customFilter.length > 0) {
+				qb = this.applyFilters(customFilter, qb, !!searchString);
+			}
 			const count = await qb.getCount();
 
 			qb.skip(cursor);
@@ -190,18 +201,6 @@ export function createResolver<T extends ClassType>(
 				}
 			}
 
-			if (searchString) {
-				qb.where(this.getSearchString(searchString, searchFields));
-			}
-
-			if (filter !== undefined && (!customFilter || customFilter.length === 0)) {
-				qb = this.applyFilters(filter, qb, !!searchString);
-			}
-
-			if (customFilter && customFilter.length > 0) {
-				qb = this.applyFilters(customFilter, qb, !!searchString);
-			}
-
 			if (sortBy) {
 				if (sortBy.toString().indexOf('.') < 0 && relations.length > 0) {
 					qb.orderBy(`${objectTypes.prototype.constructor.name}.${sortBy}`, sortDirection);
@@ -223,7 +222,7 @@ export function createResolver<T extends ClassType>(
 				const brackets = new Brackets((qb) => {
 					for (const index in filter) {
 						const f = filter[index];
-						const paramName = Math.random().toString(32)
+						const paramName = Math.random().toString(32);
 						if (parseInt(index) === 0) {
 							qb.where(`${f.field} ${f.operator} :${paramName}`, {
 								[paramName]: f.value,
