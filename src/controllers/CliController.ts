@@ -75,8 +75,8 @@ export default class CliController {
 		const schema = await buildSchema({
 			resolvers: [path.join(__dirname, '../resolvers/*.resolver.js')],
 			emitSchemaFile: true,
-			validate: false,
-			authChecker: AuthService.isAuthorizedGraphQl,
+			validate: true,
+			authChecker: AuthService.isAuthorizedGraphQl
 		});
 
 		const apollo = new ApolloServer({

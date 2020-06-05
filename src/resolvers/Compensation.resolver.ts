@@ -59,7 +59,7 @@ export default class CompensationResolver extends baseResolver {
 		@Arg('payoutId', (type) => Int, { nullable: true }) payoutId?: number
 	): Promise<Compensation<any>[]> {
 		if (
-			ctx.user.id !== id &&
+			ctx.user.bexioContact?.id !== id &&
 			!AuthService.isAuthorized(ctx.user.roles, AuthRoles.COMPENSATIONS_READ)
 		) {
 			throw new ForbiddenError();

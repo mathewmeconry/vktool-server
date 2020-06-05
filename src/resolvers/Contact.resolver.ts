@@ -183,7 +183,7 @@ export default class ContactResolver extends baseResolver {
 		};
 	}
 
-	@Authorized([AuthRoles.MEMBERS_READ])
+	@Authorized([AuthRoles.MEMBERS_READ, AuthRoles.BILLINGREPORTS_CREATE, AuthRoles.MAILING_LISTS])
 	@Query((type) => [Contact])
 	public async getMembersAll(): Promise<Contact[]> {
 		const qb = getManager()
@@ -194,6 +194,12 @@ export default class ContactResolver extends baseResolver {
 			.orderBy('contact.firstname', 'ASC');
 
 		return qb.getMany();
+	}
+
+	@Authorized([AuthRoles.MEMBERS_READ])
+	@Query((type) => [PaginationFilter], { name: `getContactFilters`, nullable: true })
+	public getFilters(): PaginationFilter[] {
+		return filters;
 	}
 
 	@FieldResolver()
@@ -231,7 +237,6 @@ export default class ContactResolver extends baseResolver {
 		return (await object.getFunctions())?.map((g) => g.name);
 	}
 
-	@Authorized([AuthRoles.CONTACTS_READ])
 	@FieldResolver((type) => CollectionPoint, { nullable: true })
 	public async collectionPoint(@Root() object: Contact): Promise<CollectionPoint | null> {
 		const extension = await this.loadExtension(object.id);
@@ -269,7 +274,7 @@ export default class ContactResolver extends baseResolver {
 		return (await this.loadExtension(object.id))?.accountHolder;
 	}
 
-	@Authorized([AuthRoles.CONTACTS_READ])
+	@Authorized([AuthRoles.CONTACTS_READ, AuthRoles.MAILING_LISTS])
 	@FieldResolver((type) => [String], { nullable: true })
 	public async moreMails(@Root() object: Contact): Promise<string[] | undefined> {
 		return (await this.loadExtension(object.id))?.moreMails;

@@ -126,7 +126,7 @@ export function createResolver<T extends ClassType>(
 
 	@Resolver({ isAbstract: true })
 	abstract class BaseResolver {
-		//@Authorized(getAuthRoles)
+		@Authorized(getAuthRoles)
 		@Query((type) => PaginationResponse, { name: `getAll${suffix}s` })
 		public async getAll(
 			@Args()
@@ -140,42 +140,11 @@ export function createResolver<T extends ClassType>(
 				customFilter,
 			}: PaginationArgs<T>
 		): Promise<PaginationResponse> {
-			let qb = getManager()
-				.getRepository(objectTypes)
-				.createQueryBuilder(objectTypes.prototype.constructor.name);
-			for (const relation of relations) {
-				if (relation.indexOf('.') > -1) {
-					qb.leftJoinAndSelect(relation, relation.split('.').slice(-1)[0]);
-				} else {
-					qb.leftJoinAndSelect(`${objectTypes.prototype.constructor.name}.${relation}`, relation);
-				}
-			}
-
-			if (searchString) {
-				qb.where(this.getSearchString(searchString, searchFields));
-			}
-
-			if (filter !== undefined && (!customFilter || customFilter.length === 0)) {
-				qb = this.applyFilters(filter, qb, !!searchString);
-			}
-
-			if (customFilter && customFilter.length > 0) {
-				qb = this.applyFilters(customFilter, qb, !!searchString);
-			}
-
+			const qb = this.getListQB({ cursor, limit, sortBy, sortDirection, searchString, filter });
 			const count = await qb.getCount();
 
 			qb.skip(cursor);
 			if (limit) qb.take(limit);
-			if (sortBy) {
-				if (sortBy.toString().indexOf('.') < 0 && relations.length > 0) {
-					qb.orderBy(`${objectTypes.prototype.constructor.name}.${sortBy}`, sortDirection);
-				} else if (sortBy.toString().indexOf('.') > 0) {
-					qb.orderBy(sortBy.toString(), sortDirection);
-				} else {
-					qb.orderBy(`\`${sortBy}\``, sortDirection);
-				}
-			}
 
 			let nextCursor = cursor + (limit || 0);
 			if (nextCursor > count) {
@@ -200,6 +169,49 @@ export function createResolver<T extends ClassType>(
 		@Query((type) => [PaginationFilter], { name: `get${suffix}Filters`, nullable: true })
 		public getFilters(): PaginationFilter[] {
 			return filters;
+		}
+
+		protected getListQB<T>({
+			cursor,
+			limit,
+			sortBy,
+			sortDirection,
+			searchString,
+			filter,
+		}: PaginationArgs<T>): SelectQueryBuilder<T> {
+			const qb = getManager()
+				.getRepository(objectTypes)
+				.createQueryBuilder(objectTypes.prototype.constructor.name);
+			for (const relation of relations) {
+				if (relation.indexOf('.') > -1) {
+					qb.leftJoinAndSelect(relation, relation.split('.').slice(-1)[0]);
+				} else {
+					qb.leftJoinAndSelect(`${objectTypes.prototype.constructor.name}.${relation}`, relation);
+				}
+			}
+
+			if (searchString) {
+				qb.where(this.getSearchString(searchString, searchFields));
+			}
+
+			if (filter !== undefined && (!customFilter || customFilter.length === 0)) {
+				qb = this.applyFilters(filter, qb, !!searchString);
+			}
+
+			if (customFilter && customFilter.length > 0) {
+				qb = this.applyFilters(customFilter, qb, !!searchString);
+			}
+
+			if (sortBy) {
+				if (sortBy.toString().indexOf('.') < 0 && relations.length > 0) {
+					qb.orderBy(`${objectTypes.prototype.constructor.name}.${sortBy}`, sortDirection);
+				} else if (sortBy.toString().indexOf('.') > 0) {
+					qb.orderBy(sortBy.toString(), sortDirection);
+				} else {
+					qb.orderBy(`\`${sortBy}\``, sortDirection);
+				}
+			}
+			return qb;
 		}
 
 		protected applyFilters<T>(

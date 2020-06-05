@@ -86,7 +86,10 @@ export default class LogoffResolver extends baseResolver {
 		@Arg('id', (type) => Int) id: number,
 		@Ctx() ctx: ApolloContext
 	): Promise<Logoff[]> {
-		if (ctx.user.id !== id && !AuthService.isAuthorized(ctx.user.roles, AuthRoles.LOGOFFS_READ)) {
+		if (
+			ctx.user.bexioContact?.id !== id &&
+			!AuthService.isAuthorized(ctx.user.roles, AuthRoles.LOGOFFS_READ)
+		) {
 			throw new ForbiddenError();
 		}
 
