@@ -1,5 +1,5 @@
 import Contact from '../entities/Contact';
-import Logoff from '../entities/Logoff';
+import Logoff, { LogoffState } from '../entities/Logoff';
 import path from 'path';
 import pug from 'pug';
 import config = require('config');
@@ -11,6 +11,26 @@ import { getManager } from 'typeorm';
 
 export default class LogoffService {
 	private static emailService = new EMailService('no-reply@vkazu.ch');
+
+	public static async getLogoffs(
+		from: string,
+		until: string,
+		state?: LogoffState
+	): Promise<Logoff[]> {
+		const qb = getManager()
+			.getRepository(Logoff)
+			.createQueryBuilder('logoff')
+			.leftJoinAndSelect('logoff.contact', 'contact')
+			.leftJoinAndSelect('contact.contactGroups', 'contactGroups')
+			.where('logoff.from <= :until', { until })
+			.andWhere('logoff.until >= :from', { from });
+
+		if (state) {
+			qb.andWhere('logoff.state = :state', { state });
+		}
+
+		return qb.getMany();
+	}
 
 	public static async sendInformationMail(contact: Contact, logoffs: Logoff[]): Promise<void> {
 		const email = pug.renderFile(
