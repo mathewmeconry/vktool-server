@@ -10,6 +10,7 @@ import {
 	Args,
 	Authorized,
 	Int,
+	Float,
 } from 'type-graphql';
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers';
 import Payout from '../entities/Payout';
@@ -23,12 +24,13 @@ import EMailService from '../services/EMailService';
 import { ApolloContext } from '../controllers/CliController';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import ContactExtension from '../entities/ContactExtension';
+import Compensation from '../entities/Compensation'
 
-const baseResolver = createResolver('Payout', Payout, [AuthRoles.PAYOUTS_READ], ['compensations']);
+const baseResolver = createResolver('Payout', Payout, [AuthRoles.PAYOUTS_READ]);
 
 @Resolver((of) => Payout)
 export default class PayoutResolver extends baseResolver {
-	private static emailService = new EMailService('no-reply@vkazu.ch');
+	private emailService = new EMailService('no-reply@vkazu.ch');
 
 	@Authorized([AuthRoles.PAYOUTS_SEND])
 	@Mutation((type) => Boolean)
@@ -82,7 +84,7 @@ export default class PayoutResolver extends baseResolver {
 				.getRepository(ContactExtension)
 				.findOne({ where: { contact: memberId } });
 
-			await PayoutResolver.emailService.sendMail(
+			await this.emailService.sendMail(
 				[member.mail, member.mailSecond || '', ...(extension?.moreMails || [])],
 				'info@vkazu.ch',
 				'Abrechnung Verkehrskadetten-Entschädigung',
@@ -156,6 +158,17 @@ export default class PayoutResolver extends baseResolver {
 			object.compensationIds
 		);
 		return customs.concat(orders);
+	}
+
+	@FieldResolver(type => Float)
+	public async total(@Root() object: Payout): Promise<number> {
+		const { sum } = await getManager()
+			.getRepository(Compensation)
+			.createQueryBuilder('Compensation')
+			.select('SUM(amount)', 'sum')
+			.where('payoutId = :payout', { payout: object.id })
+			.getRawOne();
+		return sum
 	}
 
 	@FieldResolver()
