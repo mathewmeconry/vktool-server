@@ -43,21 +43,9 @@ export default class Payout extends Base<Payout> {
 	@Column('datetime')
 	public from: Date;
 
-	@Field()
-	public total: number = 0;
-
 	constructor(until: Date, from = new Date('1970-01-01')) {
 		super();
 		this.until = until;
 		this.from = isNaN(from.getTime()) ? new Date('1970-01-01') : from;
-	}
-
-	@AfterLoad()
-	private calculateTotal() {
-		if (this.compensations && this.compensations.length > 0) {
-			for (let compensation of this.compensations) {
-				this.total = this.total + parseFloat(compensation.amount.toString());
-			}
-		}
 	}
 }

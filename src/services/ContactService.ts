@@ -19,8 +19,8 @@ export default class ContactService {
 			.leftJoinAndSelect('contact.extension', 'extension')
 			.leftJoinAndSelect('extension.collectionPoint', 'collectionPoint')
 			.where('contact.id IN (:ids)', { ids: memberIds.map(c => c['contact_id']) })
-			.orderBy('contact.lastname')
-			.addOrderBy('contact.firstname');
+			.orderBy('contact.firstname')
+			.addOrderBy('contact.lastname');
 		const contacts = await qb.getMany();
 
 		await Promise.all(

@@ -5,7 +5,7 @@ import Contact from '../entities/Contact';
 import { ApolloContext } from '../controllers/CliController';
 import { AuthRoles } from '../interfaces/AuthRoles';
 
-const baseResolver = createResolver('User', User, [AuthRoles.ADMIN], [], ['displayName', 'roles']);
+const baseResolver = createResolver('User', User, [AuthRoles.ADMIN], [], ['displayName']);
 
 @Resolver((of) => User)
 export default class UserResolver extends baseResolver {
