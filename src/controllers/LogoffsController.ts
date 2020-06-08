@@ -10,11 +10,9 @@ import LogoffService from '../services/LogoffService';
 
 interface GermanizedMember {
 	Rang: string;
-	Funktionen: string;
 	Nachname: string;
 	Vorname: string;
 	Abholpunkt: string;
-	AbholpunktAdresse: string;
 	Adresse: string;
 }
 
@@ -45,8 +43,7 @@ export default class LogoffsController {
 		}
 
 		const members = (await ContactService.getActiveMembers()).filter(
-			(m) =>
-				(!m.functions?.includes('FHR') && !m.functions?.includes('VST')) || m.functions.length > 1
+			(m) => m.rank !== undefined
 		);
 		const logoffs = await LogoffService.getLogoffs(
 			from,
@@ -68,11 +65,9 @@ export default class LogoffsController {
 			const memberLogoffs = logoffs.filter((l) => l.contact.id === member.id);
 			let germanizedMember: GermanizedMember & { [index: string]: string } = {
 				Rang: member.rank || '',
-				Funktionen: (member.functions || []).join(','),
 				Nachname: member.lastname,
 				Vorname: member.firstname,
 				Abholpunkt: member.extension?.collectionPoint?.name || '',
-				AbholpunktAdresse: `${member.extension?.collectionPoint?.address}, ${member.extension?.collectionPoint?.postcode} ${member.extension?.collectionPoint?.city}`,
 				Adresse: `${member.address}, ${member.postcode} ${member.city}`,
 			};
 
