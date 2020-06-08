@@ -34,12 +34,13 @@ import { AuthRoles } from '../interfaces/AuthRoles';
 import AuthService from '../services/AuthService';
 
 const relations = ['order', 'creator', 'compensations'];
+const searchFields = ['state', 'creator.displayName', 'order.documentNr', 'order.title'];
 const baseResolver = createResolver(
 	'BillingReport',
 	BillingReport,
 	[AuthRoles.BILLINGREPORTS_READ],
 	relations,
-	['state', 'creator.displayName', 'order.documentNr', 'order.title'],
+	searchFields,
 	[
 		{
 			id: 0,
@@ -120,7 +121,7 @@ export default class BillingReportResolver extends baseResolver {
 		{ cursor, limit, sortBy, sortDirection, searchString, filter }: PaginationArgs<BillingReport>,
 		@Ctx() ctx: ApolloContext
 	): Promise<PaginationResponse> {
-		const qb = this.getListQB<BillingReport>({
+		let qb = this.getListQB<BillingReport>({
 			cursor,
 			limit,
 			sortBy,
@@ -130,6 +131,14 @@ export default class BillingReportResolver extends baseResolver {
 		});
 		if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.BILLINGREPORTS_READ)) {
 			qb.andWhere('creator.id = :userid', { userid: ctx.user.id });
+		}
+
+		if (filter !== undefined) {
+			qb = this.applyFilters(filter, qb, !!searchString);
+		}
+
+		if (searchString) {
+			qb.where(this.getSearchString(searchString, searchFields));
 		}
 
 		const count = await qb.getCount();
