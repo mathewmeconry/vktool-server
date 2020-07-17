@@ -261,9 +261,13 @@ export function createResolver<T extends ClassType>(
 			return new Brackets((sub) => {
 				for (const searchField of searchFields) {
 					if (searchFields.indexOf(searchField) === 0) {
-						sub.where(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+						sub.where(
+							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /g, '* +')}*' IN BOOLEAN MODE)`
+						);
 					} else {
-						sub.orWhere(`MATCH(${searchField}) AGAINST ("*${searchString}*" IN BOOLEAN MODE)`);
+						sub.orWhere(
+							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /g, '* +')}*' IN BOOLEAN MODE)`
+						);
 					}
 				}
 			});
