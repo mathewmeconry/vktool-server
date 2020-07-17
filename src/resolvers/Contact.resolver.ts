@@ -119,7 +119,10 @@ export default class ContactResolver extends baseResolver {
 
 		if (!contact) {
 			contact = new ContactExtension();
+			const contactEntity = await resolveEntity<Contact>('Contact', data.id);
+			contact.contact = contactEntity;
 		}
+		
 		if (data.collectionPointId) {
 			const collectionPoint = await resolveEntity<CollectionPoint>(
 				'CollectionPoint',
