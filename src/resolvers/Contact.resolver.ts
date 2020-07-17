@@ -163,12 +163,12 @@ export default class ContactResolver extends baseResolver {
 			.leftJoinAndMapMany('contactGroups', 'Contact.contactGroups', 'contactGroup')
 			.where('contactGroup.bexioId = :bexioId', { bexioId: 7 });
 
-		if (filter !== undefined) {
-			qb = this.applyFilters<Contact>(filter, qb, !!searchString);
-		}
-
 		if (searchString) {
 			qb.andWhere(this.getSearchString<Contact>(searchString, this.searchFields));
+		}
+
+		if (filter !== undefined) {
+			qb = this.applyFilters<Contact>(filter, qb, !!searchString);
 		}
 
 		const count = await qb.getCount();

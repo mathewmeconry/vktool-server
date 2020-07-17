@@ -129,16 +129,17 @@ export default class BillingReportResolver extends baseResolver {
 			searchString,
 			filter,
 		});
-		if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.BILLINGREPORTS_READ)) {
-			qb.andWhere('creator.id = :userid', { userid: ctx.user.id });
+
+		if (searchString) {
+			qb.where(this.getSearchString(searchString, searchFields));
 		}
 
 		if (filter !== undefined) {
 			qb = this.applyFilters(filter, qb, !!searchString);
 		}
 
-		if (searchString) {
-			qb.where(this.getSearchString(searchString, searchFields));
+		if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.BILLINGREPORTS_READ)) {
+			qb.andWhere('creator.id = :userid', { userid: ctx.user.id });
 		}
 
 		const count = await qb.getCount();
