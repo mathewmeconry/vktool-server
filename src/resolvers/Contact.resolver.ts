@@ -122,13 +122,18 @@ export default class ContactResolver extends baseResolver {
 			const contactEntity = await resolveEntity<Contact>('Contact', data.id);
 			contact.contact = contactEntity;
 		}
-		
+
 		if (data.collectionPointId) {
 			const collectionPoint = await resolveEntity<CollectionPoint>(
 				'CollectionPoint',
 				data.collectionPointId
 			);
 			contact.collectionPoint = collectionPoint;
+		} else {
+			// @ts-ignore
+			contact.collectionPoint = null;
+			// @ts-ignore
+			contact.collectionPointId = null;
 		}
 
 		for (const key of Object.keys(data)) {
