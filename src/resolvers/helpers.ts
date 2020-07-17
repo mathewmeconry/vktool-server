@@ -262,11 +262,11 @@ export function createResolver<T extends ClassType>(
 				for (const searchField of searchFields) {
 					if (searchFields.indexOf(searchField) === 0) {
 						sub.where(
-							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /, '* +')}*' IN BOOLEAN MODE)`
+							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /g, '* +')}*' IN BOOLEAN MODE)`
 						);
 					} else {
 						sub.orWhere(
-							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /, '* +')}*' IN BOOLEAN MODE)`
+							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /g, '* +')}*' IN BOOLEAN MODE)`
 						);
 					}
 				}
