@@ -1,22 +1,5 @@
 {
     "port": 8000,
     "apiEndpoint": "http://localhost:8000",
-    "clientHost": "http://localhost:3000",
-    "bexio": {
-        "clientId": "6317446720.apps.bexio.com",
-        "clientSecret": "Q5+mns0qH/vgB8/Q9phFV9cjpCU=",
-        "username": "mathias.scherer@vkazu.ch",
-        "password": "z98u!uGUd%%k"
-    },
-    "azure":{
-        "clientID": "2209da49-23d9-4365-95d1-fa2dc84c7a8f",
-        "clientSecret": "yOB%SiU-yed3V18EL:Z7",
-        "resource": "2209da49-23d9-4365-95d1-fa2dc84c7a8f",
-        "tenant": "vkazu.ch"
-    },
-    "mailer":{
-        "host": "smtp.office365.com",
-        "user": "no-reply@vkazu.ch",
-        "pass": "39a37XgnWfdZND4bYAoph4Fx"
-    }
+    "clientHost": "http://localhost:3000"
 }
