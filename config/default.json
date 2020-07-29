@@ -1,5 +1,22 @@
 {
     "port": 8000,
     "apiEndpoint": "http://localhost:8000",
-    "clientHost": "http://localhost:3000"
+    "clientHost": "http://localhost:3000",
+    "bexio": {
+        "clientId": "APIV2 Oauth Client ID",
+        "clientSecret": "APIV2 Oauth Client Secret",
+        "username": "E-Mail used for fakelogin procedure",
+        "password": "Password used for fakelogin procedure"
+    },
+    "azure": {
+        "clientID": "Client ID",
+        "clientSecret": "Client Secret",
+        "resource": "Usually the same as the client ID",
+        "tenant": "TENANT"
+    },
+    "mailer": {
+        "host": "SMTP Host",
+        "user": "SMTP Username",
+        "pass": "SMTP Password"
+    }
 }
