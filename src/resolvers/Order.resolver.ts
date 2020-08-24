@@ -37,7 +37,7 @@ export default class OrderResolver extends baseResolver {
 			.orderBy('order.title', 'ASC');
 		let orders = await query.getMany();
 
-		return orders.filter((order) => order.execDates.length >= (order.billingReports || []).length);
+		return orders;
 	}
 
 	@FieldResolver((type) => Contact, { nullable: true })
