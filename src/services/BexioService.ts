@@ -406,7 +406,7 @@ export namespace BexioService {
 									contact: contact,
 									total: parseFloat(bexioOrder.total) ? parseFloat(bexioOrder.total) : 0,
 									deliveryAddress: bexioOrder.delivery_address,
-									positions: [],
+									positions: []
 								});
 
 								orderDB = await orderDB.save();

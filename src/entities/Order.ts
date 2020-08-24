@@ -1,10 +1,20 @@
-import { Entity, JoinColumn, ManyToOne, OneToMany, Column, AfterLoad, RelationId, Index } from 'typeorm';
+import {
+	Entity,
+	JoinColumn,
+	ManyToOne,
+	OneToMany,
+	Column,
+	RelationId,
+	Index,
+	BeforeInsert,
+	BeforeUpdate,
+	AfterLoad,
+} from 'typeorm';
 import moment from 'moment';
 import BexioBase from './BexioBase';
 import Contact from './Contact';
 import Position from './Position';
 import BillingReport from './BillingReport';
-import { IsString, IsNumber, IsOptional, IsDate } from 'class-validator';
 import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
@@ -57,7 +67,22 @@ export default class Order extends BexioBase<Order> {
 	public billingReportIds?: number[];
 
 	@Field((type) => [Date])
-	public execDates: Array<Date>;
+	public execDates: Array<Date> = [];
+
+	@Column('datetime', { precision: 6 })
+	public firstExecDate: Date = new Date('1970-01-01');
+
+	@Column('datetime', { precision: 6 })
+	public lastExecDate: Date = new Date('1970-01-01');
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	public updateCornerDates() {
+		this.findExecDates();
+		const sorted = this.execDates.sort((a, b) => a.getTime() - b.getTime());
+		this.firstExecDate = sorted[0] || new Date('1970-01-01');
+		this.lastExecDate = sorted[sorted.length - 1] || new Date('1970-01-01');
+	}
 
 	@AfterLoad()
 	public findExecDates(): void {
@@ -95,7 +120,8 @@ export default class Order extends BexioBase<Order> {
 				.match(dateTextRegex) || [])[0],
 			'DD MMMM YYYY'
 		).toDate();
-		if (titleMatch instanceof Date && !isNaN(titleMatch.getTime()))
+		if (titleMatch instanceof Date && !isNaN(titleMatch.getTime())) {
 			this.execDates = this.execDates.concat(titleMatch);
+		}
 	}
 }

@@ -30,18 +30,12 @@ export default class OrderResolver extends baseResolver {
 			.getRepository(Order)
 			.createQueryBuilder('order')
 			.leftJoinAndSelect('order.positions', 'positions')
-			.where('order.validFrom <= :greather', { greather: now.toISOString() })
-			.andWhere('order.validFrom >= :lower', {
-				lower: moment(new Date()).startOf('year').subtract(1, 'year').toISOString(),
+			.where('order.firstExecDate <= :greather', { greather: in15Days.toISOString() })
+			.andWhere('order.firstExecDate >= :lower', {
+				lower: before30Days.toISOString(),
 			})
 			.orderBy('order.title', 'ASC');
 		let orders = await query.getMany();
-
-		orders = orders.filter((order) =>
-			order.execDates.find((execDate) => {
-				return execDate > before30Days && execDate < in15Days;
-			})
-		);
 
 		return orders.filter((order) => order.execDates.length >= (order.billingReports || []).length);
 	}
