@@ -7,3 +7,7 @@ dist/
 coverage/
 .nyc_output/
 schema.gql
+public/static/
+public/asset-manifest.json
+public/index.html
+public/*.js
