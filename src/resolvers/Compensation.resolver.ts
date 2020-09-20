@@ -70,7 +70,7 @@ export default class CompensationResolver extends baseResolver {
 			filter['payout'] = payoutId;
 		}
 
-		const customs = await getManager().getRepository(CustomCompensation).find({ where: filter });
+		const customs: Compensation<any>[] = await getManager().getRepository(CustomCompensation).find({ where: filter });
 		const orders = await getManager()
 			.getRepository(OrderCompensation)
 			.find({ where: filter, relations: ['billingReport', 'billingReport.order'] });

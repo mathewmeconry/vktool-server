@@ -148,8 +148,8 @@ export default class PayoutResolver extends baseResolver {
 	@FieldResolver()
 	public async compensations(
 		@Root() object: Payout
-	): Promise<Array<OrderCompensation | CustomCompensation>> {
-		const customs = await resolveEntityArray<CustomCompensation>(
+	): Promise<Array<Compensation<any>>> {
+		const customs: Compensation<any>[] = await resolveEntityArray<CustomCompensation>(
 			'CustomCompensation',
 			object.compensationIds
 		);
