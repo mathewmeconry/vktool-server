@@ -262,11 +262,17 @@ export function createResolver<T extends ClassType>(
 				for (const searchField of searchFields) {
 					if (searchFields.indexOf(searchField) === 0) {
 						sub.where(
-							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /g, '* +')}*' IN BOOLEAN MODE)`
+							`MATCH(${searchField}) AGAINST ('+${searchString.replace(
+								/ /g,
+								'* +'
+							)}*' IN BOOLEAN MODE)`
 						);
 					} else {
 						sub.orWhere(
-							`MATCH(${searchField}) AGAINST ('+${searchString.replace(/ /g, '* +')}*' IN BOOLEAN MODE)`
+							`MATCH(${searchField}) AGAINST ('+${searchString.replace(
+								/ /g,
+								'* +'
+							)}*' IN BOOLEAN MODE)`
 						);
 					}
 				}
@@ -297,13 +303,19 @@ export async function resolveEntity<T>(
 	return obj;
 }
 
-export async function resolveEntityArray<T>(entity: string, ids: number[]): Promise<T[]> {
+export async function resolveEntityArray<T>(entity: string, ids: number[], relations: string[] = []): Promise<T[]> {
 	if (ids.length == 0) {
 		return [];
 	}
-	return getManager()
-		.getRepository<T>(entity)
-		.createQueryBuilder()
-		.where('id IN (:ids)', { ids })
-		.getMany();
+	const qb = getManager().getRepository<T>(entity).createQueryBuilder(entity);
+
+	for (const relation of relations) {
+		if (relation.indexOf('.') > -1) {
+			qb.leftJoinAndSelect(relation, relation.split('.').slice(-1)[0]);
+		} else {
+			qb.leftJoinAndSelect(`${entity}.${relation}`, relation);
+		}
+	}
+
+	return qb.where(`${entity}.id IN (:ids)`, { ids }).getMany();
 }
