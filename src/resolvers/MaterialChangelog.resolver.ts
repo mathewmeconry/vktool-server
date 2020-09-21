@@ -12,6 +12,7 @@ import {
 	Resolver,
 	Root,
 	createUnionType,
+	Int,
 } from 'type-graphql';
 import { getManager } from 'typeorm';
 import { ApolloContext } from '../controllers/CliController';
@@ -85,7 +86,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 	@Authorized([AuthRoles.MATERIAL_CHANGELOG_EDIT])
 	@Mutation((type) => MaterialChangelog)
 	public async deleteMaterialChangelog(
-		@Arg('id') id: number,
+		@Arg('id', (type) => Int) id: number,
 		@Ctx() ctx: ApolloContext
 	): Promise<MaterialChangelog> {
 		const mc = await resolveEntity<MaterialChangelog>('MaterialChangelog', id, [
@@ -123,7 +124,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 		}
 
 		await Promise.all(deletetionPromises);
-		return resolveEntity<MaterialChangelog>('MaterialChangelog', id);
+		return mc;
 	}
 
 	@Authorized([AuthRoles.MATERIAL_CHANGELOG_CREATE])
