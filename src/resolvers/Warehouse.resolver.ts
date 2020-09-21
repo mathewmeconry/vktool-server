@@ -1,5 +1,5 @@
 import { Arg, Authorized, Mutation, Resolver, Int, FieldResolver, Root, Query } from 'type-graphql';
-import { getManager } from 'typeorm'
+import { getManager } from 'typeorm';
 import Warehouse from '../entities/Warehouse';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import { createResolver } from './helpers';
@@ -15,6 +15,19 @@ export default class WarehouseResolver extends baseResolver {
 		@Arg('maxWeight', (type) => Int, { nullable: true }) maxWeight?: number
 	): Promise<Warehouse> {
 		const warehouse = new Warehouse();
+		warehouse.name = name;
+		warehouse.maxWeight = maxWeight;
+		return warehouse.save();
+	}
+
+	@Authorized([AuthRoles.WAREHOUSE_CREATE])
+	@Mutation((type) => Warehouse)
+	public async editWarehouse(
+		@Arg('id', () => Int) id: number,
+		@Arg('name') name: string,
+		@Arg('maxWeight', (type) => Int, { nullable: true }) maxWeight?: number
+	): Promise<Warehouse> {
+		const warehouse = await getManager().getRepository(Warehouse).findOneOrFail(id);
 		warehouse.name = name;
 		warehouse.maxWeight = maxWeight;
 		return warehouse.save();
