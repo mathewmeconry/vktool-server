@@ -9,6 +9,8 @@ import {
 	Arg,
 	Authorized,
 	Ctx,
+	ID,
+	Int,
 } from 'type-graphql';
 import { getManager } from 'typeorm';
 import { ApolloContext } from '../controllers/CliController';
@@ -17,7 +19,7 @@ import MaterialChangelog from '../entities/MaterialChangelog';
 import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct';
 import Product from '../entities/Product';
 import { AuthRoles } from '../interfaces/AuthRoles';
-import AuthService from '../services/AuthService'
+import AuthService from '../services/AuthService';
 import { createResolver, resolveEntity } from './helpers';
 
 const baseResolver = createResolver('MaterialChangelogToProduct', MaterialChangelogToProduct, [
@@ -33,6 +35,9 @@ export class AddMaterialChangelogToProduct implements Partial<MaterialChangelogT
 
 	@Field()
 	public amount: number;
+
+	@Field({ nullable: true })
+	public number?: number;
 
 	@Field()
 	public charge: boolean;
@@ -62,6 +67,7 @@ export default class MaterialChangelogToProductResolver extends baseResolver {
 		const mc2p = new MaterialChangelogToProduct();
 		mc2p.product = product;
 		mc2p.amount = data.amount;
+		mc2p.number = data.number;
 		mc2p.charge = data.charge;
 		mc2p.changelog = changelog;
 
@@ -79,35 +85,6 @@ export default class MaterialChangelogToProductResolver extends baseResolver {
 		}
 
 		return mc2p.save();
-	}
-
-	@Authorized([AuthRoles.MATERIAL_CHANGELOG_EDIT])
-	@Mutation((type) => MaterialChangelogToProduct)
-	public async deleteMaterialChangelogToProduct(
-		@Arg('id') id: number,
-		@Ctx() ctx: ApolloContext
-	): Promise<MaterialChangelogToProduct> {
-		let mc2p = await resolveEntity<MaterialChangelogToProduct>('MaterialChangelogToProduct', id, [
-			'compensation',
-			'product',
-		]);
-		mc2p.deletedBy = ctx.user;
-		await mc2p.save();
-
-		const result = await getManager().getRepository(MaterialChangelogToProduct).softDelete(id);
-
-		if (result.affected !== 1) {
-			throw new GraphQLError(`Failed to delete mc2p ${mc2p.id}`);
-		}
-
-		if (mc2p.compensation) {
-			mc2p.compensation.amount =
-				mc2p.compensation.amount - mc2p.amount * (mc2p.product.salePrice || 0);
-			await mc2p.compensation.save();
-			mc2p.compensation = undefined;
-			await mc2p.save();
-		}
-		return mc2p;
 	}
 
 	@FieldResolver((type) => Product)
