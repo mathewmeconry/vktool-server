@@ -199,7 +199,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 	}
 
 	@FieldResolver((type) => [MaterialChangelogToProduct])
-	public async products(@Root() object: MaterialChangelog): Promise<MaterialChangelogToProduct[]> {
+	public async changes(@Root() object: MaterialChangelog): Promise<MaterialChangelogToProduct[]> {
 		if (!object.changeIds) return [];
 		return resolveEntityArray('MaterialChangelogToProduct', object.changeIds);
 	}
