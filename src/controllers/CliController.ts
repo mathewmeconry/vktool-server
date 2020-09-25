@@ -4,13 +4,14 @@ import * as Express from 'express';
 import { BexioService } from '../services/BexioService';
 import * as bodyParser from 'body-parser';
 import session from 'express-session';
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import AuthService from '../services/AuthService';
 import config from 'config';
 import 'reflect-metadata';
 import FileStore from 'session-file-store';
 import { buildSchema } from 'type-graphql';
 import { ApolloServer } from 'apollo-server-express';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 // Routes
 import AuthRoutes from '../routes/AuthRoutes';
@@ -18,7 +19,7 @@ import ContactsRoutes from '../routes/ContactsRoutes';
 import PayoutRoutes from '../routes/PayoutRoutes';
 import { Server } from 'http';
 import User from '../entities/User';
-import LogoffRoutes from '../routes/LogoffRoutes'
+import LogoffRoutes from '../routes/LogoffRoutes';
 
 export interface ApolloContext {
 	user: User;
@@ -45,7 +46,7 @@ export default class CliController {
 		app.use(
 			session({
 				genid: (req) => {
-					return uuid(); // use UUIDs for session IDs
+					return uuidv4(); // use UUIDs for session IDs
 				},
 				store: new (FileStore(session))(),
 				secret: 'My super mega secret secret',
@@ -71,12 +72,15 @@ export default class CliController {
 
 		BexioService.addExpressHandlers(app);
 
+		// setup graphql upload functionality
+		// app.use(graphqlUploadExpress());
+
 		// setup apollo
 		const schema = await buildSchema({
 			resolvers: [path.join(__dirname, '../resolvers/*.resolver.js')],
 			emitSchemaFile: true,
 			validate: true,
-			authChecker: AuthService.isAuthorizedGraphQl
+			authChecker: AuthService.isAuthorizedGraphQl,
 		});
 
 		const apollo = new ApolloServer({

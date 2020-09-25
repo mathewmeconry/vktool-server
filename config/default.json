@@ -2,6 +2,7 @@
     "port": 8000,
     "apiEndpoint": "http://localhost:8000",
     "clientHost": "http://localhost:3000",
+    "fileStorage": "/tmp/filestorage",
     "bexio": {
         "clientId": "APIV2 Oauth Client ID",
         "clientSecret": "APIV2 Oauth Client Secret",

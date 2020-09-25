@@ -14,6 +14,7 @@ import Contact from './Contact';
 import MaterialChangelogToProduct from './MaterialChangelogToProduct';
 import User from './User';
 import Warehouse from './Warehouse';
+import File, { IFile } from './File';
 
 @ObjectType()
 @Entity()
@@ -67,6 +68,10 @@ export default class MaterialChangelog extends Base<MaterialChangelog> {
 
 	@RelationId('outWarehouse')
 	public outWarehouseId?: number;
+
+	@Column('json')
+	@Field(() => [File])
+	public files: IFile[];
 
 	@UpdateDateColumn()
 	public updatedAt: Date;

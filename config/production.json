@@ -1,5 +1,6 @@
 {
     "port": 8080,
     "apiEndpoint": "https://app.vkazu.ch",
-    "clientHost": "https://app.vkazu.ch"
+    "clientHost": "https://app.vkazu.ch",
+    "fileStorage": "/mnt/filestorage"
 }
