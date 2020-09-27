@@ -172,6 +172,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 			p.product = pe;
 			p.amount = product.amount;
 			p.charge = product.charge;
+			p.number = product.number;
 
 			if (p.charge) {
 				total = total + (pe.salePrice || 0) * p.amount;

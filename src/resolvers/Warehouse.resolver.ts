@@ -1,5 +1,16 @@
-import { Arg, Authorized, Mutation, Resolver, Int, FieldResolver, Root, Query } from 'type-graphql';
+import {
+	Arg,
+	Authorized,
+	Mutation,
+	Resolver,
+	Int,
+	FieldResolver,
+	Root,
+	Query,
+} from 'type-graphql';
 import { getManager } from 'typeorm';
+import MaterialChangelog from '../entities/MaterialChangelog'
+import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct'
 import Warehouse from '../entities/Warehouse';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import { createResolver } from './helpers';

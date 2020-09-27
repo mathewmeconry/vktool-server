@@ -11,6 +11,7 @@ import {
 	Ctx,
 	ID,
 	Int,
+	Query,
 } from 'type-graphql';
 import { getManager } from 'typeorm';
 import { ApolloContext } from '../controllers/CliController';
@@ -87,6 +88,52 @@ export default class MaterialChangelogToProductResolver extends baseResolver {
 		return mc2p.save();
 	}
 
+	@Authorized([AuthRoles.WAREHOUSE_READ])
+	@Query((type) => [MaterialChangelogToProduct])
+	public async getWarehouseStock(
+		@Arg('id', () => ID) id: number
+	): Promise<MaterialChangelogToProduct[]> {
+		const inChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoin('mc2p.product', 'product')
+			.where('mc.inWarehouseId = :warehouseId', { warehouseId: id })
+			.getMany();
+		const outChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoin('mc2p.product', 'product')
+			.where('mc.outWarehouseId = :warehouseId', { warehouseId: id })
+			.getMany();
+
+		return this.aggregateChanges(inChanges, outChanges);
+	}
+
+	@Authorized([AuthRoles.CONTACTS_READ, AuthRoles.MEMBERS_READ])
+	@Query((type) => [MaterialChangelogToProduct])
+	public async getContactStock(
+		@Arg('id', () => ID) id: number
+	): Promise<MaterialChangelogToProduct[]> {
+		const inChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoin('mc2p.product', 'product')
+			.where('mc.inContactId = :contactId', { contactId: id })
+			.getMany();
+		const outChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoin('mc2p.product', 'product')
+			.where('mc.outContactId = :outContactId', { outContactId: id })
+			.getMany();
+
+		return this.aggregateChanges(inChanges, outChanges);
+	}
+
 	@FieldResolver((type) => Product)
 	public product(@Root() obj: MaterialChangelogToProduct): Promise<Product> {
 		return resolveEntity('Product', obj.productId);
@@ -105,5 +152,44 @@ export default class MaterialChangelogToProductResolver extends baseResolver {
 			return null;
 		}
 		return resolveEntity('CustomCompensation', obj.compensationId);
+	}
+
+	private aggregateChanges(
+		inChanges: MaterialChangelogToProduct[],
+		outChanges: MaterialChangelogToProduct[]
+	): MaterialChangelogToProduct[] {
+		const aggregated: MaterialChangelogToProduct[] = [];
+
+		for (const change of inChanges) {
+			const index = aggregated.findIndex(
+				(c) => c.productId === change.productId && c.number === change.number
+			);
+			if (index === -1) {
+				aggregated.push(change);
+			} else {
+				aggregated[index].amount = aggregated[index].amount + change.amount;
+			}
+		}
+
+		for (const change of outChanges) {
+			const index = aggregated.findIndex(
+				(c) => c.productId === change.productId && c.number === change.number
+			);
+			if (index === -1) {
+				const indexWithoutNumber = aggregated.findIndex(
+					(c) => c.productId === change.productId && !c.number
+				);
+				if (indexWithoutNumber > -1) {
+					aggregated[index].amount = aggregated[index].amount - change.amount;
+				} else {
+					change.amount = change.amount * -1;
+					aggregated.push(change);
+				}
+			} else {
+				aggregated[index].amount = aggregated[index].amount - change.amount;
+			}
+		}
+
+		return aggregated.filter((c) => c.amount !== 0);
 	}
 }
