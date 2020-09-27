@@ -73,6 +73,10 @@ export default class MaterialChangelog extends Base<MaterialChangelog> {
 	@Field(() => [File])
 	public files: IFile[];
 
+	@Column('longtext', { nullable: true })
+	@Field({ nullable: true })
+	public signature?: string;
+
 	@UpdateDateColumn()
 	public updatedAt: Date;
 

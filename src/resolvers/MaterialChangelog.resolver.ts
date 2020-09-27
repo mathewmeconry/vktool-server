@@ -27,6 +27,7 @@ import AuthService from '../services/AuthService';
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers';
 import { AddMaterialChangelogToProduct } from './MaterialChangelogToProduct.resolver';
 import User from '../entities/User';
+import File from '../entities/File';
 
 const baseResolver = createResolver(
 	'MaterialChangelog',
@@ -79,6 +80,12 @@ class AddMaterialChangelog {
 
 	@Field()
 	public date: Date;
+
+	@Field((type) => [File])
+	public files: File[];
+
+	@Field({ nullable: true })
+	public signature: string;
 }
 
 @Resolver((of) => MaterialChangelog)
@@ -151,6 +158,8 @@ export default class MaterialChangelogResolver extends baseResolver {
 		} else {
 			mc.outWarehouse = outEntity;
 		}
+		mc.files = data.files
+		mc.signature = data.signature
 
 		await mc.save();
 
