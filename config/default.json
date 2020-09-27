@@ -4,20 +4,17 @@
     "clientHost": "http://localhost:3000",
     "fileStorage": "/tmp/filestorage",
     "bexio": {
-        "clientId": "APIV2 Oauth Client ID",
-        "clientSecret": "APIV2 Oauth Client Secret",
-        "username": "E-Mail used for fakelogin procedure",
-        "password": "Password used for fakelogin procedure"
+        "token": "eyJraWQiOiI2ZGM2YmJlOC1iMjZjLTExZTgtOGUwZC0wMjQyYWMxMTAwMDIiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJtYXRoaWFzLnNjaGVyZXJAdmthenUuY2giLCJsb2dpbl9pZCI6IjNlYTM5MGNjLWM5NjAtMTFlOS1iMTYyLWE0YmYwMTFjZTg3MiIsImNvbXBhbnlfaWQiOiJyNW92YmhqZDFxNmciLCJ1c2VyX2lkIjoyNzcxMywiYXpwIjoiZXZlcmxhc3QtdG9rZW4tb2ZmaWNlLWNsaWVudCIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgYWxsIHRlY2huaWNhbCIsImlzcyI6Imh0dHBzOlwvXC9pZHAuYmV4aW8uY29tIiwiZXhwIjozMTc1NjgwNjkyLCJpYXQiOjE1OTg4ODA2OTMsImNvbXBhbnlfdXNlcl9pZCI6MywianRpIjoiMzk0NmVhOTAtMzk2MS00YjJmLWI1MzQtMjNmNmZjYTA5YzQ1In0.cb-gX659hHXwiXBJA53vfc8N7en9N5pXmWlTD4tYGzc6WEoli_G_pMcu3NQNjE1ITeoGaqmPsMjaFbRpn2bbBOC0nj2jJLhJqIXhLsUW3QRxPy3cQlyXdf9XvJRt0-YukZUyKtgB_P2f_xVWFlPnJfS1XHpQSDNwsD14drD3pJ7Ku5dsi02593aU9s1XQajNg7bVxcniHowbOKzzHgfWT-x-ynYW9wPKiC6aVu2OCXGzZclYnfyAkp2TeE0d-QVdQCICrPY0s4dNmrvTe0K7BAGEwAjahmyg2P6qLnbQznS0bboYItxAnE1a2KbxreFltBffMQAd4yJwMqf-bnJgNzemtFzubGmBoLpFF9ivIALCgwU2fbXfUX-PoD7nTZtr2uZBzGrSI69-6klSKXAOenczKngy9RYDGF4rqknjwmqrq99MRPLSE_09dm5X_oY0ZOkImqpiajlm2YBkAO6vQPHRSNsrXj3SoZ4DbWzxb7SFGK82UJeXNVPEdm76rTTKKjnZFHJnAsm237U7sIWYwlDbN-htnLpRNHN-oo62ySUl0hOoXMeuo400TqhZQCQDKc880Maat1jiIgus56rOFn10J0Kizl_-Pco39dh5Cg22q9umuZJep2Z2YqpaDRZ0yfTTrnNBFc1-aUcNMzTQjBQEdaiWmhgKNdhKo-rWxqg"
     },
     "azure": {
-        "clientID": "Client ID",
-        "clientSecret": "Client Secret",
-        "resource": "Usually the same as the client ID",
-        "tenant": "TENANT"
+        "clientID": "2209da49-23d9-4365-95d1-fa2dc84c7a8f",
+        "clientSecret": "3x67NPl3ZDLx-Y_bVZ73iCm593k3.1N~f3",
+        "resource": "2209da49-23d9-4365-95d1-fa2dc84c7a8f",
+        "tenant": "vkazu.ch"
     },
     "mailer": {
-        "host": "SMTP Host",
-        "user": "SMTP Username",
-        "pass": "SMTP Password"
+        "host": "smtp.office365.com",
+        "user": "no-reply@vkazu.ch",
+        "pass": "&lO!0xKN*s1o4WmT^wua14gp1!CN8VnCfsg8d5A9WfaQ"
     }
 }

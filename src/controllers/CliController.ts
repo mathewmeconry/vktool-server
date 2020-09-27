@@ -103,6 +103,7 @@ export default class CliController {
 		});
 
 		app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));
+		app.use('/static/', express.static(config.get('fileStorage')))
 		app.get('/webapp/*', (req, res) => {
 			res.sendFile(path.join(__dirname + '/../../public/index.html'));
 		});

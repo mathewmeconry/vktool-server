@@ -1,5 +1,4 @@
-import { ObjectType, Field } from 'type-graphql';
-import Base from './Base';
+import { Field, ObjectType, InputType } from 'type-graphql';
 
 export interface IFile {
     name: string;
@@ -9,6 +8,7 @@ export interface IFile {
 }
 
 @ObjectType()
+@InputType('FileInput')
 export default class File implements IFile {
 	@Field()
 	public name: string;
