@@ -9,6 +9,7 @@ import CustomCompensation from '../entities/CustomCompensation';
 import OrderCompensation from '../entities/OrderCompensation';
 import { Options as SassOptions } from 'node-sass';
 import { PDFOptions } from 'puppeteer';
+import MaterialChangelog from '../entities/MaterialChangelog';
 
 export default class PdfService {
 	public static async generateMemberPayout(
@@ -106,6 +107,42 @@ export default class PdfService {
 				presidentName: 'Reto Bernasconi',
 				cashierName: 'Corinne Altherr',
 				members,
+			},
+			{
+				printBackground: true,
+				displayHeaderFooter: true,
+				headerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'),
+					{ logo: `data:image/png;base64,${logo.toString('base64')}` }
+				),
+				footerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug'),
+					{ width: '125mm' }
+				),
+				format: 'A4',
+				margin: {
+					top: '25mm',
+					left: '0',
+					bottom: '25mm',
+					right: '0',
+				},
+			}
+		);
+	}
+
+	public static async generateMaterialChangelogReceipe(
+		changelog: MaterialChangelog
+	): Promise<Buffer> {
+		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
+		return PdfService.generatePdf(
+			'materialChangelogReceipt.pug',
+			{
+				file: path.resolve(__dirname, '../../public/pdfs/scss/materialChangelogReceipt.scss'),
+			},
+			{
+				location: 'Wallisellen',
+				date: moment(changelog.createdAt).format('DD.MM.YYYY'),
+				changelog,
 			},
 			{
 				printBackground: true,

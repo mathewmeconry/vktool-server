@@ -20,6 +20,7 @@ import PayoutRoutes from '../routes/PayoutRoutes';
 import { Server } from 'http';
 import User from '../entities/User';
 import LogoffRoutes from '../routes/LogoffRoutes';
+import MaterialChangelogRoutes from '../routes/MaterialChangelogRoutes'
 
 export interface ApolloContext {
 	user: User;
@@ -67,6 +68,7 @@ export default class CliController {
 		ContactsRoutes(apiRouter);
 		PayoutRoutes(apiRouter);
 		LogoffRoutes(apiRouter);
+		MaterialChangelogRoutes(apiRouter)
 
 		app.use('/api', apiRouter);
 
