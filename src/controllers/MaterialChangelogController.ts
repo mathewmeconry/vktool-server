@@ -29,7 +29,7 @@ export default class MaterialChangelogController {
 		res.contentType('application/pdf');
 		res.setHeader(
 			'Content-Disposition',
-			`inline; filename=Materialquittung ${moment(changelog.createdAt).format('DD-MM-YYYY')}.pdf`
+			`inline; filename=Materialquittung ${moment(changelog.date).format('DD-MM-YYYY')}.pdf`
 		);
 		res.send(await PdfService.generateMaterialChangelogReceipe(changelog));
 	}

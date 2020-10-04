@@ -46,11 +46,11 @@ export default class MaterialChangelogService {
 		await MaterialChangelogService.emailService.sendMail(
 			addresses,
 			'no-reply@vkazu.ch',
-			`Materialquittung vom ${moment(changelog.createdAt).format('DD.MM.YYYY')}`,
+			`Materialquittung vom ${moment(changelog.date).format('DD.MM.YYYY')}`,
 			email,
 			[
 				{
-					filename: `Materialquittung ${moment(changelog.createdAt).format('DD.MM.YYYY')}.pdf`,
+					filename: `Materialquittung ${moment(changelog.date).format('DD.MM.YYYY')}.pdf`,
 					content: pdf,
 				},
 			]
@@ -81,7 +81,7 @@ export default class MaterialChangelogService {
 									'../../public/emails/materialChangelog/materialChangelogReceipt.scss'
 								),
 							}).css,
-							date: moment(changelog.createdAt).format('DD.MM.YYYY'),
+							date: moment(changelog.date).format('DD.MM.YYYY'),
 							contact: changelog.inContact || changelog.outContact,
 						}
 					)

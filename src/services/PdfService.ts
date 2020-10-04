@@ -141,7 +141,7 @@ export default class PdfService {
 			},
 			{
 				location: 'Wallisellen',
-				date: moment(changelog.createdAt).format('DD.MM.YYYY'),
+				date: moment(changelog.date).format('DD.MM.YYYY'),
 				changelog,
 				contact: changelog.inContact || changelog.outContact
 			},
