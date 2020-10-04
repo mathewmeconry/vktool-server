@@ -6,6 +6,7 @@ export enum AuthRoles {
 
 	MEMBERS_READ = 'members_read',
 	MEMBERS_EDIT = 'members_edit',
+	MEMBERS_PRODUCTS = 'members_products',
 
 	MAILING_LISTS = 'mailing_lists',
 
@@ -38,6 +39,16 @@ export enum AuthRoles {
 	LOGOFFS_CREATE = 'logoffs_create',
 	LOGOFFS_EDIT = 'logoffs_edit',
 	LOGOFFS_APPROVE = 'logoffs_approve',
+
+	PRODUCT_READ = 'product_read',
+	PRODUCT_EDIT = 'product_edit',
+
+	MATERIAL_CHANGELOG_READ = 'material_changelog_read',
+	MATERIAL_CHANGELOG_CREATE = 'material_changelog_create',
+	MATERIAL_CHANGELOG_EDIT = 'material_changelog_edit',
+
+	WAREHOUSE_READ = 'warehouse_read',
+	WAREHOUSE_CREATE = 'warehouse_create',
 
 	ADMIN = 'admin',
 }
@@ -73,6 +84,14 @@ export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.LOGOFFS_EDIT,
 		AuthRoles.LOGOFFS_READ,
 		AuthRoles.LOGOFFS_APPROVE,
+		AuthRoles.PRODUCT_EDIT,
+		AuthRoles.PRODUCT_READ,
+		AuthRoles.MEMBERS_PRODUCTS,
+		AuthRoles.MATERIAL_CHANGELOG_CREATE,
+		AuthRoles.MATERIAL_CHANGELOG_EDIT,
+		AuthRoles.MATERIAL_CHANGELOG_READ,
+		AuthRoles.WAREHOUSE_CREATE,
+		AuthRoles.WAREHOUSE_READ,
 	],
 	// FHR
 	9: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
@@ -111,6 +130,8 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.LOGOFFS_EDIT,
 		AuthRoles.LOGOFFS_READ,
 		AuthRoles.LOGOFFS_APPROVE,
+		AuthRoles.MEMBERS_PRODUCTS,
+		AuthRoles.MATERIAL_CHANGELOG_READ,
 	],
 	// Leiter Stv.
 	29: [
@@ -142,6 +163,14 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.LOGOFFS_EDIT,
 		AuthRoles.LOGOFFS_READ,
 		AuthRoles.LOGOFFS_APPROVE,
+		AuthRoles.PRODUCT_EDIT,
+		AuthRoles.PRODUCT_READ,
+		AuthRoles.MEMBERS_PRODUCTS,
+		AuthRoles.MATERIAL_CHANGELOG_CREATE,
+		AuthRoles.MATERIAL_CHANGELOG_EDIT,
+		AuthRoles.MATERIAL_CHANGELOG_READ,
+		AuthRoles.WAREHOUSE_CREATE,
+		AuthRoles.WAREHOUSE_READ,
 	],
 	// Leiter
 	28: [
@@ -173,6 +202,14 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.LOGOFFS_EDIT,
 		AuthRoles.LOGOFFS_READ,
 		AuthRoles.LOGOFFS_APPROVE,
+		AuthRoles.PRODUCT_EDIT,
+		AuthRoles.PRODUCT_READ,
+		AuthRoles.MEMBERS_PRODUCTS,
+		AuthRoles.MATERIAL_CHANGELOG_CREATE,
+		AuthRoles.MATERIAL_CHANGELOG_EDIT,
+		AuthRoles.MATERIAL_CHANGELOG_READ,
+		AuthRoles.WAREHOUSE_CREATE,
+		AuthRoles.WAREHOUSE_READ,
 	],
 	// CON
 	22: [

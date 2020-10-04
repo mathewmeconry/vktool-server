@@ -1,7 +1,7 @@
 {
     "type": "mariadb",
     "host": "localhost",
-    "port": 34685,
+    "port": 46087,
     "username": "root",
     "password": "password",
     "database": "vktool",

@@ -204,6 +204,19 @@ export default class ContactResolver extends baseResolver {
 		return qb.getMany();
 	}
 
+	@Authorized([AuthRoles.CONTACTS_READ, AuthRoles.MATERIAL_CHANGELOG_READ])
+	@Query((type) => [Contact])
+	public async getSuppliersAll(): Promise<Contact[]> {
+		const qb = getManager()
+			.getRepository(Contact)
+			.createQueryBuilder('contact')
+			.leftJoin('contact.contactGroups', 'contactGroup')
+			.where('contactGroup.bexioId = :bexioId', { bexioId: 3 })
+			.orderBy('contact.firstname', 'ASC');
+
+		return qb.getMany();
+	}
+
 	@Authorized([AuthRoles.MEMBERS_READ])
 	@Query((type) => [PaginationFilter], { name: `getContactFilters`, nullable: true })
 	public getFilters(): PaginationFilter[] {

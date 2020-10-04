@@ -1,0 +1,29 @@
+@import "_base";
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+.bold {
+    font-weight: bold;
+}
+
+.arrow {
+    align-self: center;
+    text-align: center;
+}
+
+.in, .out {
+    text-align: center;
+}
+
+#signature {
+    position: absolute;
+    bottom: 25px;
+    img {
+        height: 50px;
+    }
+}

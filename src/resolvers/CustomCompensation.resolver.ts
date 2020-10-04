@@ -9,12 +9,17 @@ import {
 	Ctx,
 	Authorized,
 	Int,
+	Root,
+	FieldResolver,
 } from 'type-graphql';
 import CompensationResolver from './Compensation.resolver';
-import { resolveEntity } from './helpers';
+import { resolveEntity, resolveEntityArray } from './helpers';
 import { ApolloContext } from '../controllers/CliController';
 import Contact from '../entities/Contact';
 import { AuthRoles } from '../interfaces/AuthRoles';
+import MaterialChangelog from '../entities/MaterialChangelog';
+import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct';
+import { getManager } from 'typeorm';
 
 @InputType()
 class AddCustomCompensation implements Partial<CustomCompensation> {
@@ -54,5 +59,24 @@ export default class CustomCompensationResolver extends CompensationResolver {
 		} catch (e) {
 			return null;
 		}
+	}
+
+	@Authorized([AuthRoles.MATERIAL_CHANGELOG_READ])
+	@FieldResolver((type) => [MaterialChangelogToProduct], { nullable: true })
+	public async materialChangelogToProducts(
+		@Root() object: CustomCompensation
+	): Promise<MaterialChangelogToProduct[] | null> {
+		if (object.materialChangelogToProductsIds && object.materialChangelogToProductsIds.length > 0) {
+			try {
+				return resolveEntityArray(
+					'MaterialChangelogToProduct',
+					object.materialChangelogToProductsIds,
+					['product']
+				);
+			} catch (e) {
+				return null;
+			}
+		}
+		return null;
 	}
 }

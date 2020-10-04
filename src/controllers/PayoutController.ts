@@ -3,13 +3,9 @@ import { getManager } from 'typeorm';
 import Payout from '../entities/Payout';
 import PayoutService from '../services/PayoutService';
 import Contact from '../entities/Contact';
-import EMailService from '../services/EMailService';
 import moment from 'moment';
-import ContactExtension from '../entities/ContactExtension';
 
 export default class PayoutController {
-	private static emailService = new EMailService('no-reply@vkazu.ch');
-
 	public static async generateMemberPDF(
 		req: Express.Request,
 		res: Express.Response

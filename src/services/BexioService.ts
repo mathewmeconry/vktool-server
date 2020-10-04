@@ -1,4 +1,4 @@
-import Bexio, { Scopes, BillsStatic, ContactsStatic, OrdersStatic } from 'bexio';
+import Bexio, { BillsStatic, ContactsStatic, OrdersStatic } from 'bexio';
 import * as Express from 'express';
 import ContactType from '../entities/ContactType';
 import ContactGroup from '../entities/ContactGroup';
@@ -12,19 +12,10 @@ import Datacontainer from './DataContainer';
 import moment = require('moment');
 import OrderCompensation from '../entities/OrderCompensation';
 import CustomCompensation from '../entities/CustomCompensation';
+import Product from '../entities/Product';
 
 export namespace BexioService {
-	let bexioAPI = new Bexio(
-		config.get('bexio.clientId'),
-		config.get('bexio.clientSecret'),
-		config.get('apiEndpoint') + '/bexio/callback',
-		[Scopes.CONTACT_SHOW, Scopes.KB_ORDER_SHOW, Scopes.KB_BILL_EDIT, Scopes.KB_BILL_SHOW]
-	);
-	let fakeloginInProgress = false;
-
-	export function isInitialized(): boolean {
-		return bexioAPI.isInitialized();
-	}
+	let bexioAPI = new Bexio(config.get('bexio.token'));
 
 	export function addCommandline(yargs: yargs.Argv): void {
 		yargs.command({
@@ -36,16 +27,6 @@ export namespace BexioService {
 					describe: 'Sync command',
 					builder: (yargs) => {
 						return yargs
-							.middleware(() => {
-								if (fakeloginInProgress) return;
-								if (BexioService.isInitialized()) return;
-
-								console.log(`logging in with user: ${config.get('bexio.username')}`);
-								return BexioService.fakeLogin(
-									config.get('bexio.username'),
-									config.get('bexio.password')
-								);
-							})
 							.command({
 								command: 'contacts',
 								builder: {
@@ -66,7 +47,8 @@ export namespace BexioService {
 										alias: 'f',
 									},
 								},
-								handler: () => {
+								handler: async () => {
+									await BexioService.syncContactGroups();
 									console.log('sync completed');
 									process.exit(0);
 								},
@@ -109,6 +91,14 @@ export namespace BexioService {
 									console.log('sync completed');
 									process.exit(0);
 								},
+							})
+							.command({
+								command: 'products',
+								handler: async () => {
+									await BexioService.syncProducts();
+									console.log('sync completed');
+									process.exit(0);
+								},
 							});
 					},
 					handler: () => {},
@@ -119,119 +109,83 @@ export namespace BexioService {
 	}
 
 	export function addExpressHandlers(app: Express.Application): void {
-		app.get('/bexio/init', async (req: Express.Request, res: Express.Response) => {
-			if (!bexioAPI.isInitialized()) {
-				res.redirect(bexioAPI.getAuthUrl());
-			} else {
-				res.send('Done');
-			}
-		});
-
-		app.get('/bexio/callback', async (req, res) => {
-			if (fakeloginInProgress) return;
-
-			await bexioAPI.generateAccessToken(req.query as any);
-			console.log('Got callback');
-			res.send('Done');
-		});
-
-		app.get('/bexio/fakelogin', async (req, res) => {
-			await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-			res.send('done');
-		});
-
-		app.get('/bexio/initialized', async (req, res) => {
-			if (!bexioAPI.isInitialized()) {
-				res.send('Nop');
-			} else {
-				res.send('Jep');
-			}
-		});
-
 		app.get('/bexio/sync/all', async (req, res) => {
 			if (req.header('X-Azure')) res.send('started');
 			if (req.header('X-Azure'))
-				await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-			await Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
+				await Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
 			await Promise.all([
 				BexioService.syncContacts(),
 				BexioService.syncOrders(),
 				BexioService.syncBillStatuses(),
+				BexioService.syncProducts(),
 			]);
 		});
 
 		app.get('/bexio/sync/contactTypes', async (req, res) => {
 			if (req.header('X-Azure'))
-				await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-			BexioService.syncContactTypes()
-				.then(() => {
-					res.send('Synced');
-				})
-				.catch(() => {
-					res.send('Something went wrong!');
-				});
+				BexioService.syncContactTypes()
+					.then(() => {
+						res.send('Synced');
+					})
+					.catch(() => {
+						res.send('Something went wrong!');
+					});
 		});
 
 		app.get('/bexio/sync/contactGroups', async (req, res) => {
 			if (req.header('X-Azure'))
-				await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-			BexioService.syncContactGroups()
-				.then(() => {
-					res.send('Synced');
-				})
-				.catch(() => {
-					res.send('Something went wrong!');
-				});
+				BexioService.syncContactGroups()
+					.then(() => {
+						res.send('Synced');
+					})
+					.catch(() => {
+						res.send('Something went wrong!');
+					});
 		});
 
 		app.get('/bexio/sync/contacts', async (req, res) => {
 			if (req.header('X-Azure'))
-				await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-			BexioService.syncContacts()
-				.then(() => {
-					res.send('Synced');
-				})
-				.catch(() => {
-					res.send('Something went wrong!');
-				});
+				BexioService.syncContacts()
+					.then(() => {
+						res.send('Synced');
+					})
+					.catch(() => {
+						res.send('Something went wrong!');
+					});
 		});
 
 		app.get('/bexio/sync/orders', async (req, res) => {
 			if (req.header('X-Azure'))
-				await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-			BexioService.syncOrders()
-				.then(() => {
-					res.send('Synced');
-				})
-				.catch(() => {
-					res.send('Something went wrong!');
-				});
+				BexioService.syncOrders()
+					.then(() => {
+						res.send('Synced');
+					})
+					.catch(() => {
+						res.send('Something went wrong!');
+					});
 		});
 
 		app.get('/bexio/sync/billStatuses', async (req, res) => {
 			if (req.header('X-Azure'))
-				await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-			BexioService.syncBillStatuses()
-				.then(() => {
-					res.send('Synced');
-				})
-				.catch(() => {
-					res.send('Something went wrong!');
-				});
+				BexioService.syncBillStatuses()
+					.then(() => {
+						res.send('Synced');
+					})
+					.catch(() => {
+						res.send('Something went wrong!');
+					});
 		});
-	}
 
-	export function getAuthUrl(): string {
-		return bexioAPI.getAuthUrl();
-	}
-
-	export async function fakeLogin(username: string, password: string): Promise<void> {
-		if (fakeloginInProgress) return;
-
-		fakeloginInProgress = true;
-		await bexioAPI.fakeLogin(username, password);
-		fakeloginInProgress = false;
-		return;
+		app.get('/bexio/sync/products', async (req, res) => {
+			if (req.header('X-Azure'))
+				BexioService.syncProducts()
+					.then(() => {
+						res.send('Synced');
+					})
+					.catch(() => {
+						res.send('Something went wrong!');
+					});
+		});
 	}
 
 	/**
@@ -242,7 +196,7 @@ export namespace BexioService {
 	 */
 	export async function syncContacts(): Promise<void> {
 		return new Promise<void>(async (resolve, reject) => {
-			let contacts = await bexioAPI.contacts.search({}, [
+			let contacts = await bexioAPI.contacts.search([
 				{
 					field: ContactsStatic.ContactSearchParameters.updated_at,
 					value: moment(Datacontainer.get<Date>('bexio.contacts.lastSync') || '1970-01-01').format(
@@ -374,7 +328,7 @@ export namespace BexioService {
 	 */
 	export async function syncOrders(): Promise<void> {
 		return new Promise<void>(async (resolve, reject) => {
-			let orders = await bexioAPI.orders.search({}, [
+			let orders = await bexioAPI.orders.search([
 				{
 					field: OrdersStatic.OrderSearchParameters.updated_at,
 					value: moment(Datacontainer.get<Date>('bexio.orders.lastSync') || '1970-01-01').format(
@@ -388,7 +342,7 @@ export namespace BexioService {
 
 			console.log('Syncing ' + orders.length);
 			for (let order of orders) {
-				let bexioOrder = await bexioAPI.orders.show({}, order.id);
+				let bexioOrder = await bexioAPI.orders.show(order.id);
 				if (bexioOrder) {
 					let contact = await contactRepo.findOne({ bexioId: bexioOrder.contact_id });
 
@@ -406,7 +360,7 @@ export namespace BexioService {
 									contact: contact,
 									total: parseFloat(bexioOrder.total) ? parseFloat(bexioOrder.total) : 0,
 									deliveryAddress: bexioOrder.delivery_address,
-									positions: []
+									positions: [],
 								});
 
 								orderDB = await orderDB.save();
@@ -481,7 +435,7 @@ export namespace BexioService {
 
 		for (const id of allBillsIds) {
 			console.log(`syncing bexio bill ${id}`);
-			const bill = await bexioAPI.bills.show({}, id);
+			const bill = await bexioAPI.bills.show(id);
 			if (parseFloat(bill.total_remaining_payments) == 0) {
 				await ocQB
 					.update()
@@ -508,6 +462,49 @@ export namespace BexioService {
 		}
 	}
 
+	export async function syncProducts(): Promise<void> {
+		const productRepo = getManager().getRepository(Product);
+		const contactRepo = getManager().getRepository(Contact);
+		const allItems = await bexioAPI.items.list();
+		const savePromises = [];
+		console.log(`syncing ${allItems.length} products`);
+		for (const item of allItems) {
+			let product = await productRepo.findOne({ bexioId: item.id });
+			if (!product) {
+				product = new Product();
+			}
+
+			let contact: Contact | undefined;
+			if (item.contact_id) {
+				contact = await contactRepo.findOne({ bexioId: item.contact_id });
+			}
+
+			product = Object.assign(product, {
+				contact: contact,
+				bexioId: item.id,
+				articleType: item.article_type_id,
+				delivererCode: item.deliverer_code,
+				delivererDescription: item.deliverer_description,
+				internCode: item.intern_code,
+				internName: item.intern_name,
+				internDescription: item.intern_description,
+				purchasePrice: item.purchase_price,
+				salePrice: item.sale_price,
+				purchaseTotal: item.purchase_total,
+				saleTotal: item.sale_total,
+				remarks: item.remarks,
+				deliveryPrice: item.delivery_price,
+				articleGroupId: item.article_group_id,
+			});
+			savePromises.push(product.save());
+			savePromises[savePromises.length - 1].then((p) => {
+				console.log(`Synced product ${p.id}`);
+			});
+		}
+
+		await Promise.all(savePromises);
+	}
+
 	export async function createBill(
 		positions: Array<BillsStatic.CustomPositionCreate | BillsStatic.ArticlePositionCreate>,
 		member: Contact,
@@ -526,9 +523,6 @@ export namespace BexioService {
 			title,
 		};
 
-		if (!BexioService.isInitialized()) {
-			await BexioService.fakeLogin(config.get('bexio.username'), config.get('bexio.password'));
-		}
 		const fullBill = await bexioAPI.bills.create(bill);
 		if (issue) {
 			await bexioAPI.bills.issue(fullBill.id);

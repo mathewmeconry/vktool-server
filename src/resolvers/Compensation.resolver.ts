@@ -3,14 +3,11 @@ import {
 	Resolver,
 	FieldResolver,
 	Root,
-	InputType,
-	Field,
 	Mutation,
 	Arg,
 	Ctx,
 	Authorized,
 	Query,
-	registerEnumType,
 	Int,
 	ForbiddenError,
 } from 'type-graphql';
@@ -73,7 +70,7 @@ export default class CompensationResolver extends baseResolver {
 			filter['payout'] = payoutId;
 		}
 
-		const customs = await getManager().getRepository(CustomCompensation).find({ where: filter });
+		const customs: Compensation<any>[] = await getManager().getRepository(CustomCompensation).find({ where: filter });
 		const orders = await getManager()
 			.getRepository(OrderCompensation)
 			.find({ where: filter, relations: ['billingReport', 'billingReport.order'] });
