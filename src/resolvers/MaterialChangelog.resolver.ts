@@ -28,6 +28,7 @@ import { createResolver, resolveEntity, resolveEntityArray } from './helpers';
 import { AddMaterialChangelogToProduct } from './MaterialChangelogToProduct.resolver';
 import User from '../entities/User';
 import File from '../entities/File';
+import MaterialChangelogService from '../services/MaterialChangelogService';
 
 const baseResolver = createResolver(
 	'MaterialChangelog',
@@ -158,8 +159,8 @@ export default class MaterialChangelogResolver extends baseResolver {
 		} else {
 			mc.outWarehouse = outEntity;
 		}
-		mc.files = data.files
-		mc.signature = data.signature
+		mc.files = data.files;
+		mc.signature = data.signature;
 
 		await mc.save();
 
@@ -206,6 +207,20 @@ export default class MaterialChangelogResolver extends baseResolver {
 		}
 
 		return mc.save();
+	}
+
+	@Authorized([AuthRoles.MATERIAL_CHANGELOG_READ])
+	@Mutation((type) => Boolean)
+	public async sendReceiptMail(@Arg('id', (type) => Int) id: number): Promise<boolean> {
+		const changelog = await resolveEntity<MaterialChangelog>('MaterialChangelog', id, [
+			'changes',
+			'changes.product',
+			'inContact',
+			'outContact',
+			'inWarehouse',
+			'outWarehouse',
+		]);
+		return MaterialChangelogService.sendReceiptMail(changelog);
 	}
 
 	@FieldResolver((type) => [MaterialChangelogToProduct])
