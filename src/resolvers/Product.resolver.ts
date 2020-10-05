@@ -20,7 +20,7 @@ const baseResolver = createResolver(
 	Product,
 	[AuthRoles.PRODUCT_READ],
 	['contact'],
-	['interName', 'contact.firstname', 'contact.lastname']
+	['internName', 'contact.firstname', 'contact.lastname']
 );
 
 @InputType()
