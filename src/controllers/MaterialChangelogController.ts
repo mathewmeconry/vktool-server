@@ -17,6 +17,7 @@ export default class MaterialChangelogController {
 					'outContact',
 					'inWarehouse',
 					'outWarehouse',
+					'creator'
 				],
 			});
 

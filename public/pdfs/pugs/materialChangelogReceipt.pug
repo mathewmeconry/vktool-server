@@ -12,12 +12,12 @@ block content
     div(class="header")
         div(class="out")
             p(class="bold") Von
-            p #{changelog.inContact ? `${changelog.inContact.firstname} ${changelog.inContact.lastname}` : changelog.inWarehouse.name}
+            p #{changelog.outContact ? `${changelog.outContact.firstname} ${changelog.outContact.lastname}` : changelog.outWarehouse.name}
         div(class="arrow")
             i(class="fa fa-long-arrow-alt-right fa-2x" aria-hidden="true")
         div(class="in")
             p(class="bold") Zu
-                p #{changelog.outContact ? `${changelog.outContact.firstname} ${changelog.outContact.lastname}` : changelog.outWarehouse.name}
+                p #{changelog.inContact ? `${changelog.inContact.firstname} ${changelog.inContact.lastname}` : changelog.inWarehouse.name}
     br
     table
         thead
@@ -32,6 +32,10 @@ block content
                     td #{change.amount}
                     td #{change.number}
                     td #{change.charge ? 'Ja': 'Nein'}
+    br
+    br
+    p(class="bold") Erfasst von
+    p #{changelog.creator.displayName}
     
     dev(id="signature")
         if changelog.inContact

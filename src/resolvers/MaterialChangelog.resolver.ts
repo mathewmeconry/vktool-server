@@ -219,6 +219,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 			'outContact',
 			'inWarehouse',
 			'outWarehouse',
+			'creator'
 		]);
 		return MaterialChangelogService.sendReceiptMail(changelog);
 	}
