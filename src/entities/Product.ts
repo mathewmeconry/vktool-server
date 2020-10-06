@@ -12,9 +12,9 @@ export default class Product extends BexioBase<Product> {
 	@RelationId('contact')
 	public contactId?: number;
 
-	@Field()
-	@Column()
-	public articleType: number;
+	@Field({ nullable: true })
+	@Column('int', { nullable: true })
+	public articleType?: number;
 
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
