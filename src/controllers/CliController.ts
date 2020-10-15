@@ -88,6 +88,7 @@ export default class CliController {
 		const apollo = new ApolloServer({
 			schema,
 			playground: process.env.NODE_ENV !== 'production',
+			tracing: process.env.NODE_ENV !== 'production',
 			context: ({ req }): ApolloContext => {
 				return {
 					user: req.user,
