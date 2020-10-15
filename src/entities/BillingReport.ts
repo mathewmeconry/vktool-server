@@ -46,7 +46,7 @@ export default class BillingReport extends Base<BillingReport> {
 	@Column('datetime')
 	public date: Date;
 
-	@Field((type) => OrderCompensation)
+	@Field((type) => [OrderCompensation])
 	@OneToMany((type) => OrderCompensation, (compensation) => compensation.billingReport)
 	@JoinColumn()
 	public compensations: Array<OrderCompensation>;
