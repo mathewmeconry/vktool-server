@@ -1,0 +1,22 @@
+extends layout.pug
+
+block header
+    style(type="text/css") !{compiledStyle}
+
+block content
+    div(style={float: 'right'})
+        p #{location}, #{date}
+    h2 Lagerreport für #{warehouse.name}
+    br
+    table
+        thead
+            tr
+                th Produkt
+                th Anzahl
+                th Nummern
+        tbody
+            each entry in stock
+                tr
+                    td #{entry.product.internName}
+                    td #{entry.amount}
+                    td #{entry.numbers}

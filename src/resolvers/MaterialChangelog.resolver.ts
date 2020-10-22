@@ -86,7 +86,10 @@ class AddMaterialChangelog {
 	public files: File[];
 
 	@Field({ nullable: true })
-	public signature: string;
+	public signature?: string;
+
+	@Field({ nullable: true })
+	public remarks?: string;
 }
 
 @Resolver((of) => MaterialChangelog)
@@ -161,6 +164,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 		}
 		mc.files = data.files;
 		mc.signature = data.signature;
+		mc.remarks = data.remarks;
 
 		await mc.save();
 
@@ -219,7 +223,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 			'outContact',
 			'inWarehouse',
 			'outWarehouse',
-			'creator'
+			'creator',
 		]);
 		return MaterialChangelogService.sendReceiptMail(changelog);
 	}

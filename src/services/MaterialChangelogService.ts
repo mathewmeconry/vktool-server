@@ -4,14 +4,15 @@ import path from 'path';
 import sass from 'node-sass';
 import pug from 'pug';
 import moment from 'moment';
-import { getManager } from 'typeorm'
-import ContactExtension from '../entities/ContactExtension'
-import EMailService from './EMailService'
-import PdfService from './PdfService'
-import config from 'config'
+import { getManager } from 'typeorm';
+import ContactExtension from '../entities/ContactExtension';
+import EMailService from './EMailService';
+import PdfService from './PdfService';
+import config from 'config';
+import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct';
 
 export default class MaterialChangelogService {
-    private static emailService = new EMailService('no-reply@vkazu.ch');
+	private static emailService = new EMailService('no-reply@vkazu.ch');
 
 	public static async sendReceiptMail(changelog: MaterialChangelog): Promise<boolean> {
 		const pdf = await PdfService.generateMaterialChangelogReceipe(changelog);
@@ -74,7 +75,7 @@ export default class MaterialChangelogService {
 							'../../public/emails/materialChangelog/materialChangelogReceipt.pug'
 						),
 						{
-                            apiEndpoint: config.get('apiEndpoint'),
+							apiEndpoint: config.get('apiEndpoint'),
 							compiledStyle: sass.renderSync({
 								file: path.resolve(
 									__dirname,
@@ -88,5 +89,82 @@ export default class MaterialChangelogService {
 				);
 			});
 		});
+	}
+
+	public static async getContactStock(id: number): Promise<MaterialChangelogToProduct[]> {
+		const inChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoin('mc2p.product', 'product')
+			.where('mc.inContactId = :contactId', { contactId: id })
+			.getMany();
+		const outChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoin('mc2p.product', 'product')
+			.where('mc.outContactId = :outContactId', { outContactId: id })
+			.getMany();
+
+		return this.aggregateChanges(inChanges, outChanges);
+	}
+
+	public static async getWarehouseStock(id: number): Promise<MaterialChangelogToProduct[]> {
+		const inChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoinAndSelect('mc2p.product', 'product')
+			.where('mc.inWarehouseId = :warehouseId', { warehouseId: id })
+			.getMany();
+		const outChanges = await getManager()
+			.getRepository(MaterialChangelogToProduct)
+			.createQueryBuilder('mc2p')
+			.leftJoin('mc2p.changelog', 'mc')
+			.leftJoinAndSelect('mc2p.product', 'product')
+			.where('mc.outWarehouseId = :warehouseId', { warehouseId: id })
+			.getMany();
+
+		return this.aggregateChanges(inChanges, outChanges);
+	}
+
+	private static aggregateChanges(
+		inChanges: MaterialChangelogToProduct[],
+		outChanges: MaterialChangelogToProduct[]
+	): MaterialChangelogToProduct[] {
+		const aggregated: MaterialChangelogToProduct[] = [];
+
+		for (const change of inChanges) {
+			const index = aggregated.findIndex(
+				(c) => c.productId === change.productId && c.number === change.number
+			);
+			if (index === -1) {
+				aggregated.push(change);
+			} else {
+				aggregated[index].amount = aggregated[index].amount + change.amount;
+			}
+		}
+
+		for (const change of outChanges) {
+			const index = aggregated.findIndex(
+				(c) => c.productId === change.productId && c.number === change.number
+			);
+			if (index === -1) {
+				const indexWithoutNumber = aggregated.findIndex(
+					(c) => c.productId === change.productId && !c.number
+				);
+				if (indexWithoutNumber > -1) {
+					aggregated[indexWithoutNumber].amount = aggregated[indexWithoutNumber].amount - change.amount;
+				} else {
+					change.amount = change.amount * -1;
+					aggregated.push(change);
+				}
+			} else {
+				aggregated[index].amount = aggregated[index].amount - change.amount;
+			}
+		}
+
+		return aggregated.filter((c) => c.amount !== 0);
 	}
 }

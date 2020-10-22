@@ -20,7 +20,8 @@ import PayoutRoutes from '../routes/PayoutRoutes';
 import { Server } from 'http';
 import User from '../entities/User';
 import LogoffRoutes from '../routes/LogoffRoutes';
-import MaterialChangelogRoutes from '../routes/MaterialChangelogRoutes'
+import MaterialChangelogRoutes from '../routes/MaterialChangelogRoutes';
+import WarehouseRoutes from '../routes/WarehouseRoutes';
 
 export interface ApolloContext {
 	user: User;
@@ -68,7 +69,8 @@ export default class CliController {
 		ContactsRoutes(apiRouter);
 		PayoutRoutes(apiRouter);
 		LogoffRoutes(apiRouter);
-		MaterialChangelogRoutes(apiRouter)
+		MaterialChangelogRoutes(apiRouter);
+		WarehouseRoutes(apiRouter);
 
 		app.use('/api', apiRouter);
 
@@ -106,7 +108,7 @@ export default class CliController {
 		});
 
 		app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));
-		app.use('/static/', express.static(config.get('fileStorage')))
+		app.use('/static/', express.static(config.get('fileStorage')));
 		app.get('/webapp/*', (req, res) => {
 			res.sendFile(path.join(__dirname + '/../../public/index.html'));
 		});
