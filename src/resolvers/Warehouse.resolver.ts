@@ -4,13 +4,10 @@ import {
 	Mutation,
 	Resolver,
 	Int,
-	FieldResolver,
-	Root,
+	Float,
 	Query,
 } from 'type-graphql';
 import { getManager } from 'typeorm';
-import MaterialChangelog from '../entities/MaterialChangelog'
-import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct'
 import Warehouse from '../entities/Warehouse';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import { createResolver } from './helpers';
@@ -23,7 +20,7 @@ export default class WarehouseResolver extends baseResolver {
 	@Mutation((type) => Warehouse)
 	public addWarehouse(
 		@Arg('name') name: string,
-		@Arg('maxWeight', (type) => Int, { nullable: true }) maxWeight?: number
+		@Arg('maxWeight', (type) => Float, { nullable: true }) maxWeight?: number
 	): Promise<Warehouse> {
 		const warehouse = new Warehouse();
 		warehouse.name = name;
@@ -36,7 +33,7 @@ export default class WarehouseResolver extends baseResolver {
 	public async editWarehouse(
 		@Arg('id', () => Int) id: number,
 		@Arg('name') name: string,
-		@Arg('maxWeight', (type) => Int, { nullable: true }) maxWeight?: number
+		@Arg('maxWeight', (type) => Float, { nullable: true }) maxWeight?: number
 	): Promise<Warehouse> {
 		const warehouse = await getManager().getRepository(Warehouse).findOneOrFail(id);
 		warehouse.name = name;

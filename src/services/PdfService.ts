@@ -10,6 +10,8 @@ import OrderCompensation from '../entities/OrderCompensation';
 import { Options as SassOptions } from 'node-sass';
 import { PDFOptions } from 'puppeteer';
 import MaterialChangelog from '../entities/MaterialChangelog';
+import Warehouse from '../entities/Warehouse';
+import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct';
 
 export default class PdfService {
 	public static async generateMemberPayout(
@@ -143,7 +145,81 @@ export default class PdfService {
 				location: 'Wallisellen',
 				date: moment(changelog.date).format('DD.MM.YYYY'),
 				changelog,
-				contact: changelog.inContact || changelog.outContact
+				contact: changelog.inContact || changelog.outContact,
+			},
+			{
+				printBackground: true,
+				displayHeaderFooter: true,
+				headerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'),
+					{ logo: `data:image/png;base64,${logo.toString('base64')}` }
+				),
+				footerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug'),
+					{ width: '125mm' }
+				),
+				format: 'A4',
+				margin: {
+					top: '25mm',
+					left: '0',
+					bottom: '25mm',
+					right: '0',
+				},
+			}
+		);
+	}
+
+	public static async generateWarehouseReport(
+		warehouse: Warehouse,
+		stock: Array<MaterialChangelogToProduct & { numbers: string }>
+	): Promise<Buffer> {
+		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
+		return PdfService.generatePdf(
+			'warehouseReport.pug',
+			{
+				file: path.resolve(__dirname, '../../public/pdfs/scss/warehouseReport.scss'),
+			},
+			{
+				location: 'Wallisellen',
+				date: moment(new Date()).format('DD.MM.YYYY'),
+				warehouse,
+				stock,
+			},
+			{
+				printBackground: true,
+				displayHeaderFooter: true,
+				headerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'),
+					{ logo: `data:image/png;base64,${logo.toString('base64')}` }
+				),
+				footerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug'),
+					{ width: '125mm' }
+				),
+				format: 'A4',
+				margin: {
+					top: '25mm',
+					left: '0',
+					bottom: '25mm',
+					right: '0',
+				},
+			}
+		);
+	}
+
+	public static async generateWarehousesReport(
+		stock: Array<MaterialChangelogToProduct & { numbers: string; warehouse?: string }>
+	): Promise<Buffer> {
+		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
+		return PdfService.generatePdf(
+			'warehousesReport.pug',
+			{
+				file: path.resolve(__dirname, '../../public/pdfs/scss/warehousesReport.scss'),
+			},
+			{
+				location: 'Wallisellen',
+				date: moment(new Date()).format('DD.MM.YYYY'),
+				stock,
 			},
 			{
 				printBackground: true,
