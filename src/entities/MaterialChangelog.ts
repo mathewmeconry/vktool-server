@@ -97,4 +97,8 @@ export default class MaterialChangelog extends Base<MaterialChangelog> {
 
 	@RelationId('deletedBy')
 	public deletedById?: number;
+
+	@Column('longtext', { nullable: true })
+	@Field({ nullable: true })
+	public remarks?: string;
 }
