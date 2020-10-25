@@ -98,6 +98,7 @@ export default class MaterialChangelogService {
 			.leftJoin('mc2p.changelog', 'mc')
 			.leftJoin('mc2p.product', 'product')
 			.where('mc.inContactId = :contactId', { contactId: id })
+			.andWhere('mc.deletedBy is NULL')
 			.getMany();
 		const outChanges = await getManager()
 			.getRepository(MaterialChangelogToProduct)
@@ -105,6 +106,7 @@ export default class MaterialChangelogService {
 			.leftJoin('mc2p.changelog', 'mc')
 			.leftJoin('mc2p.product', 'product')
 			.where('mc.outContactId = :outContactId', { outContactId: id })
+			.andWhere('mc.deletedBy is NULL')
 			.getMany();
 
 		return this.aggregateChanges(inChanges, outChanges);
@@ -117,6 +119,7 @@ export default class MaterialChangelogService {
 			.leftJoin('mc2p.changelog', 'mc')
 			.leftJoinAndSelect('mc2p.product', 'product')
 			.where('mc.inWarehouseId = :warehouseId', { warehouseId: id })
+			.andWhere('mc.deletedBy is NULL')
 			.getMany();
 		const outChanges = await getManager()
 			.getRepository(MaterialChangelogToProduct)
@@ -124,6 +127,7 @@ export default class MaterialChangelogService {
 			.leftJoin('mc2p.changelog', 'mc')
 			.leftJoinAndSelect('mc2p.product', 'product')
 			.where('mc.outWarehouseId = :warehouseId', { warehouseId: id })
+			.andWhere('mc.deletedBy is NULL')
 			.getMany();
 
 		return this.aggregateChanges(inChanges, outChanges);
