@@ -1,5 +1,5 @@
 import { Field, ObjectType } from 'type-graphql';
-import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { Column, Entity, ManyToOne, RelationId, Index } from 'typeorm';
 import BexioBase from './BexioBase';
 import Contact from './Contact';
 
@@ -32,6 +32,7 @@ export default class Product extends BexioBase<Product> {
 	@Column()
 	public internCode: string;
 
+	@Index({ fulltext: true })
 	@Field()
 	@Column()
 	public internName: string;

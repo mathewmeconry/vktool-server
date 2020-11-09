@@ -95,7 +95,7 @@ export default class ContactResolver extends baseResolver {
 		super();
 		getManager()
 			.getRepository(ContactGroup)
-			.find({ bexioId: In([17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22, 16, 9]) })
+			.find({ bexioId: In([13, 11, 12, 28, 29, 15, 10, 14, 22, 16, 9, 35]) })
 			.then((results) => {
 				for (const result of results) {
 					filters.push({
