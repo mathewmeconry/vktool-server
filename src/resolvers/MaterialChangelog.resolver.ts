@@ -189,9 +189,9 @@ export default class MaterialChangelogResolver extends baseResolver {
 
 		let cc: CustomCompensation | undefined = undefined;
 		if (total > 0) {
-			if (mc.outContact) {
+			if (mc.inContact) {
 				let cc = new CustomCompensation(
-					mc.outContact,
+					mc.inContact,
 					ctx.user,
 					total * -1,
 					mc.date,
