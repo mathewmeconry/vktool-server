@@ -15,197 +15,202 @@ import {
 	AfterUpdate,
 	RelationId,
 	Index,
-} from 'typeorm';
-import BexioBase from './BexioBase';
-import Compensation from './Compensation';
-import User from './User';
-import ContactType from './ContactType';
-import ContactGroup from './ContactGroup';
-import CollectionPoint from './CollectionPoint';
-import ContactExtension, { ContactExtensionInterface } from './ContactExtension';
-import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from 'class-validator';
-import { ObjectType, Field, Int, Authorized } from 'type-graphql';
-import { AuthRoles } from '../interfaces/AuthRoles';
+} from 'typeorm'
+import BexioBase from './BexioBase'
+import Compensation from './Compensation'
+import User from './User'
+import ContactType from './ContactType'
+import ContactGroup from './ContactGroup'
+import CollectionPoint from './CollectionPoint'
+import ContactExtension, { ContactExtensionInterface } from './ContactExtension'
+import { IsString, IsDate, IsOptional, IsEmail, IsPhoneNumber } from 'class-validator'
+import { ObjectType, Field, Int, Authorized } from 'type-graphql'
+import { AuthRoles } from '../interfaces/AuthRoles'
+import File from './File'
 
 @ObjectType()
 @Entity()
 export default class Contact extends BexioBase<Contact> {
 	@Field()
 	@Column('text')
-	public nr: string;
+	public nr: string
 
 	@Field((type) => ContactType)
 	@ManyToOne((type) => ContactType)
 	@JoinColumn()
-	public contactType: ContactType;
+	public contactType: ContactType
 
 	@RelationId('contactType')
-	public contactTypeId: number;
+	public contactTypeId: number
 
 	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
-	public firstname: string;
+	public firstname: string
 
 	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
-	public lastname: string;
+	public lastname: string
 
 	@Field()
 	@Column('datetime')
-	public birthday: Date;
+	public birthday: Date
 
 	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
-	public address: string;
+	public address: string
 
 	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
-	public postcode: string;
+	public postcode: string
 
 	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
-	public city: string;
+	public city: string
 
 	@Index({ fulltext: true })
 	@Field()
 	@Column('text')
-	public mail: string;
+	public mail: string
 
 	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public mailSecond?: string;
+	public mailSecond?: string
 
 	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public phoneFixed?: string;
+	public phoneFixed?: string
 
 	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public phoneFixedSecond?: string;
+	public phoneFixedSecond?: string
 
 	@Index({ fulltext: true })
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public phoneMobile?: string;
+	public phoneMobile?: string
+
+	@Field({ nullable: true })
+	@Column('longtext', { nullable: true })
+	public profilePicture?: string
 
 	@Field({ nullable: true })
 	@Column('text', { nullable: true })
-	public remarks?: string;
+	public remarks?: string
 
 	@Field((type) => [ContactGroup])
 	@ManyToMany((type) => ContactGroup)
 	@JoinTable()
-	public contactGroups: Array<ContactGroup>;
+	public contactGroups: Array<ContactGroup>
 
 	@RelationId('contactGroups')
-	public contactGroupIds: number[];
+	public contactGroupIds: number[]
 
 	@Field()
 	@Column('int')
-	public ownerId: number;
+	public ownerId: number
 
 	@Authorized([AuthRoles.COMPENSATIONS_READ])
 	@Field((type) => [Compensation])
 	@OneToMany((type) => Compensation, (compensation) => compensation.member, { nullable: true })
-	public compensations: Promise<Array<Compensation<any>>>;
+	public compensations: Promise<Array<Compensation<any>>>
 
 	@RelationId('compensations')
-	public compensationIds: number[];
+	public compensationIds: number[]
 
 	@Authorized([AuthRoles.ADMIN])
 	@Field((type) => User, { nullable: true })
 	@OneToOne((type) => User, (user) => user.bexioContact, { nullable: true })
-	public user?: User;
+	public user?: User
 
 	@RelationId('user')
-	public userId?: number;
+	public userId?: number
 
 	// custom fields stored in contactExtension entity
 	@Field({ nullable: true })
-	public rank?: string;
+	public rank?: string
 
 	@Field((type) => [String], { nullable: true })
-	public functions?: Array<string>;
+	public functions?: Array<string>
 
 	@OneToOne((type) => ContactExtension, (contactExtension) => contactExtension.contact, {
 		nullable: true,
 	})
-	public extension?: ContactExtension;
+	public extension?: ContactExtension
 
 	public isMember(): boolean {
-		return this.contactGroups.find((group) => group.bexioId === 7) ? true : false;
+		return this.contactGroups.find((group) => group.bexioId === 7) ? true : false
 	}
 
 	public async setRank(): Promise<void> {
-		const rank = await this.getRank();
+		const rank = await this.getRank()
 		if (rank) {
-			this.rank = rank.name;
+			this.rank = rank.name
 		}
 	}
 
 	public async setFunctions(): Promise<void> {
-		this.functions = (await this.getFunctions()).map((f) => f.name);
+		this.functions = (await this.getFunctions()).map((f) => f.name)
 	}
 
 	public async getRank(): Promise<ContactGroup | null> {
-		const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22, 35];
+		const rankGroups = [17, 13, 11, 12, 28, 29, 15, 27, 26, 10, 14, 33, 22, 35]
 
-		let groups = this.contactGroups;
+		let groups = this.contactGroups
 		if (!groups) {
 			groups = await getManager()
 				.getRepository<ContactGroup>(ContactGroup)
 				.createQueryBuilder()
 				.where('id IN (:ids)', { ids: this.contactGroupIds })
-				.getMany();
+				.getMany()
 		}
 
 		if (groups) {
-			return groups.find((group) => rankGroups.indexOf(group.bexioId) > -1) || null;
+			return groups.find((group) => rankGroups.indexOf(group.bexioId) > -1) || null
 		}
 
-		return null;
+		return null
 	}
 
 	public async getFunctions(): Promise<Array<ContactGroup>> {
-		const functionGroups = [9, 16, 32, 16];
+		const functionGroups = [9, 16, 32, 16]
 
-		let groups = this.contactGroups;
+		let groups = this.contactGroups
 		if (!groups) {
 			groups = await getManager()
 				.getRepository<ContactGroup>(ContactGroup)
 				.createQueryBuilder()
 				.where('id IN (:ids)', { ids: this.contactGroupIds })
-				.getMany();
+				.getMany()
 		}
 
 		if (groups) {
-			return groups.filter((group) => functionGroups.indexOf(group.bexioId) > -1);
+			return groups.filter((group) => functionGroups.indexOf(group.bexioId) > -1)
 		}
 
-		return [];
+		return []
 	}
 
 	public async save(): Promise<Contact> {
-		await super.save();
-		return this;
+		await super.save()
+		return this
 	}
 
 	@AfterLoad()
 	public async loadOverride(): Promise<boolean> {
-		this.ajustDates();
+		this.ajustDates()
 
-		return true;
+		return true
 	}
 
 	private ajustDates(): void {
-		this.birthday = new Date(this.birthday);
+		this.birthday = new Date(this.birthday)
 	}
 }

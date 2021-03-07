@@ -217,6 +217,7 @@ export namespace BexioService {
 					bexioId: In((contact.contact_group_ids || '').split(',')),
 				});
 				let contactDB = await contactRepo.findOne({ bexioId: contact.id });
+				const extendedContact = await bexioAPI.contacts.show(contact.id)
 
 				if (!contactDB) contactDB = new Contact();
 				contactDB = Object.assign(contactDB, {
@@ -237,6 +238,7 @@ export namespace BexioService {
 					remarks: contact.remarks,
 					contactGroups: contactGroups,
 					ownerId: contact.owner_id,
+					profilePicture: extendedContact.profile_image
 				});
 
 				savePromises.push(contactDB.save());
