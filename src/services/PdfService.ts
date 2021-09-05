@@ -107,7 +107,7 @@ export default class PdfService {
 				from: payout.from > new Date('1970-01-01') ? moment(payout.from).format('DD.MM.YYYY') : '',
 				until: moment(payout.until).format('DD.MM.YYYY'),
 				presidentName: 'Reto Bernasconi',
-				cashierName: 'Corinne Altherr',
+				cashierName: 'Brigitte Müller',
 				members,
 			},
 			{
