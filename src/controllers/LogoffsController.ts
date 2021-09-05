@@ -65,10 +65,14 @@ export default class LogoffsController {
 			const memberLogoffs = logoffs.filter((l) => l.contact.id === member.id);
 			let germanizedMember: GermanizedMember & { [index: string]: string } = {
 				Rang: member.rank || '',
-				Nachname: member.lastname,
 				Vorname: member.firstname,
+				Nachname: member.lastname,
 				Abholpunkt: member.extension?.collectionPoint?.name || '',
+				AufgebotKopieren: `${member.firstname} ${member.lastname} (${member.extension?.collectionPoint?.name || ''})`,
 				Adresse: `${member.address}, ${member.postcode} ${member.city}`,
+				Mobile: member.phoneMobile || '',
+				Festnetz: member.phoneFixed || '',
+				Festnetz2: member.phoneFixedSecond || ''
 			};
 
 			logoffDates.forEach((d) => {
