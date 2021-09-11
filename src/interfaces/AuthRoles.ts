@@ -49,6 +49,7 @@ export enum AuthRoles {
 
 	WAREHOUSE_READ = 'warehouse_read',
 	WAREHOUSE_CREATE = 'warehouse_create',
+	WAREHOUSE_OVERLOAD = 'warehouse_overload',
 
 	ADMIN = 'admin',
 }
@@ -92,6 +93,7 @@ export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.MATERIAL_CHANGELOG_READ,
 		AuthRoles.WAREHOUSE_CREATE,
 		AuthRoles.WAREHOUSE_READ,
+		AuthRoles.WAREHOUSE_OVERLOAD
 	],
 	// FHR
 	9: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
@@ -132,6 +134,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.LOGOFFS_APPROVE,
 		AuthRoles.MEMBERS_PRODUCTS,
 		AuthRoles.MATERIAL_CHANGELOG_READ,
+		AuthRoles.WAREHOUSE_OVERLOAD
 	],
 	// Leiter Stv.
 	29: [
@@ -171,6 +174,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.MATERIAL_CHANGELOG_READ,
 		AuthRoles.WAREHOUSE_CREATE,
 		AuthRoles.WAREHOUSE_READ,
+		AuthRoles.WAREHOUSE_OVERLOAD
 	],
 	// Leiter
 	28: [
@@ -210,6 +214,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.MATERIAL_CHANGELOG_READ,
 		AuthRoles.WAREHOUSE_CREATE,
 		AuthRoles.WAREHOUSE_READ,
+		AuthRoles.WAREHOUSE_OVERLOAD
 	],
 	// CON
 	22: [
