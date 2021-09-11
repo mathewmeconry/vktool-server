@@ -13,6 +13,7 @@ import {
 	Root,
 	createUnionType,
 	Int,
+	Query,
 } from 'type-graphql';
 import { getManager } from 'typeorm';
 import { ApolloContext } from '../controllers/CliController';
@@ -94,6 +95,18 @@ class AddMaterialChangelog {
 
 @Resolver((of) => MaterialChangelog)
 export default class MaterialChangelogResolver extends baseResolver {
+	@Authorized([AuthRoles.MEMBERS_READ, AuthRoles.CONTACTS_READ])
+	@Query(() => [MaterialChangelog])
+	public async getContactMaterialChangelogs(
+		@Arg('id', (type) => Int) id: number,
+	): Promise<MaterialChangelog[]> {
+		return getManager()
+			.getRepository(MaterialChangelog)
+			.createQueryBuilder('mc')
+			.where('mc.inContactId = :contactId OR mc.outContactId = :contactId', { contactId: id })
+			.getMany()
+	}
+
 	@Authorized([AuthRoles.MATERIAL_CHANGELOG_EDIT])
 	@Mutation((type) => MaterialChangelog)
 	public async deleteMaterialChangelog(
