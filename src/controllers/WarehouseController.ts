@@ -13,16 +13,30 @@ export default class WarehouseController {
 		let allEntries: Array<
 			MaterialChangelogToProduct & { numbers: string; warehouse?: string }
 		> = [];
-		for (const warehouse of warehouses) {
+
+		warehouses.forEach(async warehouse => {
 			const stock = await MaterialChangelogService.getWarehouseStock(warehouse.id);
-			const aggregated: Array<
-				MaterialChangelogToProduct & { numbers: string; warehouse?: string }
-			> = WarehouseController.aggregate(stock);
+			const aggregated: Array<MaterialChangelogToProduct & { numbers: string; warehouse?: string }> = WarehouseController.aggregate(stock);
 			aggregated.forEach((e) => {
 				e.warehouse = warehouse.name;
 			});
 			allEntries = allEntries.concat(aggregated);
-		}
+		})
+
+		const contactsStock = await MaterialChangelogService.getContactsStock()
+		const aggregatedContactsStock: Array<MaterialChangelogToProduct & { numbers: string; warehouse?: string }> = WarehouseController.aggregate(contactsStock)
+		aggregatedContactsStock.forEach((e) => {
+			e.warehouse = 'Mitglieder'
+		})
+		allEntries = allEntries.concat(aggregatedContactsStock)
+
+		const unkownStock = await MaterialChangelogService.getContactStockByBexioId(1321)
+		const aggregatedUnkownStock: Array<MaterialChangelogToProduct & { numbers: string; warehouse?: string }> = WarehouseController.aggregate(unkownStock)
+		aggregatedUnkownStock.forEach((e) => {
+			e.warehouse = 'Unbekannt'
+		})
+		allEntries = allEntries.concat(aggregatedUnkownStock)
+
 		res.contentType('application/pdf');
 		res.setHeader(
 			'Content-Disposition',
@@ -62,9 +76,8 @@ export default class WarehouseController {
 			if (foundIndex > -1) {
 				aggregated[foundIndex].amount += entry.amount;
 				if (entry.number) {
-					aggregated[foundIndex].numbers += `${
-						(aggregated[foundIndex].numbers || '').length > 0 ? ',' : ''
-					}${entry.number}`;
+					aggregated[foundIndex].numbers += `${(aggregated[foundIndex].numbers || '').length > 0 ? ',' : ''
+						}${entry.number}`;
 				}
 			} else {
 				const e = JSON.parse(JSON.stringify(entry));
