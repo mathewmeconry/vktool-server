@@ -214,7 +214,7 @@ export namespace BexioService {
 			for (let contact of contacts) {
 				let contactType = await contactTypeRepo.findOne({ bexioId: contact.contact_type_id });
 				let contactGroups = await contactGroupRepo.find({
-					bexioId: In((contact.contact_group_ids || '').split(',')),
+					bexioId: In<number>((contact.contact_group_ids || '').split(',').map(id => parseInt(id))),
 				});
 				let contactDB = await contactRepo.findOne({ bexioId: contact.id });
 				const extendedContact = await bexioAPI.contacts.show(contact.id)

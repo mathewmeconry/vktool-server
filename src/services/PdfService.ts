@@ -258,6 +258,7 @@ export default class PdfService {
 				userDataDir: '/tmp',
 				headless: true,
 				args: ['--disable-dev-shm-usage', '--no-sandbox'],
+				// executablePath: '/usr/bin/brave'
 			},
 		};
 

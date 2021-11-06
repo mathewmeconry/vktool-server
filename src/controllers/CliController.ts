@@ -91,6 +91,7 @@ export default class CliController {
 			schema,
 			playground: process.env.NODE_ENV !== 'production',
 			tracing: process.env.NODE_ENV !== 'production',
+			uploads: true,
 			context: ({ req }): ApolloContext => {
 				return {
 					user: req.user,

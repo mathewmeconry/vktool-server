@@ -162,13 +162,13 @@ export default class PayoutResolver extends baseResolver {
 
 	@FieldResolver(type => Float)
 	public async total(@Root() object: Payout): Promise<number> {
-		const { sum } = await getManager()
+		const result = await getManager()
 			.getRepository(Compensation)
 			.createQueryBuilder('Compensation')
 			.select('SUM(amount)', 'sum')
 			.where('payoutId = :payout', { payout: object.id })
 			.getRawOne();
-		return sum
+		return result?.sum || 0;
 	}
 
 	@FieldResolver()
