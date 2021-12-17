@@ -175,8 +175,8 @@ export default class PayoutService {
 				id: messageId,
 				method: 'TRF',
 				senderName: 'VERKEHRSKADETTEN ABTEILUNG ZÜRCHER-UNTERLAND',
-				senderIBAN: 'CH8681477000003911939',
-				bic: 'RAIFCH22E77',
+				senderIBAN: 'CH4180808003618770412',
+				bic: 'RAIFCH22XXX',
 			});
 
 			const byMember: { [index: string]: Array<Compensation<any>> } = {};
