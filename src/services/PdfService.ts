@@ -11,7 +11,7 @@ import { Options as SassOptions } from 'node-sass';
 import { PDFOptions } from 'puppeteer';
 import MaterialChangelog from '../entities/MaterialChangelog';
 import Warehouse from '../entities/Warehouse';
-import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct';
+import { StockEntry } from './MaterialChangelogService';
 
 export default class PdfService {
 	public static async generateMemberPayout(
@@ -171,7 +171,7 @@ export default class PdfService {
 
 	public static async generateWarehouseReport(
 		warehouse: Warehouse,
-		stock: Array<MaterialChangelogToProduct & { numbers: string }>
+		stock: Array<StockEntry>
 	): Promise<Buffer> {
 		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
 		return PdfService.generatePdf(
@@ -208,7 +208,7 @@ export default class PdfService {
 	}
 
 	public static async generateWarehousesReport(
-		stock: Array<MaterialChangelogToProduct & { numbers: string; warehouse?: string }>
+		stock: Array<StockEntry>
 	): Promise<Buffer> {
 		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
 		return PdfService.generatePdf(

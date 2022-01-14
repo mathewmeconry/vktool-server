@@ -9,8 +9,13 @@ import ContactExtension from '../entities/ContactExtension';
 import EMailService from './EMailService';
 import PdfService from './PdfService';
 import config from 'config';
-import MaterialChangelogToProduct from '../entities/MaterialChangelogToProduct';
-import Contact from '../entities/Contact';
+import { MaterialChangelog2WarehouseView } from '../entities/MaterialChangelog2WarehouseView';
+
+export interface StockEntry {
+	productName: string;
+	amount: number;
+	location: string;
+}
 
 export default class MaterialChangelogService {
 	private static emailService = new EMailService('no-reply@vkazu.ch');
@@ -92,156 +97,31 @@ export default class MaterialChangelogService {
 		});
 	}
 
-	public static async getContactStockByBexioId(id: number): Promise<MaterialChangelogToProduct[]> {
-		const contact = await getManager()
-			.getRepository(Contact)
-			.findOneOrFail({ where: { bexioId: id } })
+	public static async getWarehouseStock(warehouseId: number): Promise<StockEntry[]> {
+		let stock = await getManager()
+			.getRepository(MaterialChangelog2WarehouseView)
+			.createQueryBuilder()
+			.select('inAmount')
+			.addSelect('outAmount')
+			.leftJoinAndSelect(
+				'product',
+				'product',
+				'product.id = MaterialChangelog2WarehouseView.productId'
+			)
+			.leftJoinAndSelect(
+				'warehouse',
+				'warehouse',
+				'warehouse.id = MaterialChangelog2WarehouseView.warehouseId'
+			)
+			.where('warehouseId = :warehouseId', { warehouseId: warehouseId })
+			.groupBy('productId')
+			.orderBy('product.internName')
+			.getRawMany();
 
-		return MaterialChangelogService.getContactStock(contact.id, true)
-	}
-
-	public static async getContactStock(id: number, selectProduct = false): Promise<MaterialChangelogToProduct[]> {
-		const inChangesQuery = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.where('mc.inContactId = :contactId', { contactId: id })
-			.andWhere('mc.deletedBy is NULL')
-
-		const outChangesQuery = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.where('mc.outContactId = :outContactId', { outContactId: id })
-			.andWhere('mc.deletedBy is NULL')
-
-		if (selectProduct) {
-			inChangesQuery.leftJoinAndSelect('mc2p.product', 'product')
-			outChangesQuery.leftJoinAndSelect('mc2p.product', 'product')
-		} else {
-			inChangesQuery.leftJoin('mc2p.product', 'product')
-			outChangesQuery.leftJoin('mc2p.product', 'product')
-		}
-
-		const inChanges = await inChangesQuery.getMany()
-		const outChanges = await outChangesQuery.getMany()
-
-		return this.aggregateChanges(inChanges, outChanges);
-	}
-
-	public static async getContactsStock(): Promise<MaterialChangelogToProduct[]> {
-		const inChanges = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.leftJoinAndSelect('mc2p.product', 'product')
-			.leftJoin('mc.inContact', 'contact')
-			.leftJoin('contact.contactGroups', 'contactGroups')
-			.where('mc.inContactId is NOT NULL')
-			.andWhere('contactGroups.bexioId = :bexioId', { bexioId: 7 })
-			.andWhere('mc.deletedBy is NULL')
-			.getMany()
-
-		const outChanges = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.leftJoinAndSelect('mc2p.product', 'product')
-			.leftJoin('mc.inContact', 'contact')
-			.leftJoin('contact.contactGroups', 'contactGroups')
-			.where('mc.outContactId is NOT NULL')
-			.andWhere('contactGroups.bexioId = :bexioId', { bexioId: 7 })
-			.andWhere('mc.deletedBy is NULL')
-			.getMany()
-
-		return this.aggregateChanges(inChanges, outChanges)
-	}
-
-	public static async getSupplierStock(): Promise<MaterialChangelogToProduct[]> {
-		const inChanges = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.leftJoinAndSelect('mc2p.product', 'product')
-			.leftJoin('mc.inContact', 'contact')
-			.leftJoin('contact.contactGroups', 'contactGroups')
-			.where('mc.inContactId is NOT NULL')
-			.andWhere('contactGroups.bexioId = :bexioId', { bexioId: 3 })
-			.andWhere('mc.deletedBy is NULL')
-			.getMany()
-
-		const outChanges = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.leftJoinAndSelect('mc2p.product', 'product')
-			.leftJoin('mc.inContact', 'contact')
-			.leftJoin('contact.contactGroups', 'contactGroups')
-			.where('mc.outContactId is NOT NULL')
-			.andWhere('contactGroups.bexioId = :bexioId', { bexioId: 3 })
-			.andWhere('mc.deletedBy is NULL')
-			.getMany()
-
-		return this.aggregateChanges(inChanges, outChanges).filter(agg => agg.amount > 0)
-	}
-
-	public static async getWarehouseStock(id: number): Promise<MaterialChangelogToProduct[]> {
-		const inChanges = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.leftJoinAndSelect('mc2p.product', 'product')
-			.where('mc.inWarehouseId = :warehouseId', { warehouseId: id })
-			.andWhere('mc.deletedBy is NULL')
-			.getMany();
-		const outChanges = await getManager()
-			.getRepository(MaterialChangelogToProduct)
-			.createQueryBuilder('mc2p')
-			.leftJoin('mc2p.changelog', 'mc')
-			.leftJoinAndSelect('mc2p.product', 'product')
-			.where('mc.outWarehouseId = :warehouseId', { warehouseId: id })
-			.andWhere('mc.deletedBy is NULL')
-			.getMany();
-
-		return this.aggregateChanges(inChanges, outChanges);
-	}
-
-	private static aggregateChanges(
-		inChanges: MaterialChangelogToProduct[],
-		outChanges: MaterialChangelogToProduct[]
-	): MaterialChangelogToProduct[] {
-		const aggregated: MaterialChangelogToProduct[] = [];
-
-		for (const change of inChanges) {
-			const index = aggregated.findIndex(
-				(c) => c.productId === change.productId && c.number === change.number
-			);
-			if (index === -1) {
-				aggregated.push(change);
-			} else {
-				aggregated[index].amount = aggregated[index].amount + change.amount;
-			}
-		}
-
-		for (const change of outChanges) {
-			const index = aggregated.findIndex(
-				(c) => c.productId === change.productId && c.number === change.number
-			);
-			if (index === -1) {
-				const indexWithoutNumber = aggregated.findIndex(
-					(c) => c.productId === change.productId && !c.number
-				);
-				if (indexWithoutNumber > -1) {
-					aggregated[indexWithoutNumber].amount = aggregated[indexWithoutNumber].amount - change.amount;
-				} else {
-					change.amount = change.amount * -1;
-					aggregated.push(change);
-				}
-			} else {
-				aggregated[index].amount = aggregated[index].amount - change.amount;
-			}
-		}
-
-		return aggregated.filter((c) => c.amount !== 0);
+		return stock.map((stock) => ({
+			productName: stock.product_internName,
+			amount: stock.inAmount - stock.outAmount,
+			location: stock.warehouse_name,
+		}));
 	}
 }

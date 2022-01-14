@@ -13,10 +13,8 @@ block content
             tr
                 th Produkt
                 th Anzahl
-                th Nummern
         tbody
             each entry in stock
                 tr
-                    td #{entry.product.internName}
+                    td #{entry.productName}
                     td #{entry.amount}
-                    td #{entry.numbers}

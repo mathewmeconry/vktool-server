@@ -10,10 +10,8 @@ import {
 	Authorized,
 	Ctx,
 	ID,
-	Int,
 	Query,
 } from 'type-graphql';
-import { getManager } from 'typeorm';
 import { ApolloContext } from '../controllers/CliController';
 import CustomCompensation from '../entities/CustomCompensation';
 import MaterialChangelog from '../entities/MaterialChangelog';
@@ -87,22 +85,6 @@ export default class MaterialChangelogToProductResolver extends baseResolver {
 		}
 
 		return mc2p.save();
-	}
-
-	@Authorized([AuthRoles.WAREHOUSE_READ])
-	@Query((type) => [MaterialChangelogToProduct])
-	public async getWarehouseStock(
-		@Arg('id', () => ID) id: number
-	): Promise<MaterialChangelogToProduct[]> {
-		return MaterialChangelogService.getWarehouseStock(id)
-	}
-
-	@Authorized([AuthRoles.CONTACTS_READ, AuthRoles.MEMBERS_READ])
-	@Query((type) => [MaterialChangelogToProduct])
-	public async getContactStock(
-		@Arg('id', () => ID) id: number
-	): Promise<MaterialChangelogToProduct[]> {
-		return MaterialChangelogService.getContactStock(id)
 	}
 
 	@FieldResolver((type) => Product)
