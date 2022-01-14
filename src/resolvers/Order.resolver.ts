@@ -5,7 +5,7 @@ import Order from '../entities/Order';
 import BillingReport from '../entities/BillingReport';
 import { getManager } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
-import moment from 'moment';
+import Position from '../entities/Position';
 
 const baseResolver = createResolver(
 	'Order',

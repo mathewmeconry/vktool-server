@@ -22,7 +22,7 @@ import { ObjectType, Field } from 'type-graphql';
 @ObjectType()
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
-export default class Compensation<T> extends Base<T> {
+export default abstract class Compensation<T> extends Base<T> {
 	@Field((type) => Contact)
 	@ManyToOne((type) => Contact, (contact) => contact.compensations)
 	public member: Contact;
@@ -101,7 +101,7 @@ export default class Compensation<T> extends Base<T> {
 	public deletedById?: number;
 
 	@Field()
-	public description: string
+	abstract description: string
 
 	constructor(
 		member: Contact,

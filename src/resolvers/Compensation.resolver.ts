@@ -10,6 +10,7 @@ import {
 	Query,
 	Int,
 	ForbiddenError,
+	ClassType,
 } from 'type-graphql';
 import { createResolver, resolveEntity, PaginationFilterOperator } from './helpers';
 import Compensation from '../entities/Compensation';
@@ -24,7 +25,7 @@ import { getManager } from 'typeorm';
 
 const baseResolver = createResolver(
 	'Compensation',
-	Compensation,
+	Compensation as unknown as ClassType<any>,
 	[AuthRoles.COMPENSATIONS_READ],
 	['billingReport', 'billingReport.order', 'creator', 'member'],
 	['member.firstname', 'member.lastname', 'description', 'creator.displayName'],
@@ -42,7 +43,7 @@ const baseResolver = createResolver(
 			displayName: 'Genehmigt',
 			operator: PaginationFilterOperator['='],
 			value: 1,
-		}
+		},
 	]
 );
 
@@ -70,7 +71,9 @@ export default class CompensationResolver extends baseResolver {
 			filter['payout'] = payoutId;
 		}
 
-		const customs: Compensation<any>[] = await getManager().getRepository(CustomCompensation).find({ where: filter });
+		const customs: Compensation<any>[] = await getManager()
+			.getRepository(CustomCompensation)
+			.find({ where: filter });
 		const orders = await getManager()
 			.getRepository(OrderCompensation)
 			.find({ where: filter, relations: ['billingReport', 'billingReport.order'] });
