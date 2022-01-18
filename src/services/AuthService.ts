@@ -211,7 +211,7 @@ export default class AuthService {
 									relations: ['contactGroups'],
 								});
 							user.bexioContact = contact || undefined;
-						} catch (e: unknown) {
+						} catch (e) {
 							return done(e as Error);
 						}
 
