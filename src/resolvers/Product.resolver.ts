@@ -11,8 +11,10 @@ import {
 } from 'type-graphql';
 import { getManager } from 'typeorm';
 import Contact from '../entities/Contact';
+import MaterialChangelog from '../entities/MaterialChangelog';
 import Product from '../entities/Product';
 import { AuthRoles } from '../interfaces/AuthRoles';
+import MaterialChangelogService, { StockEntry } from '../services/MaterialChangelogService';
 import { createResolver, resolveEntity } from './helpers';
 
 const baseResolver = createResolver(
@@ -65,5 +67,15 @@ export default class ProductResolver extends baseResolver {
 	public async contact(@Root() object: Product): Promise<Contact | null> {
 		if (!object.contactId) return null;
 		return resolveEntity('Contact', object.contactId);
+	}
+
+	@FieldResolver((type) => [StockEntry])
+	public async locations(@Root() object: Product): Promise<StockEntry[]> {
+		return MaterialChangelogService.getProductLocation(object.id);
+	}
+
+	@FieldResolver((type) => [MaterialChangelog])
+	public async changelogs(@Root() object: Product): Promise<MaterialChangelog[]> {
+		return MaterialChangelogService.getProductChangelogs(object.id);
 	}
 }

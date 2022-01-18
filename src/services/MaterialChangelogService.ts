@@ -10,11 +10,19 @@ import EMailService from './EMailService';
 import PdfService from './PdfService';
 import config from 'config';
 import { MaterialChangelog2WarehouseView } from '../entities/MaterialChangelog2WarehouseView';
+import { Field, ObjectType } from 'type-graphql';
+import { MaterialChangelog2ContactView } from '../entities/MaterialChangelog2ContactView';
 
-export interface StockEntry {
-	productName: string;
-	amount: number;
-	location: string;
+@ObjectType()
+export class StockEntry {
+	@Field()
+	public productName: string;
+
+	@Field()
+	public amount: number;
+
+	@Field()
+	public location: string;
 }
 
 export default class MaterialChangelogService {
@@ -123,5 +131,72 @@ export default class MaterialChangelogService {
 			amount: stock.inAmount - stock.outAmount,
 			location: stock.warehouse_name,
 		}));
+	}
+
+	public static async getProductLocation(productId: number): Promise<StockEntry[]> {
+		let stock = await getManager()
+			.getRepository(MaterialChangelog2WarehouseView)
+			.createQueryBuilder()
+			.select('inAmount')
+			.addSelect('outAmount')
+			.leftJoinAndSelect(
+				'product',
+				'product',
+				'product.id = MaterialChangelog2WarehouseView.productId'
+			)
+			.leftJoinAndSelect(
+				'warehouse',
+				'warehouse',
+				'warehouse.id = MaterialChangelog2WarehouseView.warehouseId'
+			)
+			.where('productId = :productId', { productId: productId })
+			.groupBy('warehouseId')
+			.orderBy('warehouse.name')
+			.getRawMany();
+
+		let aggregated = stock.map((stock) => ({
+			productName: stock.product_internName,
+			amount: stock.inAmount - stock.outAmount,
+			location: stock.warehouse_name,
+		}));
+
+		stock = await getManager()
+			.getRepository(MaterialChangelog2ContactView)
+			.createQueryBuilder()
+			.select('inAmount')
+			.addSelect('outAmount')
+			.leftJoinAndSelect(
+				'product',
+				'product',
+				'product.id = MaterialChangelog2ContactView.productId'
+			)
+			.leftJoinAndSelect(
+				'contact',
+				'contact',
+				'contact.id = MaterialChangelog2ContactView.contactId'
+			)
+			.where('productId = :productId', { productId: productId })
+			.orderBy('contact.firstname')
+			.getRawMany();
+
+		return aggregated
+			.concat(
+				stock.map((stock) => ({
+					productName: stock.product_internName,
+					amount: stock.inAmount - stock.outAmount,
+					location: `${stock.contact_firstname} ${stock.contact_lastname}`,
+				}))
+			)
+			.filter((stock) => stock.amount != 0);
+	}
+
+	public static async getProductChangelogs(productId: number): Promise<MaterialChangelog[]> {
+		return getManager()
+			.getRepository(MaterialChangelog)
+			.createQueryBuilder('changelog')
+			.leftJoin('MaterialChangelogToProduct', 'toProduct', 'toProduct.changelogId = changelog.id')
+			.where('toProduct.productId = :productId', { productId: productId })
+			.orderBy('changelog.date', 'DESC')
+			.getMany();
 	}
 }
