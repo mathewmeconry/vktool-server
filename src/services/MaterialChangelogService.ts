@@ -23,6 +23,9 @@ export class StockEntry {
 
 	@Field()
 	public location: string;
+
+	@Field()
+	public price: number;
 }
 
 export default class MaterialChangelogService {
@@ -130,6 +133,7 @@ export default class MaterialChangelogService {
 			productName: stock.product_internName,
 			amount: stock.inAmount - stock.outAmount,
 			location: stock.warehouse_name,
+			price: stock.product_purchasePrice,
 		}));
 	}
 
@@ -158,6 +162,7 @@ export default class MaterialChangelogService {
 			productName: stock.product_internName,
 			amount: stock.inAmount - stock.outAmount,
 			location: stock.warehouse_name,
+			price: stock.product_purchasePrice,
 		}));
 
 		stock = await getManager()
@@ -185,6 +190,7 @@ export default class MaterialChangelogService {
 					productName: stock.product_internName,
 					amount: stock.inAmount - stock.outAmount,
 					location: `${stock.contact_firstname} ${stock.contact_lastname}`,
+					price: stock.product_purchasePrice,
 				}))
 			)
 			.filter((stock) => stock.amount != 0);

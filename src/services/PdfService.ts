@@ -243,6 +243,42 @@ export default class PdfService {
 		);
 	}
 
+	public static async generateWarehousesFinanceReport(
+		stock: Array<StockEntry>
+	): Promise<Buffer> {
+		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
+		return PdfService.generatePdf(
+			'warehousesFinanceReport.pug',
+			{
+				file: path.resolve(__dirname, '../../public/pdfs/scss/warehousesFinanceReport.scss'),
+			},
+			{
+				location: 'Wallisellen',
+				date: moment(new Date()).format('DD.MM.YYYY'),
+				stock,
+			},
+			{
+				printBackground: true,
+				displayHeaderFooter: true,
+				headerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'),
+					{ logo: `data:image/png;base64,${logo.toString('base64')}` }
+				),
+				footerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug'),
+					{ width: '125mm' }
+				),
+				format: 'A4',
+				margin: {
+					top: '25mm',
+					left: '0',
+					bottom: '25mm',
+					right: '0',
+				},
+			}
+		);
+	}
+
 	private static async generatePdf(
 		htmlTemplate: string,
 		styleOptions?: SassOptions,

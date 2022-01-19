@@ -1,0 +1,35 @@
+extends layout.pug
+
+block header
+    style(type="text/css") !{compiledStyle}
+
+block content
+    div(style={float: 'right'})
+        p #{location}, #{date}
+    h2 Lagerreport
+    br
+    table
+        thead
+            tr
+                th Produkt
+                th Einzelpreis
+                th Anzahl
+                th Lagerort
+                th Total
+        tbody
+            - var total = 0
+            each entry in stock
+                - var entryTotal = Math.max(entry.price * entry.amount, 0)
+                - total += entryTotal
+                tr
+                    td #{entry.productName}
+                    td CHF #{(entry.price || 0).toFixed(2)}
+                    td #{entry.amount}
+                    td #{entry.location}
+                    td CHF #{entryTotal.toFixed(2)}
+            tr(class="total")
+                td Total 
+                td
+                td 
+                td 
+                td CHF #{total.toFixed(2)}
