@@ -469,7 +469,9 @@ export namespace BexioService {
 	export async function syncProducts(): Promise<void> {
 		const productRepo = getManager().getRepository(Product);
 		const contactRepo = getManager().getRepository(Contact);
-		const allItems = await bexioAPI.items.list();
+		const allItems = await bexioAPI.items.list({
+			limit: 2000
+		});
 		const savePromises = [];
 		console.log(`syncing ${allItems.length} products`);
 		for (const item of allItems) {
