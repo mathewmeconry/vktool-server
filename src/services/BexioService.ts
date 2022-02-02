@@ -196,17 +196,20 @@ export namespace BexioService {
 	 */
 	export async function syncContacts(): Promise<void> {
 		return new Promise<void>(async (resolve, reject) => {
-			let contacts = await bexioAPI.contacts.search([
+			let contacts = await bexioAPI.contacts.search(
+				[
+					{
+						field: ContactsStatic.ContactSearchParameters.updated_at,
+						value: moment(
+							Datacontainer.get<Date>('bexio.contacts.lastSync') || '1970-01-01'
+						).format('Y-MM-DD hh:mm:ss'),
+						criteria: '>=',
+					},
+				],
 				{
-					field: ContactsStatic.ContactSearchParameters.updated_at,
-					value: moment(Datacontainer.get<Date>('bexio.contacts.lastSync') || '1970-01-01').format(
-						'Y-MM-DD hh:mm:ss'
-					),
-					criteria: '>=',
-				},
-			], {
-				limit: 2000,
-			});
+					limit: 2000,
+				}
+			);
 			let contactRepo = getManager().getRepository(Contact);
 			let contactTypeRepo = getManager().getRepository(ContactType);
 			let contactGroupRepo = getManager().getRepository(ContactGroup);
@@ -214,38 +217,56 @@ export namespace BexioService {
 
 			console.log('syncing ' + contacts.length);
 			for (let contact of contacts) {
-				let contactType = await contactTypeRepo.findOne({ bexioId: contact.contact_type_id });
-				let contactGroups = await contactGroupRepo.find({
-					bexioId: In<number>((contact.contact_group_ids || '').split(',').map(id => parseInt(id)).filter(id => !isNaN(id))),
-				});
-				let contactDB = await contactRepo.findOne({ bexioId: contact.id });
-				const extendedContact = await bexioAPI.contacts.show(contact.id)
+				try {
+					let contactType = await contactTypeRepo.findOne({ bexioId: contact.contact_type_id });
+					let contactGroups: ContactGroup[] = [];
+					if (contact.contact_group_ids) {
+						contactGroups = await contactGroupRepo.find({
+							bexioId: In<number>(
+								contact.contact_group_ids
+									.split(',')
+									.map((id) => parseInt(id))
+									.filter((id) => !isNaN(id))
+							),
+						});
+					}
 
-				if (!contactDB) contactDB = new Contact();
-				contactDB = Object.assign(contactDB, {
-					bexioId: contact.id,
-					nr: contact.nr,
-					contactType: contactType,
-					firstname: contact.name_2 || '',
-					lastname: contact.name_1 || '',
-					birthday: new Date(<string>contact.birthday),
-					address: contact.address || '',
-					postcode: contact.postcode || '',
-					city: contact.city || '',
-					mail: contact.mail || '',
-					mailSecond: contact.mail_second,
-					phoneFixed: contact.phone_fixed,
-					phoneFixedSecond: contact.phone_fixed_second,
-					phoneMobile: contact.phone_mobile,
-					remarks: contact.remarks,
-					contactGroups: contactGroups,
-					ownerId: contact.owner_id,
-					profilePicture: extendedContact.profile_image
-				});
+					let contactDB = await contactRepo.findOne({ bexioId: contact.id });
+					const extendedContact = await bexioAPI.contacts.show(contact.id);
 
-				savePromises.push(contactDB.save());
+					if (!contactDB) contactDB = new Contact();
+					contactDB = Object.assign(contactDB, {
+						bexioId: contact.id,
+						nr: contact.nr,
+						contactType: contactType,
+						firstname: contact.name_2 || '',
+						lastname: contact.name_1 || '',
+						birthday: new Date(<string>contact.birthday),
+						address: contact.address || '',
+						postcode: contact.postcode || '',
+						city: contact.city || '',
+						mail: contact.mail || '',
+						mailSecond: contact.mail_second,
+						phoneFixed: contact.phone_fixed,
+						phoneFixedSecond: contact.phone_fixed_second,
+						phoneMobile: contact.phone_mobile,
+						remarks: contact.remarks,
+						contactGroups: contactGroups,
+						ownerId: contact.owner_id,
+						profilePicture: extendedContact.profile_image,
+					});
 
-				console.log('synced ' + savePromises.length);
+					savePromises.push(
+						contactDB.save().catch((err) => {
+							console.error(err);
+							return Promise.resolve();
+						})
+					);
+
+					console.log('synced contact ' + savePromises.length);
+				} catch (err) {
+					console.error(err);
+				}
 			}
 
 			Promise.all(savePromises)
@@ -397,7 +418,7 @@ export namespace BexioService {
 										orderDB.positions = positions;
 										await orderDB.save();
 
-										console.log('Synced ' + savePromises.length);
+										console.log('Synced order ' + savePromises.length);
 										Datacontainer.set('bexio.orders.lastSync', new Date());
 										resolve();
 									}
@@ -470,7 +491,7 @@ export namespace BexioService {
 		const productRepo = getManager().getRepository(Product);
 		const contactRepo = getManager().getRepository(Contact);
 		const allItems = await bexioAPI.items.list({
-			limit: 2000
+			limit: 2000,
 		});
 		const savePromises = [];
 		console.log(`syncing ${allItems.length} products`);
