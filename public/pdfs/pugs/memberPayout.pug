@@ -14,9 +14,10 @@ block content
     div(class="header")
         div(class="bankingInformation")
             p(class="bold") Bankinformationen
-            p #{member.extension.bankName}
-            p #{member.extension.iban}
-            p #{member.extension.accountHolder}
+            if member.extension
+                p #{member.extension.bankName}
+                p #{member.extension.iban}
+                p #{member.extension.accountHolder}
         div(class="address")
             p(class="bold") Kontaktangaben
             p #{member.firstname} #{member.lastname}
