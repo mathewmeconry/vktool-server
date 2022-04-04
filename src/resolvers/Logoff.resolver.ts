@@ -51,7 +51,7 @@ const baseResolver = createResolver(
 			displayName: 'Abgelehnt',
 			operator: PaginationFilterOperator['='],
 			value: LogoffState.DECLINED,
-		}
+		},
 	]
 );
 
@@ -140,13 +140,17 @@ export default class LogoffResolver extends baseResolver {
 		return logoff.save();
 	}
 
-	@Authorized([AuthRoles.LOGOFFS_CREATE])
+	@Authorized([AuthRoles.LOGOFFS_CREATE, AuthRoles.AUTHENTICATED])
 	@Mutation((type) => [Logoff])
 	public async addLogoffs(
 		@Arg('data', (type) => [AddLogoff]) data: AddLogoff[],
 		@Arg('notify', { defaultValue: true }) notify: boolean = true,
 		@Ctx() ctx: ApolloContext
 	): Promise<Logoff[]> {
+		if (data.map((d) => d.contactId).some((id) => ctx.user.bexioContactId !== id)) {
+			throw new ForbiddenError();
+		}
+
 		const savePromises: Promise<Logoff>[] = [];
 		for (const add of data) {
 			const contact = await resolveEntity<Contact>('Contact', add.contactId);
@@ -171,13 +175,17 @@ export default class LogoffResolver extends baseResolver {
 		return Promise.all(savePromises);
 	}
 
-	@Authorized([AuthRoles.LOGOFFS_CREATE])
+	@Authorized([AuthRoles.LOGOFFS_CREATE, AuthRoles.AUTHENTICATED])
 	@Mutation((type) => Logoff)
 	public async addLogoff(
 		@Arg('data') data: AddLogoff,
 		@Arg('notify', { defaultValue: true }) notify: boolean = true,
 		@Ctx() ctx: ApolloContext
 	): Promise<Logoff> {
+		if (data.contactId !== ctx.user.bexioContact?.id) {
+			throw new ForbiddenError();
+		}
+
 		const contact = await resolveEntity<Contact>('Contact', data.contactId);
 		const logoff = new Logoff(
 			contact,
