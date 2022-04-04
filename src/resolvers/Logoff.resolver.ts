@@ -147,8 +147,13 @@ export default class LogoffResolver extends baseResolver {
 		@Arg('notify', { defaultValue: true }) notify: boolean = true,
 		@Ctx() ctx: ApolloContext
 	): Promise<Logoff[]> {
-		if (data.map((d) => d.contactId).some((id) => ctx.user.bexioContactId !== id)) {
-			throw new ForbiddenError();
+		if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.LOGOFFS_CREATE)) {
+			if (data.map((d) => d.contactId).some((id) => ctx.user.bexioContactId !== id)) {
+				throw new ForbiddenError();
+			}
+			if (data.map((d) => d.state).some((s) => s !== LogoffState.PENDING)) {
+				throw new ForbiddenError();
+			}
 		}
 
 		const savePromises: Promise<Logoff>[] = [];
@@ -182,8 +187,14 @@ export default class LogoffResolver extends baseResolver {
 		@Arg('notify', { defaultValue: true }) notify: boolean = true,
 		@Ctx() ctx: ApolloContext
 	): Promise<Logoff> {
-		if (data.contactId !== ctx.user.bexioContact?.id) {
-			throw new ForbiddenError();
+		if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.LOGOFFS_CREATE)) {
+			if (data.contactId !== ctx.user.bexioContact?.id) {
+				throw new ForbiddenError();
+			}
+
+			if (data.state !== LogoffState.PENDING) {
+				throw new ForbiddenError();
+			}
 		}
 
 		const contact = await resolveEntity<Contact>('Contact', data.contactId);
