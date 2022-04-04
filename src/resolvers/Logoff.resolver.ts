@@ -151,7 +151,7 @@ export default class LogoffResolver extends baseResolver {
 			if (data.map((d) => d.contactId).some((id) => ctx.user.bexioContactId !== id)) {
 				throw new ForbiddenError();
 			}
-			if (data.map((d) => d.state).some((s) => s !== LogoffState.PENDING)) {
+			if (data.map((d) => d.state).some((s) => s.toLowerCase() !== LogoffState.PENDING)) {
 				throw new ForbiddenError();
 			}
 		}
@@ -192,7 +192,7 @@ export default class LogoffResolver extends baseResolver {
 				throw new ForbiddenError();
 			}
 
-			if (data.state !== LogoffState.PENDING) {
+			if (data.state.toLowerCase() !== LogoffState.PENDING) {
 				throw new ForbiddenError();
 			}
 		}
