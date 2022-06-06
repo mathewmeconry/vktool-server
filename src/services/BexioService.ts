@@ -190,12 +190,12 @@ export namespace BexioService {
 	}
 
 	export async function regsiterCronJobs() {
-		await CronJobs.register(BexioService.syncContactGroups, 30 * 60);
-		await CronJobs.register(BexioService.syncContactTypes, 30 * 60);
-		await CronJobs.register(BexioService.syncContacts, 30 * 60);
-		await CronJobs.register(BexioService.syncOrders, 30 * 60);
-		await CronJobs.register(BexioService.syncBillStatuses, 30 * 60);
-		await CronJobs.register(BexioService.syncProducts, 30 * 60);
+		await CronJobs.register(BexioService.syncContactGroups, 30 * 60 * 1000);
+		await CronJobs.register(BexioService.syncContactTypes, 30 * 60 * 1000);
+		await CronJobs.register(BexioService.syncContacts, 30 * 60 * 1000);
+		await CronJobs.register(BexioService.syncOrders, 30 * 60 * 1000);
+		await CronJobs.register(BexioService.syncBillStatuses, 30 * 60 * 1000);
+		await CronJobs.register(BexioService.syncProducts, 30 * 60 * 1000);
 	}
 
 	/**
