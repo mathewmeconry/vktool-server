@@ -75,6 +75,7 @@ export default class CliController {
 		app.use('/api', apiRouter);
 
 		BexioService.addExpressHandlers(app);
+		BexioService.regsiterCronJobs();
 
 		// setup graphql upload functionality
 		// app.use(graphqlUploadExpress());

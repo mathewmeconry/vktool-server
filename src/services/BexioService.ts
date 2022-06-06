@@ -13,6 +13,7 @@ import moment = require('moment');
 import OrderCompensation from '../entities/OrderCompensation';
 import CustomCompensation from '../entities/CustomCompensation';
 import Product from '../entities/Product';
+import CronJobs from './CronJobs';
 
 export namespace BexioService {
 	let bexioAPI = new Bexio(config.get('bexio.token'));
@@ -186,6 +187,15 @@ export namespace BexioService {
 						res.send('Something went wrong!');
 					});
 		});
+	}
+
+	export async function regsiterCronJobs() {
+		await CronJobs.register(BexioService.syncContactGroups, 30 * 60);
+		await CronJobs.register(BexioService.syncContactTypes, 30 * 60);
+		await CronJobs.register(BexioService.syncContacts, 30 * 60);
+		await CronJobs.register(BexioService.syncOrders, 30 * 60);
+		await CronJobs.register(BexioService.syncBillStatuses, 30 * 60);
+		await CronJobs.register(BexioService.syncProducts, 30 * 60);
 	}
 
 	/**
