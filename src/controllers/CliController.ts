@@ -50,7 +50,9 @@ export default class CliController {
 				genid: (req) => {
 					return uuidv4(); // use UUIDs for session IDs
 				},
-				store: new (FileStore(session))(),
+				store: new (FileStore(session))({
+					path: path.join(config.get('fileStorage'), 'sessions'),
+				}),
 				secret: 'My super mega secret secret',
 				resave: false,
 				saveUninitialized: true,
@@ -110,7 +112,16 @@ export default class CliController {
 		});
 
 		app.use('/webapp/', express.static(path.join(__dirname, '/../../public/')));
-		app.use('/static/', express.static(config.get('fileStorage')));
+		app.use(
+			'/static/',
+			(req, res, next) => {
+				if (req.path.includes('session')) {
+					return res.status(404).send('Not found');
+				}
+				next();
+			},
+			express.static(config.get('fileStorage'))
+		);
 		app.get('/webapp/*', (req, res) => {
 			res.sendFile(path.join(__dirname + '/../../public/index.html'));
 		});
