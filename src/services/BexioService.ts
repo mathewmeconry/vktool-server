@@ -112,8 +112,7 @@ export namespace BexioService {
 	export function addExpressHandlers(app: Express.Application): void {
 		app.get('/bexio/sync/all', async (req, res) => {
 			if (req.header('X-Azure')) res.send('started');
-			if (req.header('X-Azure'))
-				await Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
+			await Promise.all([BexioService.syncContactGroups(), BexioService.syncContactTypes()]);
 			await Promise.all([
 				BexioService.syncContacts(),
 				BexioService.syncOrders(),
@@ -123,69 +122,63 @@ export namespace BexioService {
 		});
 
 		app.get('/bexio/sync/contactTypes', async (req, res) => {
-			if (req.header('X-Azure'))
-				BexioService.syncContactTypes()
-					.then(() => {
-						res.send('Synced');
-					})
-					.catch(() => {
-						res.send('Something went wrong!');
-					});
+			BexioService.syncContactTypes()
+				.then(() => {
+					res.send('Synced');
+				})
+				.catch(() => {
+					res.send('Something went wrong!');
+				});
 		});
 
 		app.get('/bexio/sync/contactGroups', async (req, res) => {
-			if (req.header('X-Azure'))
-				BexioService.syncContactGroups()
-					.then(() => {
-						res.send('Synced');
-					})
-					.catch(() => {
-						res.send('Something went wrong!');
-					});
+			BexioService.syncContactGroups()
+				.then(() => {
+					res.send('Synced');
+				})
+				.catch(() => {
+					res.send('Something went wrong!');
+				});
 		});
 
 		app.get('/bexio/sync/contacts', async (req, res) => {
-			if (req.header('X-Azure'))
-				BexioService.syncContacts()
-					.then(() => {
-						res.send('Synced');
-					})
-					.catch(() => {
-						res.send('Something went wrong!');
-					});
+			BexioService.syncContacts()
+				.then(() => {
+					res.send('Synced');
+				})
+				.catch(() => {
+					res.send('Something went wrong!');
+				});
 		});
 
 		app.get('/bexio/sync/orders', async (req, res) => {
-			if (req.header('X-Azure'))
-				BexioService.syncOrders()
-					.then(() => {
-						res.send('Synced');
-					})
-					.catch(() => {
-						res.send('Something went wrong!');
-					});
+			BexioService.syncOrders()
+				.then(() => {
+					res.send('Synced');
+				})
+				.catch(() => {
+					res.send('Something went wrong!');
+				});
 		});
 
 		app.get('/bexio/sync/billStatuses', async (req, res) => {
-			if (req.header('X-Azure'))
-				BexioService.syncBillStatuses()
-					.then(() => {
-						res.send('Synced');
-					})
-					.catch(() => {
-						res.send('Something went wrong!');
-					});
+			BexioService.syncBillStatuses()
+				.then(() => {
+					res.send('Synced');
+				})
+				.catch(() => {
+					res.send('Something went wrong!');
+				});
 		});
 
 		app.get('/bexio/sync/products', async (req, res) => {
-			if (req.header('X-Azure'))
-				BexioService.syncProducts()
-					.then(() => {
-						res.send('Synced');
-					})
-					.catch(() => {
-						res.send('Something went wrong!');
-					});
+			BexioService.syncProducts()
+				.then(() => {
+					res.send('Synced');
+				})
+				.catch(() => {
+					res.send('Something went wrong!');
+				});
 		});
 	}
 
