@@ -1,4 +1,12 @@
-import { Entity, JoinColumn, Column, ManyToOne, RelationId, DeleteDateColumn, Index } from 'typeorm';
+import {
+	Entity,
+	JoinColumn,
+	Column,
+	ManyToOne,
+	RelationId,
+	DeleteDateColumn,
+	Index,
+} from 'typeorm';
 import Contact from './Contact';
 import Base from './Base';
 import User from './User';
@@ -46,6 +54,10 @@ export default class Logoff extends Base<Logoff> {
 	@RelationId('createdBy')
 	public createdById: number;
 
+	@Field({ nullable: true })
+	@Column('datetime', { precision: 6, nullable: true })
+	public createdAt?: Date;
+
 	@Field((type) => User, { nullable: true })
 	@ManyToOne((type) => User, { nullable: true })
 	@JoinColumn()
@@ -82,5 +94,6 @@ export default class Logoff extends Base<Logoff> {
 		this.state = state;
 		this.remarks = remarks || undefined;
 		this.createdBy = createdBy;
+		this.createdAt = new Date();
 	}
 }
