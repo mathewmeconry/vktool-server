@@ -7,10 +7,6 @@ import CliController from './controllers/CliController'
 async function init() {
 	let connectionOptions = await getConnectionOptions()
 
-	if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
-		// @ts-ignore
-		connectionOptions['ssl'] = true
-	}
 	await createConnection(connectionOptions)
 
 	yargs.command({
