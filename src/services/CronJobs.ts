@@ -1,13 +1,19 @@
 export default class CronJobs {
-	public static async register(func: Function, interval: number): Promise<void> {
+	private static running: { [index: string]: boolean };
+
+	public static async register(name: string, func: Function, interval: number): Promise<void> {
 		await func();
-		setInterval(CronJobs.staticFuncHandler(func, interval), interval);
+		setInterval(CronJobs.staticFuncHandler(name, func, interval), interval);
 	}
 
-	private static staticFuncHandler(func: Function, interval: number): Function {
+	private static staticFuncHandler(name: string, func: Function, interval: number): Function {
 		return async () => {
-			await func();
-			setInterval(CronJobs.staticFuncHandler(func, interval), interval);
+			if (!CronJobs.running[name]) {
+				CronJobs.running[name] = true;
+				await func();
+				CronJobs.running[name] = false;
+			}
+			setInterval(CronJobs.staticFuncHandler(name, func, interval), interval);
 		};
 	}
 }
