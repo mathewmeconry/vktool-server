@@ -54,8 +54,8 @@ export default class CliController {
 					path: path.join(config.get('fileStorage'), 'sessions'),
 				}),
 				secret: 'My super mega secret secret',
-				resave: false,
-				saveUninitialized: true,
+				resave: true,
+				saveUninitialized: false,
 				cookie: {
 					maxAge: Date.now() + 30 * 86400 * 1000,
 				},
