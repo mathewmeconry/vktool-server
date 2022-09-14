@@ -101,9 +101,9 @@ export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
 
 export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 	// VK
-	10: [],
+	10: [AuthRoles.MEMBERS_READ],
 	// KA
-	11: [],
+	11: [AuthRoles.MEMBERS_READ],
 	// KS
 	12: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
 	// GF
