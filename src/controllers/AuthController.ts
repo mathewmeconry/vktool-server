@@ -23,13 +23,8 @@ export default class AuthController {
 		res: Express.Response,
 		next: Function
 	): Promise<void> {
-		passport.authenticate('azure_ad_oauth2', { failureRedirect: '/login' }, function (...args) {
-			if (res.req?.user) {
-				res.redirect(config.get('clientHost'));
-			} else {
-				res.req?.logout();
-				res.redirect(config.get('clientHost') + '/login');
-			}
+		passport.authenticate('azure_ad_oauth2', { failureRedirect: '/login' })(req, res, () => {
+			res.redirect(config.get('clientHost'));
 		});
 	}
 

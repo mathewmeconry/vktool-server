@@ -55,7 +55,7 @@ export default class CliController {
 				}),
 				secret: 'My super mega secret secret',
 				resave: true,
-				saveUninitialized: false,
+				saveUninitialized: true,
 				cookie: {
 					maxAge: Date.now() + 30 * 86400 * 1000,
 				},
