@@ -228,7 +228,7 @@ export default class MaterialChangelogResolver extends baseResolver {
 
 	@Authorized([AuthRoles.MATERIAL_CHANGELOG_READ])
 	@Mutation((type) => Boolean)
-	public async sendReceiptMail(@Arg('id', (type) => Int) id: number): Promise<boolean> {
+	public async sendMaterialChangelogReceiptMail(@Arg('id', (type) => Int) id: number): Promise<boolean> {
 		const changelog = await resolveEntity<MaterialChangelog>('MaterialChangelog', id, [
 			'changes',
 			'changes.product',

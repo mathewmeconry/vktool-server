@@ -32,6 +32,7 @@ import { getManager } from 'typeorm';
 import { ApolloContext } from '../controllers/CliController';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import AuthService from '../services/AuthService';
+import BillingReportService from '../services/BillingReportService';
 
 const relations = ['order', 'creator', 'compensations'];
 const searchFields = ['state', 'creator.displayName', 'order.documentNr', 'order.title'];
@@ -314,6 +315,18 @@ export default class BillingReportResolver extends baseResolver {
 		br.updatedBy = ctx.user;
 
 		return br.save();
+	}
+
+	@Authorized([AuthRoles.BILLINGREPORTS_CREATE, AuthRoles.BILLINGREPORTS_READ])
+	@Mutation((type) => Boolean)
+	public async sendBillingReportReceiptMail(@Arg('id', (type) => Int) id: number): Promise<boolean> {
+		const billingReport = await resolveEntity<BillingReport>('BillingReport', id, [
+			'order',
+			'order.contact',
+			'compensations',
+			'els'
+		]);
+		return BillingReportService.sendReceiptMail(billingReport);
 	}
 
 	@FieldResolver()

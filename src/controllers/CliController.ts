@@ -22,6 +22,7 @@ import User from '../entities/User';
 import LogoffRoutes from '../routes/LogoffRoutes';
 import MaterialChangelogRoutes from '../routes/MaterialChangelogRoutes';
 import WarehouseRoutes from '../routes/WarehouseRoutes';
+import BillingReportRoutes from '../routes/BillingReportRoutes';
 
 export interface ApolloContext {
 	user: User;
@@ -73,6 +74,7 @@ export default class CliController {
 		LogoffRoutes(apiRouter);
 		MaterialChangelogRoutes(apiRouter);
 		WarehouseRoutes(apiRouter);
+		BillingReportRoutes(apiRouter);
 
 		app.use('/api', apiRouter);
 

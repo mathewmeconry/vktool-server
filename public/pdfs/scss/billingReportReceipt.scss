@@ -1,0 +1,21 @@
+
+table {
+    width: 100%;
+    tr {
+        td {
+            padding: 5px;
+        }
+    }
+}
+
+table#comps {
+    tr {
+        th,td {
+            text-align: left;
+        }
+    }
+}
+
+img {
+    image-resolution: 300dpi;
+}

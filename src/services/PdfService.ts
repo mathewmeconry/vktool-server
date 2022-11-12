@@ -12,6 +12,7 @@ import { PDFOptions } from 'puppeteer';
 import MaterialChangelog from '../entities/MaterialChangelog';
 import Warehouse from '../entities/Warehouse';
 import { StockEntry } from './MaterialChangelogService';
+import BillingReport from '../entities/BillingReport';
 
 export default class PdfService {
 	public static async generateMemberPayout(
@@ -207,9 +208,7 @@ export default class PdfService {
 		);
 	}
 
-	public static async generateWarehousesReport(
-		stock: Array<StockEntry>
-	): Promise<Buffer> {
+	public static async generateWarehousesReport(stock: Array<StockEntry>): Promise<Buffer> {
 		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
 		return PdfService.generatePdf(
 			'warehousesReport.pug',
@@ -243,9 +242,7 @@ export default class PdfService {
 		);
 	}
 
-	public static async generateWarehousesFinanceReport(
-		stock: Array<StockEntry>
-	): Promise<Buffer> {
+	public static async generateWarehousesFinanceReport(stock: Array<StockEntry>): Promise<Buffer> {
 		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
 		return PdfService.generatePdf(
 			'warehousesFinanceReport.pug',
@@ -256,6 +253,57 @@ export default class PdfService {
 				location: 'Wallisellen',
 				date: moment(new Date()).format('DD.MM.YYYY'),
 				stock,
+			},
+			{
+				printBackground: true,
+				displayHeaderFooter: true,
+				headerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/header.pug'),
+					{ logo: `data:image/png;base64,${logo.toString('base64')}` }
+				),
+				footerTemplate: pug.renderFile(
+					path.resolve(__dirname, '../../public/pdfs/pugs/footer.pug'),
+					{ width: '125mm' }
+				),
+				format: 'A4',
+				margin: {
+					top: '25mm',
+					left: '0',
+					bottom: '25mm',
+					right: '0',
+				},
+			}
+		);
+	}
+
+	public static async generateBillingReportReceipt(billingReport: BillingReport): Promise<Buffer> {
+		const logo = await fs.readFile(path.resolve(__dirname, '../../public/logo.png'));
+
+		const combinedComps: {
+			[index: string]: { from: string; until: string; charge: string; amount: number };
+		} = {};
+		for (const comp of billingReport.compensations) {
+			const compReduceId = `${comp.from.getDate()}_${comp.until.getDate()}_${comp.charge}`;
+			if (!combinedComps.hasOwnProperty(compReduceId)) {
+				combinedComps[compReduceId] = {
+					from: moment(comp.from).format('hh:mm'),
+					until: moment(comp.until).format('hh:mm'),
+					charge: comp.charge ? 'Ja' : 'Nein',
+					amount: 0,
+				};
+			}
+			++combinedComps[compReduceId].amount;
+		}
+
+		return PdfService.generatePdf(
+			'billingReportReceipt.pug',
+			{
+				file: path.resolve(__dirname, '../../public/pdfs/scss/billingReportReceipt.scss'),
+			},
+			{
+				date: moment(billingReport.date).format('DD.MM.YYYY'),
+				billingReport,
+				compensations: combinedComps,
 			},
 			{
 				printBackground: true,

@@ -1,0 +1,56 @@
+extends layout.pug 
+
+block header 
+    style(type="text/css") !{compiledStyle}
+    link(rel='stylesheet' href='https://pro.fontawesome.com/releases/v5.10.0/css/all.css') 
+
+block content
+    h2 Einsatzrapport vom #{date}
+    br
+    br
+    h3 Einsatzinformationen
+    table 
+        tr 
+            td Auftrag:
+            td #{billingReport.order.title}
+        tr 
+            td Datum:
+            td #{date}
+        tr 
+            td Einsatzleiter:
+                - var result = ""
+                each el, index in billingReport.els
+                    if index != 0
+                        - result = (result + ", ")
+                    if el.firstname
+                        - result = (result + el.firstname)
+                    if el.lastname
+                        - result = (result + " " + el.lastname)
+            td #{result}
+        tr
+            td Verpflegung durch den Veranstalter: 
+            td #{(billingReport.food ? 'Ja' : 'Nein')}
+    br
+    br
+    h3 Verkehrskadetten
+    table(id="comps")
+        tr
+            th Anzahl
+            th Von 
+            th Bis
+            th Verrechnet
+        each comp in compensations
+            tr
+                td #{comp.amount}
+                td #{comp.from}
+                td #{comp.until}
+                td #{comp.charge}
+
+
+    br
+    br
+    br
+    br
+    div
+        p(style="text-align: right;") Unterschrift des Veranstalter
+        img(src=billingReport.signature, width="350px", style="margin-left: auto; display: block;")
