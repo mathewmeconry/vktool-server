@@ -20,20 +20,14 @@ export default class OrderResolver extends baseResolver {
 	@Authorized([AuthRoles.BILLINGREPORTS_CREATE])
 	@Query((type) => [Order])
 	public async getOpenOrders(): Promise<Order[]> {
-		let now = new Date();
-		let before30Days = new Date();
-		before30Days.setDate(before30Days.getDate() - 30);
-		let in15Days = new Date();
-		in15Days.setDate(in15Days.getDate() + 15);
+		let pastDate = new Date();
+		pastDate.setDate(pastDate.getDate() - 180);
 
 		const query = getManager()
 			.getRepository(Order)
 			.createQueryBuilder('order')
 			.leftJoinAndSelect('order.positions', 'positions')
-			.where('order.firstExecDate <= :greather', { greather: in15Days.toISOString() })
-			.andWhere('order.firstExecDate >= :lower', {
-				lower: before30Days.toISOString(),
-			})
+			.where('order.validFrom >= :past', { past: pastDate.toISOString() })
 			.orderBy('order.title', 'ASC');
 		let orders = await query.getMany();
 
