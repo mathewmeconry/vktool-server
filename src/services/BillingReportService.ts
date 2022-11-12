@@ -28,7 +28,6 @@ export default class BillingReportService {
 		if (mails.length === 0) {
 			return false;
 		}
-		console.log(mails);
 
 		await BillingReportService.emailService.sendMail(
 			mails,
