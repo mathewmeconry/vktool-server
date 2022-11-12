@@ -45,12 +45,19 @@ const baseResolver = createResolver(
 		{
 			id: 0,
 			field: 'BillingReport.state',
+			displayName: 'Nicht unterschrieben',
+			operator: PaginationFilterOperator['='],
+			value: BillingReportState.UNSIGNED,
+		},
+		{
+			id: 1,
+			field: 'BillingReport.state',
 			displayName: 'Offen',
 			operator: PaginationFilterOperator['='],
 			value: BillingReportState.PENDING,
 		},
 		{
-			id: 1,
+			id: 2,
 			field: 'BillingReport.state',
 			displayName: 'Genehmigt',
 			operator: PaginationFilterOperator['='],
@@ -187,7 +194,10 @@ export default class BillingReportResolver extends baseResolver {
 		const br = await resolveEntity<BillingReport>('BillingReport', data.id);
 
 		if (!AuthService.isAuthorized(ctx.user.roles, AuthRoles.BILLINGREPORTS_EDIT)) {
-			if (br.creatorId !== ctx.user.id || br.state !== BillingReportState.PENDING) {
+			if (
+				br.creatorId !== ctx.user.id ||
+				br.state !== BillingReportState.UNSIGNED
+			) {
 				throw new ForbiddenError();
 			}
 		}
@@ -236,7 +246,7 @@ export default class BillingReportResolver extends baseResolver {
 			drivers,
 			data.food,
 			data.remarks || '',
-			BillingReportState.PENDING
+			BillingReportState.UNSIGNED
 		);
 
 		return br.save();
@@ -271,6 +281,36 @@ export default class BillingReportResolver extends baseResolver {
 			br.approvedBy = undefined;
 		}
 		br.state = state;
+		br.updatedBy = ctx.user;
+
+		return br.save();
+	}
+
+	@Authorized([AuthRoles.BILLINGREPORTS_CREATE, AuthRoles.BILLINGREPORTS_APPROVE])
+	@Mutation((type) => BillingReport)
+	public async signBillingReport(
+		@Arg('id', (type) => Int) id: number,
+		@Arg('signature', (type) => String) signature: string,
+		@Ctx() ctx: ApolloContext
+	): Promise<BillingReport> {
+		if (!signature) {
+			throw new Error('No Signature provided');
+		}
+
+		if (!signature.startsWith('data:image/png;base64')) {
+			throw new Error('Invalid image provided');
+		}
+
+		const br = await getManager()
+			.getRepository(BillingReport)
+			.createQueryBuilder('billingReport')
+			.where('billingReport.id = :id', { id })
+			.getOne();
+
+		if (!br) throw new Error('BillingReport not found');
+
+		br.state = BillingReportState.PENDING;
+		br.signature = signature;
 		br.updatedBy = ctx.user;
 
 		return br.save();

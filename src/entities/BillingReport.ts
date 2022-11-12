@@ -14,10 +14,10 @@ import Order from './Order';
 import Base from './Base';
 import OrderCompensation from './OrderCompensation';
 import Contact from './Contact';
-import { IsOptional, IsNumber, IsDate, IsArray, IsString, IsBoolean } from 'class-validator';
 import { ObjectType, Field } from 'type-graphql';
 
 export enum BillingReportState {
+	UNSIGNED = 'unsigned',
 	PENDING = 'pending',
 	APPROVED = 'approved',
 	DECLINED = 'declined',
@@ -99,6 +99,10 @@ export default class BillingReport extends Base<BillingReport> {
 	@RelationId('updatedBy')
 	public updatedById: number;
 
+	@Field({ nullable: true })
+	@Column('longtext', { nullable: true })
+	public signature?: string;
+
 	constructor(
 		creator: User,
 		order: Order,
@@ -109,7 +113,8 @@ export default class BillingReport extends Base<BillingReport> {
 		food: boolean,
 		remarks: string,
 		state: BillingReportState,
-		approvedBy?: User
+		approvedBy?: User,
+		signature?: string
 	) {
 		super();
 		this.creator = creator;
@@ -122,5 +127,6 @@ export default class BillingReport extends Base<BillingReport> {
 		this.food = food;
 		this.remarks = remarks;
 		this.state = state;
+		this.signature = signature;
 	}
 }
