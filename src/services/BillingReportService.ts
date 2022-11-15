@@ -31,7 +31,7 @@ export default class BillingReportService {
 
 		await BillingReportService.emailService.sendMail(
 			mails,
-			'no-reply@vkazu.ch',
+			'einsatz@vkazu.ch',
 			`Einsatzrapport vom ${moment(billingReport.date).format('DD.MM.YYYY')}`,
 			email,
 			[
@@ -64,6 +64,7 @@ export default class BillingReportService {
 								),
 							}).css,
 							date: moment(billingReport.date).format('DD.MM.YYYY'),
+							sender: 'einsatz@vkazu.ch'
 						}
 					)
 				);
@@ -88,7 +89,7 @@ export default class BillingReportService {
 		res.contentType('application/pdf');
 		res.setHeader(
 			'Content-Disposition',
-			`inline; filename=Materialquittung ${moment(billingReport.date).format('DD-MM-YYYY')}.pdf`
+			`inline; filename=Einsatzrapport vom ${moment(billingReport.date).format('DD-MM-YYYY')}.pdf`
 		);
 		res.send(await PdfService.generateBillingReportReceipt(billingReport));
 	}
