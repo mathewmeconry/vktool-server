@@ -11,6 +11,7 @@ import {
 	Authorized,
 	Int,
 	Float,
+	ID,
 } from 'type-graphql';
 import { createResolver, resolveEntity, resolveEntityArray } from './helpers';
 import Payout from '../entities/Payout';
@@ -24,7 +25,7 @@ import EMailService from '../services/EMailService';
 import { ApolloContext } from '../controllers/CliController';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import ContactExtension from '../entities/ContactExtension';
-import Compensation from '../entities/Compensation'
+import Compensation from '../entities/Compensation';
 
 const baseResolver = createResolver('Payout', Payout, [AuthRoles.PAYOUTS_READ]);
 
@@ -145,10 +146,58 @@ export default class PayoutResolver extends baseResolver {
 		return completePayout;
 	}
 
+	@Authorized([AuthRoles.PAYOUTS_EDIT])
+	@Mutation((type) => Boolean)
+	public async markAsPaied(
+		@Arg('id', () => ID) id: number,
+		@Arg('memberId', () => ID) memberId: number
+	): Promise<boolean> {
+		const compensations = await getManager()
+			.getRepository(Compensation)
+			.find({
+				where: {
+					payoutId: id,
+					memberId,
+				},
+			});
+
+		const promises = [];
+		for (const comp of compensations) {
+			comp.paied = true;
+			promises.push(comp.save());
+		}
+
+		await Promise.all(promises);
+
+		return true;
+	}
+
+	@Authorized([AuthRoles.PAYOUTS_EDIT])
+	@Mutation((type) => Boolean)
+	public async markAsPaiedBulk(
+		@Arg('id', () => Int) id: number,
+		@Arg('memberIds', () => [Int]) memberIds: number[]
+	): Promise<boolean> {
+		const compensations = await getManager()
+			.getRepository(Compensation)
+			.createQueryBuilder()
+			.where(`Compensation.payoutId = :payoutId`, { payoutId: id })
+			.andWhere(`Compensation.memberId IN (:memberIds)`, { memberIds })
+			.getMany();
+
+		const promises = [];
+		for (const comp of compensations) {
+			comp.paied = true;
+			promises.push(comp.save());
+		}
+
+		await Promise.all(promises);
+
+		return true;
+	}
+
 	@FieldResolver()
-	public async compensations(
-		@Root() object: Payout
-	): Promise<Array<Compensation<any>>> {
+	public async compensations(@Root() object: Payout): Promise<Array<Compensation<any>>> {
 		const customs: Compensation<any>[] = await resolveEntityArray<CustomCompensation>(
 			'CustomCompensation',
 			object.compensationIds
@@ -160,7 +209,7 @@ export default class PayoutResolver extends baseResolver {
 		return customs.concat(orders);
 	}
 
-	@FieldResolver(type => Float)
+	@FieldResolver((type) => Float)
 	public async total(@Root() object: Payout): Promise<number> {
 		const result = await getManager()
 			.getRepository(Compensation)
