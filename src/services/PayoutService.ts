@@ -2,7 +2,6 @@ import Payout from '../entities/Payout';
 import Compensation from '../entities/Compensation';
 import { getManager } from 'typeorm';
 import CompensationService from './CompensationService';
-import { GeneratePdfOptions, generatePdf } from 'tea-school';
 import * as path from 'path';
 import fs from 'fs';
 import * as pug from 'pug';

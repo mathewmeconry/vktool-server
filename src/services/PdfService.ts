@@ -283,16 +283,18 @@ export default class PdfService {
 			[index: string]: { from: string; until: string; charge: string; amount: number };
 		} = {};
 		for (const comp of billingReport.compensations) {
-			const compReduceId = `${comp.from.getTime()}_${comp.until.getTime()}_${comp.charge}`;
-			if (!combinedComps.hasOwnProperty(compReduceId)) {
-				combinedComps[compReduceId] = {
-					from: moment(comp.from).format('HH:mm'),
-					until: moment(comp.until).format('HH:mm'),
-					charge: comp.charge ? 'Ja' : 'Nein',
-					amount: 0,
-				};
+			if (comp.deletedAt != null) {
+				const compReduceId = `${comp.from.getTime()}_${comp.until.getTime()}_${comp.charge}`;
+				if (!combinedComps.hasOwnProperty(compReduceId)) {
+					combinedComps[compReduceId] = {
+						from: moment(comp.from).format('HH:mm'),
+						until: moment(comp.until).format('HH:mm'),
+						charge: comp.charge ? 'Ja' : 'Nein',
+						amount: 0,
+					};
+				}
+				++combinedComps[compReduceId].amount;
 			}
-			++combinedComps[compReduceId].amount;
 		}
 
 		return PdfService.generatePdf(
