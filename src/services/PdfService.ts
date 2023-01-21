@@ -283,7 +283,7 @@ export default class PdfService {
 			[index: string]: { from: string; until: string; charge: string; amount: number };
 		} = {};
 		for (const comp of billingReport.compensations) {
-			if (comp.deletedAt != null) {
+			if (!comp.deletedAt) {
 				const compReduceId = `${comp.from.getTime()}_${comp.until.getTime()}_${comp.charge}`;
 				if (!combinedComps.hasOwnProperty(compReduceId)) {
 					combinedComps[compReduceId] = {
