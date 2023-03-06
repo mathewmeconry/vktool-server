@@ -27,8 +27,8 @@ export enum AuthRoles {
 	BILLINGREPORTS_APPROVE = 'billingreports_approve',
 
 	COLLECTIONPOINT_READ = 'collectionpoint_read',
-	COLLECTIONPOINT_CREATE = 'collectionpoint_readcreate',
-	COLLECTIONPOINT_EDIT = 'collectionpoint_readedit',
+	COLLECTIONPOINT_CREATE = 'collectionpoint_read',
+	COLLECTIONPOINT_EDIT = 'collectionpoint_read',
 
 	PAYOUTS_READ = 'payouts_read',
 	PAYOUTS_CREATE = 'payouts_create',
@@ -56,45 +56,7 @@ export enum AuthRoles {
 
 export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
 	// VST
-	16: [
-		AuthRoles.MEMBERS_READ,
-		AuthRoles.MEMBERS_EDIT,
-		AuthRoles.CONTACTS_EDIT,
-		AuthRoles.CONTACTS_READ,
-		AuthRoles.RANKS_READ,
-		AuthRoles.RANKS_EDIT,
-		AuthRoles.BILLINGREPORTS_CREATE,
-		AuthRoles.BILLINGREPORTS_READ,
-		AuthRoles.BILLINGREPORTS_APPROVE,
-		AuthRoles.BILLINGREPORTS_EDIT,
-		AuthRoles.ORDERS_READ,
-		AuthRoles.ORDERS_EDIT,
-		AuthRoles.COMPENSATIONS_READ,
-		AuthRoles.COMPENSATIONS_CREATE,
-		AuthRoles.COMPENSATIONS_APPROVE,
-		AuthRoles.COMPENSATIONS_EDIT,
-		AuthRoles.COLLECTIONPOINT_READ,
-		AuthRoles.COLLECTIONPOINT_EDIT,
-		AuthRoles.COLLECTIONPOINT_READ,
-		AuthRoles.MAILING_LISTS,
-		AuthRoles.PAYOUTS_READ,
-		AuthRoles.PAYOUTS_CREATE,
-		AuthRoles.PAYOUTS_SEND,
-		AuthRoles.PAYOUTS_EDIT,
-		AuthRoles.LOGOFFS_CREATE,
-		AuthRoles.LOGOFFS_EDIT,
-		AuthRoles.LOGOFFS_READ,
-		AuthRoles.LOGOFFS_APPROVE,
-		AuthRoles.PRODUCT_EDIT,
-		AuthRoles.PRODUCT_READ,
-		AuthRoles.MEMBERS_PRODUCTS,
-		AuthRoles.MATERIAL_CHANGELOG_CREATE,
-		AuthRoles.MATERIAL_CHANGELOG_EDIT,
-		AuthRoles.MATERIAL_CHANGELOG_READ,
-		AuthRoles.WAREHOUSE_CREATE,
-		AuthRoles.WAREHOUSE_READ,
-		AuthRoles.WAREHOUSE_OVERLOAD
-	],
+	16: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
 	// FHR
 	9: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
 };
