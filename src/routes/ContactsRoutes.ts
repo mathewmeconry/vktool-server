@@ -9,4 +9,9 @@ export default function ContactsRoutes(app: Express.Router) {
 		AuthService.checkAuthorization([AuthRoles.AUTHENTICATED]),
 		ContactsController.getMemberListPdf
 	);
+	app.get(
+		'/members/csv',
+		AuthService.checkAuthorization([AuthRoles.AUTHENTICATED]),
+		ContactsController.getMemberListCsv
+	);
 }
