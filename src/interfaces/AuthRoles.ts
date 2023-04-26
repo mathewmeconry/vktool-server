@@ -64,13 +64,17 @@ export const AuthRolesByFunction: { [index: number]: Array<AuthRoles> } = {
 export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 	// VK
 	10: [AuthRoles.MEMBERS_READ],
-	// KA
+	// Gfr
 	11: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
-	// KS
+	// Obgfr
+	52: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
+	// Wm
 	12: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
-	// GF
+	// Obwm
 	13: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
-	// ZF
+	// Fw
+	35: [AuthRoles.MEMBERS_READ, AuthRoles.RANKS_READ, AuthRoles.BILLINGREPORTS_CREATE],
+	// Lt
 	14: [
 		AuthRoles.MEMBERS_READ,
 		AuthRoles.RANKS_READ,
@@ -78,7 +82,23 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.MAILING_LISTS,
 		AuthRoles.LOGOFFS_READ,
 	],
-	// OZF
+	// Oblt
+	50: [
+		AuthRoles.MEMBERS_READ,
+		AuthRoles.RANKS_READ,
+		AuthRoles.BILLINGREPORTS_CREATE,
+		AuthRoles.MAILING_LISTS,
+		AuthRoles.LOGOFFS_READ,
+	],
+	// Hptm
+	51: [
+		AuthRoles.MEMBERS_READ,
+		AuthRoles.RANKS_READ,
+		AuthRoles.BILLINGREPORTS_CREATE,
+		AuthRoles.MAILING_LISTS,
+		AuthRoles.LOGOFFS_READ,
+	],
+	// Maj
 	15: [
 		AuthRoles.MEMBERS_READ,
 		AuthRoles.CONTACTS_READ,
@@ -98,7 +118,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.MATERIAL_CHANGELOG_READ,
 		AuthRoles.WAREHOUSE_OVERLOAD
 	],
-	// Leiter Stv.
+	// Oberstlt
 	29: [
 		AuthRoles.MEMBERS_READ,
 		AuthRoles.MEMBERS_EDIT,
@@ -138,7 +158,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.WAREHOUSE_READ,
 		AuthRoles.WAREHOUSE_OVERLOAD
 	],
-	// Leiter
+	// Oberst
 	28: [
 		AuthRoles.MEMBERS_READ,
 		AuthRoles.MEMBERS_EDIT,
@@ -178,7 +198,7 @@ export const AuthRolesByRank: { [index: number]: Array<AuthRoles> } = {
 		AuthRoles.WAREHOUSE_READ,
 		AuthRoles.WAREHOUSE_OVERLOAD
 	],
-	// CON
+	// Fachof
 	22: [
 		AuthRoles.MEMBERS_READ,
 		AuthRoles.CONTACTS_READ,

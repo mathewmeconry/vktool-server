@@ -27,7 +27,7 @@ import OrderCompensation from '../entities/OrderCompensation';
 import CustomCompensation from '../entities/CustomCompensation';
 import User from '../entities/User';
 import CollectionPoint from '../entities/CollectionPoint';
-import { getManager, Brackets, In } from 'typeorm';
+import { getManager, In } from 'typeorm';
 import { AuthRoles } from '../interfaces/AuthRoles';
 import ContactExtension from '../entities/ContactExtension';
 
@@ -93,18 +93,19 @@ export default class ContactResolver extends baseResolver {
 
 	constructor() {
 		super();
+		const groups = [10, 11, 52, 12, 13, 35, 14, 50, 51, 15, 29, 28, 22, 9, 16];
 		getManager()
 			.getRepository(ContactGroup)
-			.find({ bexioId: In([13, 11, 12, 28, 29, 15, 10, 14, 22, 16, 9, 35]) })
+			.find({ bexioId: In(groups) })
 			.then((results) => {
 				for (const result of results) {
-					filters.push({
+					filters[groups.indexOf(result.bexioId)] = {
 						id: result.id,
 						field: 'contactGroup.id',
 						operator: PaginationFilterOperator['='],
 						value: result.id,
 						displayName: result.name,
-					});
+					};
 				}
 			});
 	}

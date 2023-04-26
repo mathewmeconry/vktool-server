@@ -180,7 +180,7 @@ export default class Contact extends BexioBase<Contact> {
 	}
 
 	public async getFunctions(): Promise<Array<ContactGroup>> {
-		const functionGroups = [9, 16, 32, 16]
+		const functionGroups = [9, 16, 32]
 
 		let groups = this.contactGroups
 		if (!groups) {
