@@ -78,7 +78,7 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mysql": "^2.16.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "nodemailer": "^6.2.1",
     "passport": "^0.4.0",
     "passport-azure-ad-oauth2": "^0.0.4",
